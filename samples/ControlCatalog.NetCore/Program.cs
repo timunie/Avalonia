@@ -116,6 +116,10 @@ namespace ControlCatalog.NetCore
                 {
                     EnableMultitouch = true
                 })
+                .With(new AvaloniaNativePlatformOptions
+                {
+                    AvaloniaNativeLibraryPath = "/Users/grokys/Library/Developer/Xcode/DerivedData/Avalonia.Native.OSX-ehswkpaijuricldwlvxnjmleeeet/Build/Products/Debug/libAvalonia.Native.OSX.dylib",
+                })
                 .UseSkia()
                 .UseManagedSystemDialogs()
                 .LogToTrace();
