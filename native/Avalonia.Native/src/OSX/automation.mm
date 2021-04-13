@@ -115,6 +115,20 @@ public:
     }
 }
 
+- (NSAccessibilitySubrole)accessibilitySubrole
+{
+    auto controlType = _peer->GetAutomationControlType();
+    
+    switch (controlType) {
+        case AutomationTabItem: if (@available(macOS 10.13, *)) {
+            return NSAccessibilityTabButtonSubrole;
+        } else {
+            return NSAccessibilityUnknownSubrole;
+        }
+        default: return NSAccessibilityUnknownSubrole;
+    }
+}
+
 - (NSString *)accessibilityIdentifier
 {
     return GetNSStringAndRelease(_peer->GetAutomationId());

@@ -521,11 +521,7 @@ public:
     virtual void FocusChanged(IAvnAutomationPeer* peer) override
     {
         auto element = GetAccessibilityElement(peer);
-        
-        if (element != nullptr)
-        {
-            NSAccessibilityPostNotification(element, NSAccessibilityFocusedUIElementChangedNotification);
-        }
+        [Window automationFocusChanged:element];
     }
     
 protected:
@@ -1888,6 +1884,7 @@ NSArray* AllLoopModes = [NSArray arrayWithObjects: NSDefaultRunLoopMode, NSEvent
     double _lastScaling;
     IAvnAutomationPeer* _automationPeer;
     NSMutableArray* _automationChildren;
+    id _automationFocused;
 }
 
 -(void) setIsExtended:(bool)value;
@@ -2317,10 +2314,20 @@ NSArray* AllLoopModes = [NSArray arrayWithObjects: NSDefaultRunLoopMode, NSEvent
     
     if (peer->IsRootProvider())
     {
-        return GetAccessibilityElement(peer->RootProvider_GetFocus());
+        _automationFocused = GetAccessibilityElement(peer->RootProvider_GetFocus());
+        return _automationFocused;
     }
     
     return [super accessibilityFocusedUIElement];
+}
+
+- (void)automationFocusChanged:(id)focusedElement
+{
+    [_automationFocused setAccessibilityFocused:false];
+    [focusedElement setAccessibilityFocused:true];
+    NSAccessibilityPostNotification(_automationFocused, NSAccessibilityFocusedUIElementChangedNotification);
+    _automationFocused = focusedElement;
+    NSAccessibilityPostNotification(focusedElement, NSAccessibilityFocusedUIElementChangedNotification);
 }
 
 - (IAvnAutomationPeer*) getAutomationPeer

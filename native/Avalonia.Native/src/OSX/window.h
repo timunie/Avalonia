@@ -34,6 +34,7 @@ class WindowBaseImpl;
 -(double) getScaling;
 -(double) getExtendedTitleBarHeight;
 -(void) setIsExtended:(bool)value;
+-(void) automationFocusChanged:(id _Nullable)focusedElement;
 @end
 
 struct INSWindowHolder
