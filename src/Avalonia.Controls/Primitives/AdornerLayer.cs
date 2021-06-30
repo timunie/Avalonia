@@ -50,7 +50,7 @@ namespace Avalonia.Controls.Primitives
         {
             foreach (var child in Children)
             {
-                var info = child.GetValue(s_adornedElementInfoProperty);
+                var info = ((Control)child).GetValue(s_adornedElementInfoProperty);
 
                 if (info != null && info.Bounds.HasValue)
                 {
@@ -69,7 +69,7 @@ namespace Avalonia.Controls.Primitives
         {
             foreach (var child in Children)
             {
-                var info = child.GetValue(s_adornedElementInfoProperty);
+                var info = ((Control)child).GetValue(s_adornedElementInfoProperty);
 
                 if (info != null && info.Bounds.HasValue)
                 {

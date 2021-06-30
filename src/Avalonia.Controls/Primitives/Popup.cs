@@ -669,14 +669,14 @@ namespace Avalonia.Controls.Primitives
             {
                 popupHost.Presenter.ApplyTemplate();
 
-                var presenterSubscription = popupHost.Presenter.GetObservable(ContentPresenter.ChildProperty)
+                var presenterSubscription = ((Control)popupHost.Presenter).GetObservable(ContentPresenter.ChildProperty)
                     .Subscribe(SetTemplatedParentAndApplyChildTemplates);
 
                 _openState.SetPresenterSubscription(presenterSubscription);
             }
         }
 
-        private void SetTemplatedParentAndApplyChildTemplates(IControl control)
+        private void SetTemplatedParentAndApplyChildTemplates(IControl? control)
         {
             if (control != null)
             {
