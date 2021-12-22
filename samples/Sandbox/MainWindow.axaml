@@ -1,4 +1,21 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'
+        xmlns:m='using:Sandbox.Model'
+        x:DataType='m:MainViewModel'
+        DragDrop.AllowDrop='true'
         x:Class="Sandbox.MainWindow">
+    <Window.DataContext>
+        <m:MainViewModel />
+    </Window.DataContext>
+    <ListBox Items="{CompiledBinding FileItems}" >
+        <ListBox.ItemTemplate>
+            <DataTemplate DataType="m:FileItem">
+                <StackPanel Orientation="Horizontal" Spacing="10" >
+                    <Image Source="{CompiledBinding Icon}" Width="200" />
+                    <TextBlock Text="{CompiledBinding FileName}" VerticalAlignment="Center" />
+                </StackPanel>
+            </DataTemplate>
+        </ListBox.ItemTemplate>
+    </ListBox>
+    
 </Window>
