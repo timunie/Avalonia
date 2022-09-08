@@ -14,6 +14,23 @@ using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.VisualTree;
 using Avalonia.Controls.Metadata;
+using Avalonia.Data;
+
+
+/* TODO
+ 
+ ** Properties **
+ 
+ - [ ] Add DisplayMemberPath
+ - [X] Add IsEditable
+ - [X] Add IsReadOnly
+ - [ ] Add SelectionBoxItemStringFormat ??
+ - [ ] Add ShouldPreserveUserEnteredPrefix
+ - [ ] Add StaysOpenOnEdit
+ - [X] Add Text 
+
+ */
+
 
 namespace Avalonia.Controls
 {
@@ -21,6 +38,7 @@ namespace Avalonia.Controls
     /// A drop-down list control.
     /// </summary>
     [TemplatePart("PART_Popup", typeof(Popup))]
+    [TemplatePart("PART_EditableTextBox", typeof(TextBox))]
     public class ComboBox : SelectingItemsControl
     {
         /// <summary>
@@ -80,11 +98,44 @@ namespace Avalonia.Controls
         public static readonly StyledProperty<VerticalAlignment> VerticalContentAlignmentProperty =
             ContentControl.VerticalContentAlignmentProperty.AddOwner<ComboBox>();
 
+        /// <summary>
+        /// Defines the <see cref="Text" /> property
+        /// </summary>
+        public static readonly DirectProperty<ComboBox, string?> TextProperty =
+            TextBlock.TextProperty.AddOwnerWithDataValidation<ComboBox>(
+                o => o.Text,
+                (o, v) => o.Text = v,
+                defaultBindingMode: BindingMode.TwoWay,
+                enableDataValidation: true);
+
+        /// <summary>
+        /// Defines the <see cref="IsEditable" /> property
+        /// </summary>
+        public static readonly StyledProperty<bool> IsEditableProperty =
+            AvaloniaProperty.Register<ComboBox, bool>(nameof(IsEditable));
+
+        /// <summary>
+        /// Gets or sets if the ComboBox is editable
+        /// </summary>
+        public bool IsEditable
+        {
+            get { return GetValue(IsEditableProperty); }
+            set { SetValue(IsEditableProperty, value); }
+        }
+
+        /// <summary>
+        /// Defines the <see cref="IsReadOnly" /> property
+        /// </summary>
+        public static readonly StyledProperty<bool> IsReadOnlyProperty =
+            TextBox.IsReadOnlyProperty.AddOwner<ComboBox>();
+        
         private bool _isDropDownOpen;
         private Popup? _popup;
+        private TextBox? _editableTextBox;
         private object? _selectionBoxItem;
         private readonly CompositeDisposable _subscriptionsOnOpen = new CompositeDisposable();
-
+        private string? _text;
+        
         /// <summary>
         /// Initializes static members of the <see cref="ComboBox"/> class.
         /// </summary>
@@ -168,7 +219,26 @@ namespace Avalonia.Controls
             get { return GetValue(VerticalContentAlignmentProperty); }
             set { SetValue(VerticalContentAlignmentProperty, value); }
         }
+        
+        /// <summary>
+        /// Gets or sets the Text if the ComboBox is editable
+        /// </summary>
+        public string? Text
+        {
+            get { return _text; }
+            set { SetAndRaise(TextProperty, ref _text, value); }
+        }
 
+        /// <summary>
+        /// Gets or sets if the ComboBox is read-only. This property does only have effect if the control is editable.
+        /// (<see cref="IsEditable"/> = true />)
+        /// </summary>
+        public bool IsReadOnly
+        {
+            get { return GetValue(IsReadOnlyProperty); }
+            set { SetValue(IsReadOnlyProperty, value); }
+        }
+        
         /// <inheritdoc/>
         protected override IItemContainerGenerator CreateItemContainerGenerator()
         {
@@ -270,6 +340,11 @@ namespace Avalonia.Controls
         /// <inheritdoc/>
         protected override void OnPointerReleased(PointerReleasedEventArgs e)
         {
+            if (IsDropDownOpen && e.Source is TextPresenter)
+            {
+                e.Handled = true;
+            }
+            
             if (!e.Handled && e.Source is IVisual source)
             {
                 if (_popup?.IsInsidePopup(source) == true)
@@ -280,14 +355,24 @@ namespace Avalonia.Controls
                         e.Handled = true;
                     }
                 }
-                else
+                else if (_editableTextBox is { IsKeyboardFocusWithin: false })
                 {
                     IsDropDownOpen = !IsDropDownOpen;
-                    e.Handled = true;
+                    e.Handled = true; 
                 }
             }
 
             base.OnPointerReleased(e);
+        }
+
+        /// <inheritdoc/>
+        protected override void OnPointerPressed(PointerPressedEventArgs e)
+        {
+            if (IsDropDownOpen && e.Source is TextPresenter)
+            {
+                e.Handled = true;
+            }
+            base.OnPointerPressed(e);
         }
 
         /// <inheritdoc/>
@@ -300,6 +385,8 @@ namespace Avalonia.Controls
             }
 
             _popup = e.NameScope.Get<Popup>("PART_Popup");
+            _editableTextBox = e.NameScope.Get<TextBox>("PART_EditableTextBox");
+            
             _popup.Opened += PopupOpened;
             _popup.Closed += PopupClosed;
         }
@@ -367,6 +454,7 @@ namespace Avalonia.Controls
         private void SelectedItemChanged(AvaloniaPropertyChangedEventArgs e)
         {
             UpdateSelectionBoxItem(e.NewValue);
+            Text = e.NewValue?.ToString();
             TryFocusSelectedItem();
         }
 
