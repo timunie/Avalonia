@@ -400,7 +400,7 @@ namespace Avalonia.Controls
         /// </summary>
         /// <param name="index">index to search for</param>
         /// <returns>the value at the given index or the default value if index is not in the table</returns>
-        public T GetValueAt(int index)
+        public T? GetValueAt(int index)
         {
             return GetValueAt(index, out bool found);
         }
@@ -411,7 +411,7 @@ namespace Avalonia.Controls
         /// <param name="index">index to search for</param>
         /// <param name="found">set to true by the method if the index was found; otherwise, false</param>
         /// <returns>the value at the given index or the default value if index is not in the table</returns>
-        public T GetValueAt(int index, out bool found)
+        public T? GetValueAt(int index, out bool found)
         {
             int rangeIndex = this.FindRangeIndex(index);
             if (this.IsCorrectRangeIndex(rangeIndex, index))

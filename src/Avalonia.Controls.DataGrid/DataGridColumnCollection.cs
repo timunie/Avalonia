@@ -42,7 +42,7 @@ namespace Avalonia.Controls
             private set;
         }
 
-        internal DataGridColumn FirstColumn
+        internal DataGridColumn? FirstColumn
         {
             get
             {
@@ -50,7 +50,7 @@ namespace Avalonia.Controls
             }
         }
 
-        internal DataGridColumn FirstVisibleColumn
+        internal DataGridColumn? FirstVisibleColumn
         {
             get
             {
@@ -58,11 +58,11 @@ namespace Avalonia.Controls
             }
         }
 
-        internal DataGridColumn FirstVisibleNonFillerColumn
+        internal DataGridColumn? FirstVisibleNonFillerColumn
         {
             get
             {
-                DataGridColumn dataGridColumn = FirstVisibleColumn;
+                var dataGridColumn = FirstVisibleColumn;
                 if (dataGridColumn == RowGroupSpacerColumn)
                 {
                     dataGridColumn = GetNextVisibleColumn(dataGridColumn);
@@ -71,7 +71,7 @@ namespace Avalonia.Controls
             }
         }
 
-        internal DataGridColumn FirstVisibleWritableColumn
+        internal DataGridColumn? FirstVisibleWritableColumn
         {
             get
             {
@@ -79,7 +79,7 @@ namespace Avalonia.Controls
             }
         }
 
-        internal DataGridColumn FirstVisibleScrollingColumn
+        internal DataGridColumn? FirstVisibleScrollingColumn
         {
             get
             {
@@ -93,7 +93,7 @@ namespace Avalonia.Controls
             private set;
         }
 
-        internal DataGridColumn LastVisibleColumn
+        internal DataGridColumn? LastVisibleColumn
         {
             get
             {
@@ -101,7 +101,7 @@ namespace Avalonia.Controls
             }
         }
 
-        internal DataGridColumn LastVisibleScrollingColumn
+        internal DataGridColumn? LastVisibleScrollingColumn
         {
             get
             {
@@ -109,7 +109,7 @@ namespace Avalonia.Controls
             }
         }
 
-        internal DataGridColumn LastVisibleWritableColumn
+        internal DataGridColumn? LastVisibleWritableColumn
         {
             get
             {
@@ -159,7 +159,7 @@ namespace Avalonia.Controls
                     }
 
                     _owningGrid.OnClearingColumns();
-                    for (int columnIndex = 0; columnIndex < ItemsInternal.Count; columnIndex++)
+                    for (var columnIndex = 0; columnIndex < ItemsInternal.Count; columnIndex++)
                     {
                         // Detach the column...
                         ItemsInternal[columnIndex].OwningGrid = null;
@@ -194,14 +194,14 @@ namespace Avalonia.Controls
                     throw new ArgumentNullException("dataGridColumn");
                 }
 
-                int columnIndexWithFiller = columnIndex;
+                var columnIndexWithFiller = columnIndex;
                 if (dataGridColumn != RowGroupSpacerColumn && RowGroupSpacerColumn.IsRepresented)
                 {
                     columnIndexWithFiller++;
                 }
 
                 // get the new current cell coordinates
-                DataGridCellCoordinates newCurrentCellCoordinates = _owningGrid.OnInsertingColumn(columnIndex, dataGridColumn);
+                var newCurrentCellCoordinates = _owningGrid.OnInsertingColumn(columnIndex, dataGridColumn);
 
                 // insert the column into our internal list
                 ItemsInternal.Insert(columnIndexWithFiller, dataGridColumn);
@@ -242,8 +242,8 @@ namespace Avalonia.Controls
 
         internal bool DisplayInOrder(int columnIndex1, int columnIndex2)
         {
-            int displayIndex1 = ItemsInternal[columnIndex1].DisplayIndexWithFiller;
-            int displayIndex2 = ItemsInternal[columnIndex2].DisplayIndexWithFiller;
+            var displayIndex1 = ItemsInternal[columnIndex1].DisplayIndexWithFiller;
+            var displayIndex2 = ItemsInternal[columnIndex2].DisplayIndexWithFiller;
             return displayIndex1 < displayIndex2;
         }
 
@@ -252,7 +252,7 @@ namespace Avalonia.Controls
             // The insert below could cause the first column to be added.  That causes a refresh 
             // which re-enters method so instead of checking RowGroupSpacerColumn.IsRepresented, 
             // we need to check to see if it's actually in our collection instead.
-            bool spacerRepresented = (ItemsInternal.Count > 0) && (ItemsInternal[0] == RowGroupSpacerColumn);
+            var spacerRepresented = (ItemsInternal.Count > 0) && (ItemsInternal[0] == RowGroupSpacerColumn);
             if (rowGrouping && !spacerRepresented)
             {
                 Insert(0, RowGroupSpacerColumn);
@@ -281,7 +281,7 @@ namespace Avalonia.Controls
             VisibleColumnCount = 0;
             _columnsMap.Clear();
 
-            for (int columnIndex = 0; columnIndex < ItemsInternal.Count; columnIndex++)
+            for (var columnIndex = 0; columnIndex < ItemsInternal.Count; columnIndex++)
             {
                 var item = ItemsInternal[columnIndex];
                 _columnsMap[columnIndex] = item.DisplayIndex;
@@ -303,20 +303,20 @@ namespace Avalonia.Controls
             return _columnsMap.TryGetValue(columnIndex, out var displayIndex) ? displayIndex : -1;
         }
 
-        internal DataGridColumn GetColumnAtDisplayIndex(int displayIndex)
+        internal DataGridColumn? GetColumnAtDisplayIndex(int displayIndex)
         {
             if (displayIndex < 0 || displayIndex >= ItemsInternal.Count || displayIndex >= DisplayIndexMap.Count)
             {
                 return null;
             }
-            int columnIndex = DisplayIndexMap[displayIndex];
+            var columnIndex = DisplayIndexMap[displayIndex];
             return ItemsInternal[columnIndex];
         }
 
         internal int GetColumnCount(bool isVisible, bool isFrozen, int fromColumnIndex, int toColumnIndex)
         {
-            int columnCount = 0;
-            DataGridColumn dataGridColumn = ItemsInternal[fromColumnIndex];
+            var columnCount = 0;
+            var dataGridColumn = ItemsInternal[fromColumnIndex];
 
             while (dataGridColumn != ItemsInternal[toColumnIndex])
             {
@@ -328,7 +328,7 @@ namespace Avalonia.Controls
 
         internal IEnumerable<DataGridColumn> GetDisplayedColumns()
         {
-            foreach (int columnIndex in DisplayIndexMap)
+            foreach (var columnIndex in DisplayIndexMap)
             {
                 yield return ItemsInternal[columnIndex];
             }
@@ -343,9 +343,9 @@ namespace Avalonia.Controls
         {
             Debug.Assert(filter != null);
             Debug.Assert(ItemsInternal.Count == DisplayIndexMap.Count);
-            foreach (int columnIndex in DisplayIndexMap)
+            foreach (var columnIndex in DisplayIndexMap)
             {
-                DataGridColumn column = ItemsInternal[columnIndex];
+                var column = ItemsInternal[columnIndex];
                 if (filter(column))
                 {
                     yield return column;
@@ -373,9 +373,9 @@ namespace Avalonia.Controls
         /// <returns>Columns that meet the criteria, in descending DisplayIndex order.</returns>
         internal IEnumerable<DataGridColumn> GetDisplayedColumnsReverse(Predicate<DataGridColumn> filter)
         {
-            for (int displayIndex = DisplayIndexMap.Count - 1; displayIndex >= 0; displayIndex--)
+            for (var displayIndex = DisplayIndexMap.Count - 1; displayIndex >= 0; displayIndex--)
             {
-                DataGridColumn column = ItemsInternal[DisplayIndexMap[displayIndex]];
+                var column = ItemsInternal[DisplayIndexMap[displayIndex]];
                 if (filter(column))
                 {
                     yield return column;
@@ -383,16 +383,16 @@ namespace Avalonia.Controls
             }
         }
 
-        internal DataGridColumn GetFirstColumn(bool? isVisible, bool? isFrozen, bool? isReadOnly)
+        internal DataGridColumn? GetFirstColumn(bool? isVisible, bool? isFrozen, bool? isReadOnly)
         {
             Debug.Assert(ItemsInternal.Count == DisplayIndexMap.Count);
-            int index = 0;
+            var index = 0;
             while (index < DisplayIndexMap.Count)
             {
-                DataGridColumn dataGridColumn = GetColumnAtDisplayIndex(index);
-                if ((isVisible == null || (dataGridColumn.IsVisible) == isVisible) &&
-                    (isFrozen == null || dataGridColumn.IsFrozen == isFrozen) &&
-                    (isReadOnly == null || dataGridColumn.IsReadOnly == isReadOnly))
+                var dataGridColumn = GetColumnAtDisplayIndex(index);
+                if ((isVisible == null || (dataGridColumn?.IsVisible) == isVisible) &&
+                    (isFrozen == null || dataGridColumn?.IsFrozen == isFrozen) &&
+                    (isReadOnly == null || dataGridColumn?.IsReadOnly == isReadOnly))
                 {
                     return dataGridColumn;
                 }
@@ -401,16 +401,16 @@ namespace Avalonia.Controls
             return null;
         }
 
-        internal DataGridColumn GetLastColumn(bool? isVisible, bool? isFrozen, bool? isReadOnly)
+        internal DataGridColumn? GetLastColumn(bool? isVisible, bool? isFrozen, bool? isReadOnly)
         {
             Debug.Assert(ItemsInternal.Count == DisplayIndexMap.Count);
-            int index = DisplayIndexMap.Count - 1;
+            var index = DisplayIndexMap.Count - 1;
             while (index >= 0)
             {
-                DataGridColumn dataGridColumn = GetColumnAtDisplayIndex(index);
-                if ((isVisible == null || (dataGridColumn.IsVisible) == isVisible) &&
-                    (isFrozen == null || dataGridColumn.IsFrozen == isFrozen) &&
-                    (isReadOnly == null || dataGridColumn.IsReadOnly == isReadOnly))
+                var dataGridColumn = GetColumnAtDisplayIndex(index);
+                if ((isVisible == null || (dataGridColumn?.IsVisible) == isVisible) &&
+                    (isFrozen == null || dataGridColumn?.IsFrozen == isFrozen) &&
+                    (isReadOnly == null || dataGridColumn?.IsReadOnly == isReadOnly))
                 {
                     return dataGridColumn;
                 }
@@ -419,26 +419,26 @@ namespace Avalonia.Controls
             return null;
         }
 
-        internal DataGridColumn GetNextColumn(DataGridColumn dataGridColumnStart)
+        internal DataGridColumn? GetNextColumn(DataGridColumn dataGridColumnStart)
         {
             return GetNextColumn(dataGridColumnStart, null /*isVisible*/, null /*isFrozen*/, null /*isReadOnly*/);
         }
 
-        internal DataGridColumn GetNextColumn(DataGridColumn dataGridColumnStart,
+        internal DataGridColumn? GetNextColumn(DataGridColumn? dataGridColumnStart,
                                                   bool? isVisible, bool? isFrozen, bool? isReadOnly)
         {
             Debug.Assert(dataGridColumnStart != null);
             Debug.Assert(ItemsInternal.Contains(dataGridColumnStart));
             Debug.Assert(ItemsInternal.Count == DisplayIndexMap.Count);
 
-            int index = dataGridColumnStart.DisplayIndexWithFiller + 1;
+            var index = dataGridColumnStart.DisplayIndexWithFiller + 1;
             while (index < DisplayIndexMap.Count)
             {
-                DataGridColumn dataGridColumn = GetColumnAtDisplayIndex(index);
+                var dataGridColumn = GetColumnAtDisplayIndex(index);
 
-                if ((isVisible == null || (dataGridColumn.IsVisible) == isVisible) &&
-                    (isFrozen == null || dataGridColumn.IsFrozen == isFrozen) &&
-                    (isReadOnly == null || dataGridColumn.IsReadOnly == isReadOnly))
+                if ((isVisible == null || (dataGridColumn?.IsVisible) == isVisible) &&
+                    (isFrozen == null || dataGridColumn?.IsFrozen == isFrozen) &&
+                    (isReadOnly == null || dataGridColumn?.IsReadOnly == isReadOnly))
                 {
                     return dataGridColumn;
                 }
@@ -447,31 +447,31 @@ namespace Avalonia.Controls
             return null;
         }
 
-        internal DataGridColumn GetNextVisibleColumn(DataGridColumn dataGridColumnStart)
+        internal DataGridColumn? GetNextVisibleColumn(DataGridColumn? dataGridColumnStart)
         {
             return GetNextColumn(dataGridColumnStart, true /*isVisible*/, null /*isFrozen*/, null /*isReadOnly*/);
         }
 
-        internal DataGridColumn GetNextVisibleFrozenColumn(DataGridColumn dataGridColumnStart)
+        internal DataGridColumn? GetNextVisibleFrozenColumn(DataGridColumn dataGridColumnStart)
         {
             return GetNextColumn(dataGridColumnStart, true /*isVisible*/, true /*isFrozen*/, null /*isReadOnly*/);
         }
 
-        internal DataGridColumn GetNextVisibleWritableColumn(DataGridColumn dataGridColumnStart)
+        internal DataGridColumn? GetNextVisibleWritableColumn(DataGridColumn dataGridColumnStart)
         {
             return GetNextColumn(dataGridColumnStart, true /*isVisible*/, null /*isFrozen*/, false /*isReadOnly*/);
         }
 
-        internal DataGridColumn GetPreviousColumn(DataGridColumn dataGridColumnStart,
+        internal DataGridColumn? GetPreviousColumn(DataGridColumn dataGridColumnStart,
                                                       bool? isVisible, bool? isFrozen, bool? isReadOnly)
         {
-            int index = dataGridColumnStart.DisplayIndexWithFiller - 1;
+            var index = dataGridColumnStart.DisplayIndexWithFiller - 1;
             while (index >= 0)
             {
-                DataGridColumn dataGridColumn = GetColumnAtDisplayIndex(index);
-                if ((isVisible == null || (dataGridColumn.IsVisible) == isVisible) &&
-                    (isFrozen == null || dataGridColumn.IsFrozen == isFrozen) &&
-                    (isReadOnly == null || dataGridColumn.IsReadOnly == isReadOnly))
+                var dataGridColumn = GetColumnAtDisplayIndex(index);
+                if ((isVisible == null || (dataGridColumn?.IsVisible) == isVisible) &&
+                    (isFrozen == null || dataGridColumn?.IsFrozen == isFrozen) &&
+                    (isReadOnly == null || dataGridColumn?.IsReadOnly == isReadOnly))
                 {
                     return dataGridColumn;
                 }
@@ -480,26 +480,26 @@ namespace Avalonia.Controls
             return null;
         }
 
-        internal DataGridColumn GetPreviousVisibleNonFillerColumn(DataGridColumn dataGridColumnStart)
+        internal DataGridColumn? GetPreviousVisibleNonFillerColumn(DataGridColumn dataGridColumnStart)
         {
-            DataGridColumn column = GetPreviousColumn(dataGridColumnStart, true /*isVisible*/, null /*isFrozen*/, null /*isReadOnly*/);
+            var column = GetPreviousColumn(dataGridColumnStart, true /*isVisible*/, null /*isFrozen*/, null /*isReadOnly*/);
             return (column is DataGridFillerColumn) ? null : column;
         }
 
-        internal DataGridColumn GetPreviousVisibleScrollingColumn(DataGridColumn dataGridColumnStart)
+        internal DataGridColumn? GetPreviousVisibleScrollingColumn(DataGridColumn dataGridColumnStart)
         {
             return GetPreviousColumn(dataGridColumnStart, true /*isVisible*/, false /*isFrozen*/, null /*isReadOnly*/);
         }
 
-        internal DataGridColumn GetPreviousVisibleWritableColumn(DataGridColumn dataGridColumnStart)
+        internal DataGridColumn? GetPreviousVisibleWritableColumn(DataGridColumn dataGridColumnStart)
         {
             return GetPreviousColumn(dataGridColumnStart, true /*isVisible*/, null /*isFrozen*/, false /*isReadOnly*/);
         }
 
         internal int GetVisibleColumnCount(int fromColumnIndex, int toColumnIndex)
         {
-            int columnCount = 0;
-            DataGridColumn dataGridColumn = ItemsInternal[fromColumnIndex];
+            var columnCount = 0;
+            var dataGridColumn = ItemsInternal[fromColumnIndex];
 
             while (dataGridColumn != ItemsInternal[toColumnIndex])
             {
@@ -524,7 +524,7 @@ namespace Avalonia.Controls
         internal double GetVisibleFrozenEdgedColumnsWidth()
         {
             double visibleFrozenColumnsWidth = 0;
-            for (int columnIndex = 0; columnIndex < ItemsInternal.Count; columnIndex++)
+            for (var columnIndex = 0; columnIndex < ItemsInternal.Count; columnIndex++)
             {
                 if (ItemsInternal[columnIndex].IsVisible && ItemsInternal[columnIndex].IsFrozen)
                 {
@@ -552,14 +552,14 @@ namespace Avalonia.Controls
                     throw DataGridError.DataGrid.CannotChangeColumnCollectionWhileAdjustingDisplayIndexes();
                 }
 
-                int columnIndexWithFiller = columnIndex;
+                var columnIndexWithFiller = columnIndex;
                 if (!isSpacer && RowGroupSpacerColumn.IsRepresented)
                 {
                     columnIndexWithFiller++;
                 }
 
-                DataGridColumn dataGridColumn = ItemsInternal[columnIndexWithFiller];
-                DataGridCellCoordinates newCurrentCellCoordinates = _owningGrid.OnRemovingColumn(dataGridColumn);
+                var dataGridColumn = ItemsInternal[columnIndexWithFiller];
+                var newCurrentCellCoordinates = _owningGrid.OnRemovingColumn(dataGridColumn);
                 ItemsInternal.RemoveAt(columnIndexWithFiller);
                 if (dataGridColumn.IsVisible)
                 {

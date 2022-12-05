@@ -42,7 +42,7 @@ namespace Avalonia.Controls
 
         private DataGridCellsPresenter _cellsElement;
         private DataGridCell _fillerCell;
-        private DataGridRowHeader _headerElement;
+        private DataGridRowHeader? _headerElement;
         private double _lastHorizontalOffset;
         private int? _mouseOverColumnIndex;
         private bool _isValid = true;
@@ -711,7 +711,7 @@ namespace Avalonia.Controls
             }
         }
 
-        internal void EnsureHeaderStyleAndVisibility(Styling.Style previousStyle)
+        internal void EnsureHeaderStyleAndVisibility(Styling.Style? previousStyle)
         {
             if (_headerElement != null && OwningGrid != null)
             {

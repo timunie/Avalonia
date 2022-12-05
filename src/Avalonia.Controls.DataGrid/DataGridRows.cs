@@ -43,7 +43,7 @@ namespace Avalonia.Controls
         {
             get
             {
-                int count = FrozenColumnCount;
+                var count = FrozenColumnCount;
                 if (ColumnsInternal.RowGroupSpacerColumn.IsRepresented && (AreRowGroupHeadersFrozen || count > 0))
                 {
                     // Either the RowGroupHeaders are frozen by default or the user set a frozen column count.  In both cases, we need to freeze
@@ -79,11 +79,11 @@ namespace Avalonia.Controls
                 Debug.Assert(NegVerticalOffset >= 0);
 
                 // Height of all rows above the viewport
-                double totalRowsHeight = _verticalOffset - NegVerticalOffset;
+                var totalRowsHeight = _verticalOffset - NegVerticalOffset;
 
                 // Add the height of all the rows currently displayed, AvailableRowRoom
                 // is not always up to date enough for this
-                foreach (Control element in DisplayData.GetScrollingElements())
+                foreach (var element in DisplayData.GetScrollingElements())
                 {
                     if (element is DataGridRow row)
                     {
@@ -96,7 +96,7 @@ namespace Avalonia.Controls
                 }
 
                 // Details up to and including viewport
-                int detailsCount = GetDetailsCountInclusive(0, DisplayData.LastScrollingSlot);
+                var detailsCount = GetDetailsCountInclusive(0, DisplayData.LastScrollingSlot);
 
                 // Subtract details that were accounted for from the totalRowsHeight
                 totalRowsHeight -= detailsCount * RowDetailsHeightEstimate;
@@ -111,7 +111,7 @@ namespace Avalonia.Controls
                 // Calculate estimates for what's beyond the viewport
                 if (VisibleSlotCount > DisplayData.NumDisplayedScrollingElements)
                 {
-                    int remainingRowCount = (SlotCount - DisplayData.LastScrollingSlot - _collapsedSlotsTable.GetIndexCount(DisplayData.LastScrollingSlot, SlotCount - 1) - 1);
+                    var remainingRowCount = (SlotCount - DisplayData.LastScrollingSlot - _collapsedSlotsTable.GetIndexCount(DisplayData.LastScrollingSlot, SlotCount - 1) - 1);
 
                     // Add estimation for the cell heights of all rows beyond our viewport
                     totalRowsHeight += RowHeightEstimate * remainingRowCount;
@@ -121,7 +121,7 @@ namespace Avalonia.Controls
                 }
 
                 //
-                double totalDetailsHeight = detailsCount * RowDetailsHeightEstimate;
+                var totalDetailsHeight = detailsCount * RowDetailsHeightEstimate;
 
                 return totalRowsHeight + totalDetailsHeight;
             }
@@ -143,7 +143,7 @@ namespace Avalonia.Controls
                 try
                 {
                     // Individually deselecting displayed rows to view potential transitions
-                    for (int slot = DisplayData.FirstScrollingSlot;
+                    for (var slot = DisplayData.FirstScrollingSlot;
                          slot > -1 && slot <= DisplayData.LastScrollingSlot;
                          slot++)
                     {
@@ -174,11 +174,11 @@ namespace Avalonia.Controls
             _noSelectionChangeCount++;
             try
             {
-                bool exceptionAlreadySelected = false;
+                var exceptionAlreadySelected = false;
                 if (_selectedItems.Count > 0)
                 {
                     // Individually deselecting displayed rows to view potential transitions
-                    for (int slot = DisplayData.FirstScrollingSlot;
+                    for (var slot = DisplayData.FirstScrollingSlot;
                          slot > -1 && slot <= DisplayData.LastScrollingSlot;
                          slot++)
                     {
@@ -189,7 +189,7 @@ namespace Avalonia.Controls
                         }
                     }
                     exceptionAlreadySelected = _selectedItems.ContainsSlot(slotException);
-                    int selectedCount = _selectedItems.Count;
+                    var selectedCount = _selectedItems.Count;
                     if (selectedCount > 0)
                     {
                         if (selectedCount > 1)
@@ -198,7 +198,7 @@ namespace Avalonia.Controls
                         }
                         else
                         {
-                            int currentlySelectedSlot = _selectedItems.GetIndexes().First();
+                            var currentlySelectedSlot = _selectedItems.GetIndexes().First();
                             if (currentlySelectedSlot != slotException)
                             {
                                 SelectionHasChanged = true;
@@ -251,12 +251,12 @@ namespace Avalonia.Controls
         /// <returns>null if the DataSource is null, the provided item in not in the source, or the item is not displayed; otherwise, the associated Row</returns>
         internal DataGridRow GetRowFromItem(object dataItem)
         {
-            int rowIndex = DataConnection.IndexOf(dataItem);
+            var rowIndex = DataConnection.IndexOf(dataItem);
             if (rowIndex < 0)
             {
                 return null;
             }
-            int slot = SlotFromRowIndex(rowIndex);
+            var slot = SlotFromRowIndex(rowIndex);
             return IsSlotVisible(slot) ? DisplayData.GetDisplayedElement(slot) as DataGridRow : null;
         }
 
@@ -270,7 +270,7 @@ namespace Avalonia.Controls
         {
             Debug.Assert(slot >= 0 && slot <= SlotCount);
 
-            bool isRow = rowIndex != -1;
+            var isRow = rowIndex != -1;
             if (isCollapsed)
             {
                 InsertElement(slot,
@@ -306,8 +306,8 @@ namespace Avalonia.Controls
 
         internal void InsertRowAt(int rowIndex)
         {
-            int slot = SlotFromRowIndex(rowIndex);
-            object item = DataConnection.GetDataItem(rowIndex);
+            var slot = SlotFromRowIndex(rowIndex);
+            var item = DataConnection.GetDataItem(rowIndex);
 
             // isCollapsed below is always false because we only use the method if we're not grouping
             InsertElementAt(slot, rowIndex, item, null/*DataGridRowGroupInfo*/, false /*isCollapsed*/);
@@ -347,7 +347,7 @@ namespace Avalonia.Controls
                 // _desiredCurrentColumnIndex is used in MakeFirstDisplayedCellCurrentCell to set the
                 // column position back to what it was before the refresh
                 _desiredCurrentColumnIndex = CurrentColumnIndex;
-                double verticalOffset = _verticalOffset;
+                var verticalOffset = _verticalOffset;
                 if (DisplayData.PendingVerticalScrollHeight > 0)
                 {
                     // Use the pending vertical scrollbar position if there is one, in the case that the collection
@@ -472,8 +472,8 @@ namespace Avalonia.Controls
                 // of the grid
                 firstFullSlot = DisplayData.LastScrollingSlot;
                 // Figure out how much of the last row is cut off
-                double rowHeight = GetExactSlotElementHeight(DisplayData.LastScrollingSlot);
-                double availableHeight = AvailableSlotElementRoom + rowHeight;
+                var rowHeight = GetExactSlotElementHeight(DisplayData.LastScrollingSlot);
+                var availableHeight = AvailableSlotElementRoom + rowHeight;
                 if (MathUtilities.AreClose(rowHeight, availableHeight))
                 {
                     if (DisplayData.LastScrollingSlot == slot)
@@ -545,7 +545,7 @@ namespace Avalonia.Controls
                     Debug.Assert(_selectedItems.Count <= 1);
                     if (_selectedItems.Count > 0)
                     {
-                        int currentlySelectedSlot = _selectedItems.GetIndexes().First();
+                        var currentlySelectedSlot = _selectedItems.GetIndexes().First();
                         if (currentlySelectedSlot != slot)
                         {
                             SelectSlot(currentlySelectedSlot, false);
@@ -605,7 +605,7 @@ namespace Avalonia.Controls
                 Debug.Assert(row.OwningGrid == this);
                 Debug.Assert(row.Cells.Count == ColumnsItemsInternal.Count);
 
-                int columnIndex = 0;
+                var columnIndex = 0;
                 foreach (DataGridCell dataGridCell in row.Cells)
                 {
                     Debug.Assert(dataGridCell.OwningRow == row);
@@ -628,7 +628,7 @@ namespace Avalonia.Controls
             SlotCount = 0;
             VisibleSlotCount = 0;
             IEnumerator<int> groupSlots = null;
-            int nextGroupSlot = -1;
+            var nextGroupSlot = -1;
             if (RowGroupHeadersTable.RangeCount > 0)
             {
                 groupSlots = RowGroupHeadersTable.GetIndexes().GetEnumerator();
@@ -637,13 +637,13 @@ namespace Avalonia.Controls
                     nextGroupSlot = groupSlots.Current;
                 }
             }
-            int slot = 0;
-            int addedRows = 0;
+            var slot = 0;
+            var addedRows = 0;
             while (slot < totalSlots && AvailableSlotElementRoom > 0)
             {
                 if (slot == nextGroupSlot)
                 {
-                    DataGridRowGroupInfo groupRowInfo = RowGroupHeadersTable.GetValueAt(slot);
+                    var groupRowInfo = RowGroupHeadersTable.GetValueAt(slot);
                     AddSlotElement(slot, GenerateRowGroupHeader(slot, groupRowInfo));
                     nextGroupSlot = groupSlots.MoveNext() ? groupSlots.Current : -1;
                 }
@@ -667,13 +667,13 @@ namespace Avalonia.Controls
 
         private void ApplyDisplayedRowsState(int startSlot, int endSlot)
         {
-            int firstSlot = Math.Max(DisplayData.FirstScrollingSlot, startSlot);
-            int lastSlot = Math.Min(DisplayData.LastScrollingSlot, endSlot);
+            var firstSlot = Math.Max(DisplayData.FirstScrollingSlot, startSlot);
+            var lastSlot = Math.Min(DisplayData.LastScrollingSlot, endSlot);
 
             if (firstSlot >= 0)
             {
                 Debug.Assert(lastSlot >= firstSlot);
-                int slot = GetNextVisibleSlot(firstSlot - 1);
+                var slot = GetNextVisibleSlot(firstSlot - 1);
                 while (slot <= lastSlot)
                 {
                     if (DisplayData.GetDisplayedElement(slot) is DataGridRow row)
@@ -702,19 +702,19 @@ namespace Avalonia.Controls
         // Updates _collapsedSlotsTable and returns the number of pixels that were collapsed
         private double CollapseSlotsInTable(int startSlot, int endSlot, ref int slotsExpanded, int lastDisplayedSlot, ref double heightChangeBelowLastDisplayedSlot)
         {
-            int firstSlot = startSlot;
+            var firstSlot = startSlot;
             int lastSlot;
             double totalHeightChange = 0;
             // Figure out which slots actually need to be expanded since some might already be collapsed
             while (firstSlot <= endSlot)
             {
                 firstSlot = _collapsedSlotsTable.GetNextGap(firstSlot - 1);
-                int nextCollapsedSlot = _collapsedSlotsTable.GetNextIndex(firstSlot) - 1;
+                var nextCollapsedSlot = _collapsedSlotsTable.GetNextIndex(firstSlot) - 1;
                 lastSlot = nextCollapsedSlot == -2 ? endSlot : Math.Min(endSlot, nextCollapsedSlot);
 
                 if (firstSlot <= lastSlot)
                 {
-                    double heightChange = GetHeightEstimate(firstSlot, lastSlot);
+                    var heightChange = GetHeightEstimate(firstSlot, lastSlot);
                     totalHeightChange -= heightChange;
                     slotsExpanded -= lastSlot - firstSlot + 1;
 
@@ -767,9 +767,9 @@ namespace Avalonia.Controls
             Debug.Assert(slotDeleted >= 0);
 
             // Take care of the non-visible loaded rows
-            for (int index = 0; index < _loadedRows.Count;)
+            for (var index = 0; index < _loadedRows.Count;)
             {
-                DataGridRow dataGridRow = _loadedRows[index];
+                var dataGridRow = _loadedRows[index];
                 if (IsSlotVisible(dataGridRow.Slot))
                 {
                     index++;
@@ -820,9 +820,9 @@ namespace Avalonia.Controls
             }
 
             // Update the RowGroupHeaders
-            foreach (int slot in RowGroupHeadersTable.GetIndexes())
+            foreach (var slot in RowGroupHeadersTable.GetIndexes())
             {
-                DataGridRowGroupInfo rowGroupInfo = RowGroupHeadersTable.GetValueAt(slot);
+                var rowGroupInfo = RowGroupHeadersTable.GetValueAt(slot);
                 if (rowGroupInfo.Slot > slotDeleted)
                 {
                     rowGroupInfo.Slot--;
@@ -848,7 +848,7 @@ namespace Avalonia.Controls
             Debug.Assert(slotInserted >= 0);
 
             // Take care of the non-visible loaded rows
-            foreach (DataGridRow dataGridRow in _loadedRows)
+            foreach (var dataGridRow in _loadedRows)
             {
                 if (!IsSlotVisible(dataGridRow.Slot) && dataGridRow.Slot >= slotInserted)
                 {
@@ -883,9 +883,9 @@ namespace Avalonia.Controls
             }
 
             // Update the RowGroupHeaders
-            foreach (int slot in RowGroupHeadersTable.GetIndexes(slotInserted))
+            foreach (var slot in RowGroupHeadersTable.GetIndexes(slotInserted))
             {
-                DataGridRowGroupInfo rowGroupInfo = RowGroupHeadersTable.GetValueAt(slot);
+                var rowGroupInfo = RowGroupHeadersTable.GetValueAt(slot);
                 if (rowGroupInfo.Slot >= slotInserted)
                 {
                     rowGroupInfo.Slot++;
@@ -910,7 +910,7 @@ namespace Avalonia.Controls
         {
             if (_rowsPresenter != null)
             {
-                foreach (Control element in _rowsPresenter.Children)
+                foreach (var element in _rowsPresenter.Children)
                 {
                     if (element is DataGridRow row)
                     {
@@ -927,7 +927,7 @@ namespace Avalonia.Controls
             double heightAboveStartSlot = 0;
             if (isDisplayed)
             {
-                int slot = DisplayData.FirstScrollingSlot;
+                var slot = DisplayData.FirstScrollingSlot;
                 while (slot < startSlot)
                 {
                     heightAboveStartSlot += GetExactSlotElementHeight(slot);
@@ -935,7 +935,7 @@ namespace Avalonia.Controls
                 }
 
                 // First make the bottom rows available for recycling so we minimize element creation when expanding
-                for (int i = 0; (i < endSlot - startSlot + 1) && (DisplayData.LastScrollingSlot > endSlot); i++)
+                for (var i = 0; (i < endSlot - startSlot + 1) && (DisplayData.LastScrollingSlot > endSlot); i++)
                 {
                     RemoveDisplayedElement(DisplayData.LastScrollingSlot, wasDeleted: false, updateSlotInformation: true);
                 }
@@ -943,8 +943,8 @@ namespace Avalonia.Controls
 
             // Figure out which slots actually need to be expanded since some might already be collapsed
             double currentHeightChange = 0;
-            int firstSlot = startSlot;
-            int lastSlot = endSlot;
+            var firstSlot = startSlot;
+            var lastSlot = endSlot;
             while (firstSlot <= endSlot)
             {
                 firstSlot = _collapsedSlotsTable.GetNextIndex(firstSlot - 1);
@@ -959,7 +959,7 @@ namespace Avalonia.Controls
                     if (!isDisplayed)
                     {
                         // Estimate the height change if the slots aren't displayed.  If they are displayed, we can add real values
-                        double rowCount = lastSlot - firstSlot - GetRowGroupHeaderCount(firstSlot, lastSlot, false, out double headerHeight) + 1;
+                        double rowCount = lastSlot - firstSlot - GetRowGroupHeaderCount(firstSlot, lastSlot, false, out var headerHeight) + 1;
                         double detailsCount = GetDetailsCountInclusive(firstSlot, lastSlot);
                         currentHeightChange += headerHeight + (detailsCount * RowDetailsHeightEstimate) + (rowCount * RowHeightEstimate);
                     }
@@ -973,11 +973,11 @@ namespace Avalonia.Controls
 
             if (isDisplayed)
             {
-                double availableHeight = CellsHeight - heightAboveStartSlot;
+                var availableHeight = CellsHeight - heightAboveStartSlot;
                 // Actually expand the displayed slots up to what we can display
-                for (int i = startSlot; (i <= endSlot) && (currentHeightChange < availableHeight); i++)
+                for (var i = startSlot; (i <= endSlot) && (currentHeightChange < availableHeight); i++)
                 {
-                    Control insertedElement = InsertDisplayedElement(i, updateSlotInformation: false);
+                    var insertedElement = InsertDisplayedElement(i, updateSlotInformation: false);
                     currentHeightChange += insertedElement.DesiredSize.Height;
                     if (i > DisplayData.LastScrollingSlot)
                     {
@@ -999,7 +999,7 @@ namespace Avalonia.Controls
             if (EditingRow != null && EditingRow.Cells != null)
             {
                 Debug.Assert(EditingRow.Cells.Count == ColumnsItemsInternal.Count);
-                foreach (DataGridColumn column in ColumnsInternal.GetDisplayedColumns(c => c.IsVisible && !c.IsReadOnly))
+                foreach (var column in ColumnsInternal.GetDisplayedColumns(c => c.IsVisible && !c.IsReadOnly))
                 {
                     column.GenerateEditingElementInternal(EditingRow.Cells[column.Index], EditingRow.DataContext);
                 }
@@ -1020,7 +1020,7 @@ namespace Avalonia.Controls
         private DataGridRow GenerateRow(int rowIndex, int slot, object dataContext)
         {
             Debug.Assert(rowIndex > -1);
-            DataGridRow dataGridRow = GetGeneratedRow(dataContext);
+            var dataGridRow = GetGeneratedRow(dataContext);
             if (dataGridRow == null)
             {
                 dataGridRow = DisplayData.GetUsedRow() ?? new DataGridRow();
@@ -1054,7 +1054,7 @@ namespace Avalonia.Controls
                 return DisplayData.GetDisplayedElement(slot).DesiredSize.Height;
             }
 
-            Control slotElement = InsertDisplayedElement(slot, true /*updateSlotInformation*/);
+            var slotElement = InsertDisplayedElement(slot, true /*updateSlotInformation*/);
             Debug.Assert(slotElement != null);
             return slotElement.DesiredSize.Height;
         }
@@ -1062,7 +1062,7 @@ namespace Avalonia.Controls
         // Returns an estimate for the height of the slots between fromSlot and toSlot
         private double GetHeightEstimate(int fromSlot, int toSlot)
         {
-            double rowCount = toSlot - fromSlot - GetRowGroupHeaderCount(fromSlot, toSlot, true, out double headerHeight) + 1;
+            double rowCount = toSlot - fromSlot - GetRowGroupHeaderCount(fromSlot, toSlot, true, out var headerHeight) + 1;
             double detailsCount = GetDetailsCountInclusive(fromSlot, toSlot);
 
             return headerHeight + (detailsCount * RowDetailsHeightEstimate) + (rowCount * RowHeightEstimate);
@@ -1082,7 +1082,7 @@ namespace Avalonia.Controls
             }
             else
             {
-                DataGridRowGroupInfo rowGroupInfo = RowGroupHeadersTable.GetValueAt(slot);
+                var rowGroupInfo = RowGroupHeadersTable.GetValueAt(slot);
                 if (rowGroupInfo != null)
                 {
                     return _rowGroupHeightsByLevel[rowGroupInfo.Level];
@@ -1102,7 +1102,7 @@ namespace Avalonia.Controls
             Debug.Assert(toSlot >= fromSlot);
 
             double height = 0;
-            for (int slot = fromSlot; slot <= toSlot; slot++)
+            for (var slot = fromSlot; slot <= toSlot; slot++)
             {
                 height += GetSlotElementHeight(slot);
             }
@@ -1117,7 +1117,7 @@ namespace Avalonia.Controls
         private DataGridRow GetGeneratedRow(object dataContext)
         {
             // Check the list of rows being loaded via the LoadingRow event.
-            DataGridRow dataGridRow = GetLoadedRow(dataContext);
+            var dataGridRow = GetLoadedRow(dataContext);
             if (dataGridRow != null)
             {
                 return dataGridRow;
@@ -1140,7 +1140,7 @@ namespace Avalonia.Controls
 
         private DataGridRow GetLoadedRow(object dataContext)
         {
-            foreach (DataGridRow dataGridRow in _loadedRows)
+            foreach (var dataGridRow in _loadedRows)
             {
                 if (dataGridRow.DataContext == dataContext)
                 {
@@ -1178,7 +1178,7 @@ namespace Avalonia.Controls
             if (_rowsPresenter != null)
             {
                 DataGridRowGroupHeader groupHeader = null;
-                DataGridRow row = element as DataGridRow;
+                var row = element as DataGridRow;
                 if (row != null)
                 {
                     LoadRowVisualsForDisplay(row);
@@ -1274,7 +1274,7 @@ namespace Avalonia.Controls
             if (slot < DisplayData.FirstScrollingSlot - 1)
             {
                 // The element was added above our viewport so it pushes the VerticalOffset down
-                double elementHeight = RowGroupHeadersTable.Contains(slot) ? RowGroupHeaderHeightEstimate : RowHeightEstimate;
+                var elementHeight = RowGroupHeadersTable.Contains(slot) ? RowGroupHeaderHeightEstimate : RowHeightEstimate;
 
                 SetVerticalOffset(_verticalOffset + elementHeight);
             }
@@ -1315,7 +1315,7 @@ namespace Avalonia.Controls
                 {
                     Debug.Assert(dataGridRow.Cells.Count == ColumnsItemsInternal.Count);
 
-                    int columnIndex = 0;
+                    var columnIndex = 0;
                     foreach (DataGridCell dataGridCell in dataGridRow.Cells)
                     {
                         Debug.Assert(dataGridCell.OwningRow == dataGridRow);
@@ -1355,7 +1355,7 @@ namespace Avalonia.Controls
                 {
                     // The underlying data was already added, therefore we need to avoid accessing any back-end data since we might be off by 1 row.
                     _temporarilyResetCurrentCell = true;
-                    bool success = SetCurrentCellCore(-1, -1);
+                    var success = SetCurrentCellCore(-1, -1);
                     Debug.Assert(success);
                 }
             }
@@ -1385,7 +1385,7 @@ namespace Avalonia.Controls
         private void OnRemovedElement(int slotDeleted, object itemDeleted)
         {
             SlotCount--;
-            bool wasCollapsed = _collapsedSlotsTable.Contains(slotDeleted);
+            var wasCollapsed = _collapsedSlotsTable.Contains(slotDeleted);
             if (!wasCollapsed)
             {
                 VisibleSlotCount--;
@@ -1472,14 +1472,14 @@ namespace Avalonia.Controls
                 if (slotDeleted == CurrentSlot)
                 {
                     // No editing is committed since the underlying entity was already deleted.
-                    bool success = SetCurrentCellCore(-1, -1, false /*commitEdit*/, false /*endRowEdit*/);
+                    var success = SetCurrentCellCore(-1, -1, false /*commitEdit*/, false /*endRowEdit*/);
                     Debug.Assert(success);
                 }
                 else
                 {
                     // Underlying data of deleted row is gone. It cannot be accessed anymore. Skip the commit of the editing.
                     _temporarilyResetCurrentCell = true;
-                    bool success = SetCurrentCellCore(-1, -1);
+                    var success = SetCurrentCellCore(-1, -1);
                     Debug.Assert(success);
                 }
             }
@@ -1574,7 +1574,7 @@ namespace Avalonia.Controls
             if (EditingRow != null && EditingRow.Cells != null)
             {
                 Debug.Assert(EditingRow.Cells.Count == ColumnsItemsInternal.Count);
-                foreach (DataGridColumn column in Columns)
+                foreach (var column in Columns)
                 {
                     column.RemoveEditingElement();
                 }
@@ -1610,7 +1610,7 @@ namespace Avalonia.Controls
         {
             if (UnloadingRow != null || UnloadingRowGroup != null)
             {
-                foreach (Control element in DisplayData.GetScrollingElements())
+                foreach (var element in DisplayData.GetScrollingElements())
                 {
                     // Raise Unloading Row for all the rows we're displaying
                     if (element is DataGridRow row)
@@ -1672,12 +1672,12 @@ namespace Avalonia.Controls
             try
             {
                 double deltaY = 0;
-                int newFirstScrollingSlot = DisplayData.FirstScrollingSlot;
-                double newVerticalOffset = _verticalOffset + height;
+                var newFirstScrollingSlot = DisplayData.FirstScrollingSlot;
+                var newVerticalOffset = _verticalOffset + height;
                 if (height > 0)
                 {
                     // Scrolling Down
-                    int lastVisibleSlot = GetPreviousVisibleSlot(SlotCount);
+                    var lastVisibleSlot = GetPreviousVisibleSlot(SlotCount);
                     if (_vScrollBar != null && MathUtilities.AreClose(_vScrollBar.Maximum, newVerticalOffset))
                     {
                         // We've scrolled to the bottom of the ScrollBar, automatically place the user at the very bottom
@@ -1706,8 +1706,8 @@ namespace Avalonia.Controls
                                 // Very large scroll occurred. Instead of determining the exact number of scrolled off rows,
                                 // let's estimate the number based on RowHeight.
                                 ResetDisplayedRows();
-                                double singleRowHeightEstimate = RowHeightEstimate + (RowDetailsVisibilityMode == DataGridRowDetailsVisibilityMode.Visible ? RowDetailsHeightEstimate : 0);
-                                int scrolledToSlot = newFirstScrollingSlot + (int)(height / singleRowHeightEstimate);
+                                var singleRowHeightEstimate = RowHeightEstimate + (RowDetailsVisibilityMode == DataGridRowDetailsVisibilityMode.Visible ? RowDetailsHeightEstimate : 0);
+                                var scrolledToSlot = newFirstScrollingSlot + (int)(height / singleRowHeightEstimate);
                                 scrolledToSlot += _collapsedSlotsTable.GetIndexCount(newFirstScrollingSlot, newFirstScrollingSlot + scrolledToSlot);
                                 newFirstScrollingSlot = Math.Min(GetNextVisibleSlot(scrolledToSlot), lastVisibleSlot);
                             }
@@ -1731,8 +1731,8 @@ namespace Avalonia.Controls
                                         break;
                                     }
 
-                                    double rowHeight = GetExactSlotElementHeight(newFirstScrollingSlot);
-                                    double remainingHeight = height - deltaY;
+                                    var rowHeight = GetExactSlotElementHeight(newFirstScrollingSlot);
+                                    var remainingHeight = height - deltaY;
                                     if (MathUtilities.LessThanOrClose(rowHeight, remainingHeight))
                                     {
                                         deltaY += rowHeight;
@@ -1773,8 +1773,8 @@ namespace Avalonia.Controls
                             }
                             else
                             {
-                                double singleRowHeightEstimate = RowHeightEstimate + (RowDetailsVisibilityMode == DataGridRowDetailsVisibilityMode.Visible ? RowDetailsHeightEstimate : 0);
-                                int scrolledToSlot = newFirstScrollingSlot + (int)(height / singleRowHeightEstimate);
+                                var singleRowHeightEstimate = RowHeightEstimate + (RowDetailsVisibilityMode == DataGridRowDetailsVisibilityMode.Visible ? RowDetailsHeightEstimate : 0);
+                                var scrolledToSlot = newFirstScrollingSlot + (int)(height / singleRowHeightEstimate);
                                 scrolledToSlot -= _collapsedSlotsTable.GetIndexCount(scrolledToSlot, newFirstScrollingSlot);
 
                                 newFirstScrollingSlot = Math.Max(0, GetPreviousVisibleSlot(scrolledToSlot + 1));
@@ -1783,7 +1783,7 @@ namespace Avalonia.Controls
                         }
                         else
                         {
-                            int lastScrollingSlot = DisplayData.LastScrollingSlot;
+                            var lastScrollingSlot = DisplayData.LastScrollingSlot;
                             while (MathUtilities.GreaterThan(deltaY, height))
                             {
                                 if (newFirstScrollingSlot > 0)
@@ -1801,8 +1801,8 @@ namespace Avalonia.Controls
                                     NegVerticalOffset = 0;
                                     break;
                                 }
-                                double rowHeight = GetExactSlotElementHeight(newFirstScrollingSlot);
-                                double remainingHeight = height - deltaY;
+                                var rowHeight = GetExactSlotElementHeight(newFirstScrollingSlot);
+                                var remainingHeight = height - deltaY;
                                 if (MathUtilities.LessThanOrClose(rowHeight + remainingHeight, 0))
                                 {
                                     deltaY -= rowHeight;
@@ -1827,7 +1827,7 @@ namespace Avalonia.Controls
                     }
                 }
 
-                double firstRowHeight = GetExactSlotElementHeight(newFirstScrollingSlot);
+                var firstRowHeight = GetExactSlotElementHeight(newFirstScrollingSlot);
                 if (MathUtilities.LessThan(firstRowHeight, NegVerticalOffset))
                 {
                     // We've scrolled off more of the first row than what's possible.  This can happen
@@ -1843,14 +1843,14 @@ namespace Avalonia.Controls
 
                 UpdateDisplayedRows(newFirstScrollingSlot, CellsHeight);
 
-                double firstElementHeight = GetExactSlotElementHeight(DisplayData.FirstScrollingSlot);
+                var firstElementHeight = GetExactSlotElementHeight(DisplayData.FirstScrollingSlot);
                 if (MathUtilities.GreaterThan(NegVerticalOffset, firstElementHeight))
                 {
-                    int firstElementSlot = DisplayData.FirstScrollingSlot;
+                    var firstElementSlot = DisplayData.FirstScrollingSlot;
                     // We filled in some rows at the top and now we have a NegVerticalOffset that's greater than the first element
                     while (newFirstScrollingSlot > 0 && MathUtilities.GreaterThan(NegVerticalOffset, firstElementHeight))
                     {
-                        int previousSlot = GetPreviousVisibleSlot(firstElementSlot);
+                        var previousSlot = GetPreviousVisibleSlot(firstElementSlot);
                         if (previousSlot == -1)
                         {
                             NegVerticalOffset = 0;
@@ -1908,7 +1908,7 @@ namespace Avalonia.Controls
         private void SelectDisplayedElement(int slot)
         {
             Debug.Assert(IsSlotVisible(slot));
-            Control element = DisplayData.GetDisplayedElement(slot);
+            var element = DisplayData.GetDisplayedElement(slot);
             if (element is DataGridRow row)
             {
                 row.UpdatePseudoClasses();
@@ -1917,7 +1917,7 @@ namespace Avalonia.Controls
             else
             {
                 // Assume it's a RowGroupHeader
-                DataGridRowGroupHeader groupHeader = element as DataGridRowGroupHeader;
+                var groupHeader = element as DataGridRowGroupHeader;
                 groupHeader.UpdatePseudoClasses();
             }
         }
@@ -1936,10 +1936,10 @@ namespace Avalonia.Controls
             _selectedItems.SelectSlots(startSlot, endSlot, isSelected);
 
             // Apply the correct row state for display rows and also expand or collapse detail accordingly
-            int firstSlot = Math.Max(DisplayData.FirstScrollingSlot, startSlot);
-            int lastSlot = Math.Min(DisplayData.LastScrollingSlot, endSlot);
+            var firstSlot = Math.Max(DisplayData.FirstScrollingSlot, startSlot);
+            var lastSlot = Math.Min(DisplayData.LastScrollingSlot, endSlot);
 
-            for (int slot = firstSlot; slot <= lastSlot; slot++)
+            for (var slot = firstSlot; slot <= lastSlot; slot++)
             {
                 if (IsSlotVisible(slot))
                 {
@@ -1967,7 +1967,7 @@ namespace Avalonia.Controls
 
             if (_rowsPresenter != null)
             {
-                foreach (Control element in _rowsPresenter.Children)
+                foreach (var element in _rowsPresenter.Children)
                 {
                     if (element is DataGridRow row)
                     {
@@ -2012,7 +2012,7 @@ namespace Avalonia.Controls
 
             // Raise UnloadingRow regardless of whether the row will be recycled
             OnUnloadingRow(new DataGridRowEventArgs(dataGridRow));
-            bool recycleRow = CurrentSlot != dataGridRow.Index;
+            var recycleRow = CurrentSlot != dataGridRow.Index;
 
             if (recycleRow)
             {
@@ -2029,10 +2029,10 @@ namespace Avalonia.Controls
         private void UpdateDisplayedRows(int newFirstDisplayedSlot, double displayHeight)
         {
             Debug.Assert(!_collapsedSlotsTable.Contains(newFirstDisplayedSlot));
-            int firstDisplayedScrollingSlot = newFirstDisplayedSlot;
-            int lastDisplayedScrollingSlot = -1;
-            double deltaY = -NegVerticalOffset;
-            int visibleScrollingRows = 0;
+            var firstDisplayedScrollingSlot = newFirstDisplayedSlot;
+            var lastDisplayedScrollingSlot = -1;
+            var deltaY = -NegVerticalOffset;
+            var visibleScrollingRows = 0;
 
             if (MathUtilities.LessThanOrClose(displayHeight, 0) || SlotCount == 0 || ColumnsItemsInternal.Count == 0)
             {
@@ -2045,7 +2045,7 @@ namespace Avalonia.Controls
                 firstDisplayedScrollingSlot = 0;
             }
 
-            int slot = firstDisplayedScrollingSlot;
+            var slot = firstDisplayedScrollingSlot;
             while (slot < SlotCount && !MathUtilities.GreaterThanOrClose(deltaY, displayHeight))
             {
                 deltaY += GetExactSlotElementHeight(slot);
@@ -2067,7 +2067,7 @@ namespace Avalonia.Controls
             // If we're up to the first row, and we still have room left, uncover as much of the first row as we can
             if (firstDisplayedScrollingSlot == 0 && MathUtilities.LessThan(deltaY, displayHeight))
             {
-                double newNegVerticalOffset = Math.Max(0, NegVerticalOffset - displayHeight + deltaY);
+                var newNegVerticalOffset = Math.Max(0, NegVerticalOffset - displayHeight + deltaY);
                 deltaY += NegVerticalOffset - newNegVerticalOffset;
                 NegVerticalOffset = newNegVerticalOffset;
             }
@@ -2104,11 +2104,11 @@ namespace Avalonia.Controls
         {
             //Debug.Assert(!_collapsedSlotsTable.Contains(newLastDisplayedScrollingRow));
 
-            int lastDisplayedScrollingRow = newLastDisplayedScrollingRow;
-            int firstDisplayedScrollingRow = -1;
-            double displayHeight = CellsHeight;
+            var lastDisplayedScrollingRow = newLastDisplayedScrollingRow;
+            var firstDisplayedScrollingRow = -1;
+            var displayHeight = CellsHeight;
             double deltaY = 0;
-            int visibleScrollingRows = 0;
+            var visibleScrollingRows = 0;
 
             if (MathUtilities.LessThanOrClose(displayHeight, 0) || SlotCount == 0 || ColumnsItemsInternal.Count == 0)
             {
@@ -2121,7 +2121,7 @@ namespace Avalonia.Controls
                 lastDisplayedScrollingRow = 0;
             }
 
-            int slot = lastDisplayedScrollingRow;
+            var slot = lastDisplayedScrollingRow;
             while (MathUtilities.LessThan(deltaY, displayHeight) && slot >= 0)
             {
                 deltaY += GetExactSlotElementHeight(slot);
@@ -2196,9 +2196,9 @@ namespace Avalonia.Controls
                 // We need to figure out the CollectionViewGroup that the sender belongs to.  We could cache
                 // it by tagging the collections ahead of time, but I think the extra storage might not be worth
                 // it since this lookup should be performant enough
-                int insertSlot = -1;
-                DataGridRowGroupInfo parentGroupInfo = GetParentGroupInfo(sender);
-                DataGridCollectionViewGroup group = e.NewItems[0] as DataGridCollectionViewGroup;
+                var insertSlot = -1;
+                var parentGroupInfo = GetParentGroupInfo(sender);
+                var group = e.NewItems[0] as DataGridCollectionViewGroup;
 
                 if (parentGroupInfo != null)
                 {
@@ -2207,7 +2207,7 @@ namespace Avalonia.Controls
                         insertSlot = parentGroupInfo.Slot + 1;
                         // For groups, we need to skip over subgroups to find the correct slot
                         DataGridRowGroupInfo groupInfo;
-                        for (int i = 0; i < e.NewStartingIndex; i++)
+                        for (var i = 0; i < e.NewStartingIndex; i++)
                         {
                             do
                             {
@@ -2233,7 +2233,7 @@ namespace Avalonia.Controls
                 // This could not be found when new GroupDescriptions are added to the PagedCollectionView
                 if (insertSlot != -1)
                 {
-                    bool isCollapsed = (parentGroupInfo != null) && (!parentGroupInfo.IsVisible || _collapsedSlotsTable.Contains(parentGroupInfo.Slot));
+                    var isCollapsed = (parentGroupInfo != null) && (!parentGroupInfo.IsVisible || _collapsedSlotsTable.Contains(parentGroupInfo.Slot));
                     if (group != null)
                     {
                         if (group.Items != null)
@@ -2251,7 +2251,7 @@ namespace Avalonia.Controls
                     else
                     {
                         // Assume we're adding a new row
-                        int rowIndex = DataConnection.IndexOf(e.NewItems[0]);
+                        var rowIndex = DataConnection.IndexOf(e.NewItems[0]);
                         Debug.Assert(rowIndex != -1);
                         if (SlotCount == 0 && DataConnection.ShouldAutoGenerateColumns)
                         {
@@ -2284,13 +2284,13 @@ namespace Avalonia.Controls
                     {
                         removedGroup.Items.CollectionChanged -= CollectionViewGroup_CollectionChanged;
                     }
-                    DataGridRowGroupInfo groupInfo = RowGroupInfoFromCollectionViewGroup(removedGroup);
+                    var groupInfo = RowGroupInfoFromCollectionViewGroup(removedGroup);
                     Debug.Assert(groupInfo != null);
                     if ((groupInfo.Level == _rowGroupHeightsByLevel.Length - 1) && (removedGroup.Items != null) && (removedGroup.Items.Count > 0))
                     {
                         Debug.Assert((groupInfo.LastSubItemSlot - groupInfo.Slot) == removedGroup.Items.Count);
                         // If we're removing a leaf Group then remove all of its items before removing the Group
-                        for (int i = 0; i < removedGroup.Items.Count; i++)
+                        for (var i = 0; i < removedGroup.Items.Count; i++)
                         {
                             RemoveElementAt(groupInfo.Slot + 1, item: removedGroup.Items[i], isRow: true);
                         }
@@ -2300,7 +2300,7 @@ namespace Avalonia.Controls
                 else
                 {
                     // A single item was removed from a leaf group
-                    DataGridRowGroupInfo parentGroupInfo = GetParentGroupInfo(sender);
+                    var parentGroupInfo = GetParentGroupInfo(sender);
                     if (parentGroupInfo != null)
                     {
                         int slot;
@@ -2324,9 +2324,9 @@ namespace Avalonia.Controls
         private void ClearRowGroupHeadersTable()
         {
             // Detach existing handlers on CollectionViewGroup.Items.CollectionChanged
-            foreach (int slot in RowGroupHeadersTable.GetIndexes())
+            foreach (var slot in RowGroupHeadersTable.GetIndexes())
             {
-                DataGridRowGroupInfo groupInfo = RowGroupHeadersTable.GetValueAt(slot);
+                var groupInfo = RowGroupHeadersTable.GetValueAt(slot);
                 if (groupInfo.CollectionViewGroup.Items != null)
                 {
                     groupInfo.CollectionViewGroup.Items.CollectionChanged -= CollectionViewGroup_CollectionChanged;
@@ -2352,7 +2352,7 @@ namespace Avalonia.Controls
         {
             if (e.PropertyName == "ItemCount")
             {
-                DataGridRowGroupInfo rowGroupInfo = RowGroupInfoFromCollectionViewGroup(sender as DataGridCollectionViewGroup);
+                var rowGroupInfo = RowGroupInfoFromCollectionViewGroup(sender as DataGridCollectionViewGroup);
                 if (rowGroupInfo != null && IsSlotVisible(rowGroupInfo.Slot))
                 {
                     if (DisplayData.GetDisplayedElement(rowGroupInfo.Slot) is DataGridRowGroupHeader rowGroupHeader)
@@ -2384,7 +2384,7 @@ namespace Avalonia.Controls
 
         private int CountAndPopulateGroupHeaders(object group, int rootSlot, int level)
         {
-            int treeCount = 1;
+            var treeCount = 1;
 
             if (group is DataGridCollectionViewGroup collectionViewGroup)
             {
@@ -2393,7 +2393,7 @@ namespace Avalonia.Controls
                     collectionViewGroup.Items.CollectionChanged += CollectionViewGroup_CollectionChanged;
                     if (collectionViewGroup.Items[0] is DataGridCollectionViewGroup)
                     {
-                        foreach (object subGroup in collectionViewGroup.Items)
+                        foreach (var subGroup in collectionViewGroup.Items)
                         {
                             treeCount += CountAndPopulateGroupHeaders(subGroup, rootSlot + treeCount, level + 1);
                         }
@@ -2413,13 +2413,13 @@ namespace Avalonia.Controls
         {
             if (IsSlotVisible(parentGroupInfo.Slot))
             {
-                DataGridRowGroupHeader ancestorGroupHeader = DisplayData.GetDisplayedElement(parentGroupInfo.Slot) as DataGridRowGroupHeader;
+                var ancestorGroupHeader = DisplayData.GetDisplayedElement(parentGroupInfo.Slot) as DataGridRowGroupHeader;
                 while (ancestorGroupHeader != null)
                 {
                     ancestorGroupHeader.EnsureExpanderButtonIsChecked();
                     if (ancestorGroupHeader.Level > 0)
                     {
-                        int slot = RowGroupHeadersTable.GetPreviousIndex(ancestorGroupHeader.RowGroupInfo.Slot);
+                        var slot = RowGroupHeadersTable.GetPreviousIndex(ancestorGroupHeader.RowGroupInfo.Slot);
                         if (IsSlotVisible(slot))
                         {
                             ancestorGroupHeader = DisplayData.GetDisplayedElement(slot) as DataGridRowGroupHeader;
@@ -2437,10 +2437,10 @@ namespace Avalonia.Controls
                 && DataConnection.CollectionView.CanGroup
                 && DataConnection.CollectionView.Groups != null)
             {
-                int totalSlots = 0;
+                var totalSlots = 0;
                 _topLevelGroup = (INotifyCollectionChanged)DataConnection.CollectionView.Groups;
                 _topLevelGroup.CollectionChanged += CollectionViewGroup_CollectionChanged;
-                foreach (object group in DataConnection.CollectionView.Groups)
+                foreach (var group in DataConnection.CollectionView.Groups)
                 {
                     totalSlots += CountAndPopulateGroupHeaders(group, totalSlots, 0);
                 }
@@ -2459,11 +2459,11 @@ namespace Avalonia.Controls
             {
                 // Initialize our array for the height of the RowGroupHeaders by Level.
                 // If the Length is the same, we can reuse the old array
-                int groupLevelCount = DataConnection.CollectionView.GroupingDepth;
+                var groupLevelCount = DataConnection.CollectionView.GroupingDepth;
                 if (_rowGroupHeightsByLevel == null || _rowGroupHeightsByLevel.Length != groupLevelCount)
                 {
                     _rowGroupHeightsByLevel = new double[groupLevelCount];
-                    for (int i = 0; i < groupLevelCount; i++)
+                    for (var i = 0; i < groupLevelCount; i++)
                     {
                         // Default height for now, the actual heights are updated as the RowGroupHeaders
                         // are added and measured
@@ -2474,7 +2474,7 @@ namespace Avalonia.Controls
                 {
                     RowGroupSublevelIndents = new double[groupLevelCount];
                     double indent;
-                    for (int i = 0; i < groupLevelCount; i++)
+                    for (var i = 0; i < groupLevelCount; i++)
                     {
                         indent = DATAGRID_defaultRowGroupSublevelIndent;
                         RowGroupSublevelIndents[i] = indent;
@@ -2490,7 +2490,7 @@ namespace Avalonia.Controls
 
         private void EnsureRowGroupSpacerColumn()
         {
-            bool spacerColumnChanged = ColumnsInternal.EnsureRowGrouping(!RowGroupHeadersTable.IsEmpty);
+            var spacerColumnChanged = ColumnsInternal.EnsureRowGrouping(!RowGroupHeadersTable.IsEmpty);
             if (spacerColumnChanged)
             {
                 if (ColumnsInternal.RowGroupSpacerColumn.IsRepresented && CurrentColumnIndex == 0)
@@ -2524,7 +2524,7 @@ namespace Avalonia.Controls
             {
                 if (IsSlotVisible(rowGroupInfo.Slot))
                 {
-                    DataGridRowGroupHeader rowGroupHeader = DisplayData.GetDisplayedElement(rowGroupInfo.Slot) as DataGridRowGroupHeader;
+                    var rowGroupHeader = DisplayData.GetDisplayedElement(rowGroupInfo.Slot) as DataGridRowGroupHeader;
                     Debug.Assert(rowGroupHeader != null);
                     rowGroupHeader.ToggleExpandCollapse(isVisible, setCurrent);
                 }
@@ -2540,7 +2540,7 @@ namespace Avalonia.Controls
                     {
                         if (rowGroupInfo.Slot < DisplayData.FirstScrollingSlot)
                         {
-                            double heightChange = UpdateRowGroupVisibility(rowGroupInfo, isVisible, isDisplayed: false);
+                            var heightChange = UpdateRowGroupVisibility(rowGroupInfo, isVisible, isDisplayed: false);
                             // Use epsilon instead of 0 here so that in the off chance that our estimates put the vertical offset negative
                             // the user can still scroll to the top since the offset is non-zero
                             SetVerticalOffset(Math.Max(MathUtilities.DoubleEpsilon, _verticalOffset + heightChange));
@@ -2558,15 +2558,15 @@ namespace Avalonia.Controls
         // Returns the inclusive count of expanded RowGroupHeaders from startSlot to endSlot
         private int GetRowGroupHeaderCount(int startSlot, int endSlot, bool? isVisible, out double headersHeight)
         {
-            int count = 0;
+            var count = 0;
             headersHeight = 0;
-            foreach (int slot in RowGroupHeadersTable.GetIndexes(startSlot))
+            foreach (var slot in RowGroupHeadersTable.GetIndexes(startSlot))
             {
                 if (slot > endSlot)
                 {
                     return count;
                 }
-                DataGridRowGroupInfo rowGroupInfo = RowGroupHeadersTable.GetValueAt(slot);
+                var rowGroupInfo = RowGroupHeadersTable.GetValueAt(slot);
                 if (!isVisible.HasValue ||
                     (isVisible.Value && !_collapsedSlotsTable.Contains(slot)) ||
                     (!isVisible.Value && _collapsedSlotsTable.Contains(slot)))
@@ -2585,19 +2585,19 @@ namespace Avalonia.Controls
         private double UpdateRowGroupVisibility(DataGridRowGroupInfo targetRowGroupInfo, bool newIsVisible, bool isDisplayed)
         {
             double heightChange = 0;
-            int slotsExpanded = 0;
-            int startSlot = targetRowGroupInfo.Slot + 1;
+            var slotsExpanded = 0;
+            var startSlot = targetRowGroupInfo.Slot + 1;
             int endSlot;
 
             targetRowGroupInfo.IsVisible = newIsVisible;
             if (newIsVisible)
             {
                 // Expand
-                foreach (int slot in RowGroupHeadersTable.GetIndexes(targetRowGroupInfo.Slot + 1))
+                foreach (var slot in RowGroupHeadersTable.GetIndexes(targetRowGroupInfo.Slot + 1))
                 {
                     if (slot >= startSlot)
                     {
-                        DataGridRowGroupInfo rowGroupInfo = RowGroupHeadersTable.GetValueAt(slot);
+                        var rowGroupInfo = RowGroupHeadersTable.GetValueAt(slot);
                         if (rowGroupInfo.Level <= targetRowGroupInfo.Level)
                         {
                             break;
@@ -2624,9 +2624,9 @@ namespace Avalonia.Controls
             {
                 // Collapse
                 endSlot = SlotCount - 1;
-                foreach (int slot in RowGroupHeadersTable.GetIndexes(targetRowGroupInfo.Slot + 1))
+                foreach (var slot in RowGroupHeadersTable.GetIndexes(targetRowGroupInfo.Slot + 1))
                 {
-                    DataGridRowGroupInfo rowGroupInfo = RowGroupHeadersTable.GetValueAt(slot);
+                    var rowGroupInfo = RowGroupHeadersTable.GetValueAt(slot);
                     if (rowGroupInfo.Level <= targetRowGroupInfo.Level)
                     {
                         endSlot = slot - 1;
@@ -2634,12 +2634,12 @@ namespace Avalonia.Controls
                     }
                 }
 
-                int oldLastDisplayedSlot = DisplayData.LastScrollingSlot;
-                int endDisplayedSlot = Math.Min(endSlot, DisplayData.LastScrollingSlot);
+                var oldLastDisplayedSlot = DisplayData.LastScrollingSlot;
+                var endDisplayedSlot = Math.Min(endSlot, DisplayData.LastScrollingSlot);
                 if (isDisplayed)
                 {
                     // We need to remove all the displayed slots that aren't already collapsed
-                    int elementsToRemove = endDisplayedSlot - startSlot + 1 - _collapsedSlotsTable.GetIndexCount(startSlot, endDisplayedSlot);
+                    var elementsToRemove = endDisplayedSlot - startSlot + 1 - _collapsedSlotsTable.GetIndexCount(startSlot, endDisplayedSlot);
 
                     if (_focusedRow != null && _focusedRow.Slot >= startSlot && _focusedRow.Slot <= endSlot)
                     {
@@ -2648,7 +2648,7 @@ namespace Avalonia.Controls
                         _focusedRow = null;
                     }
 
-                    for (int i = 0; i < elementsToRemove; i++)
+                    for (var i = 0; i < elementsToRemove; i++)
                     {
                         RemoveDisplayedElement(startSlot, wasDeleted: false , updateSlotInformation: false);
                     }
@@ -2658,9 +2658,9 @@ namespace Avalonia.Controls
                 if (DisplayData.FirstScrollingSlot >= startSlot && DisplayData.FirstScrollingSlot <= endSlot)
                 {
                     // Our first visible slot was collapsed, find the replacement
-                    int collapsedSlotsAbove = DisplayData.FirstScrollingSlot - startSlot - _collapsedSlotsTable.GetIndexCount(startSlot, DisplayData.FirstScrollingSlot);
+                    var collapsedSlotsAbove = DisplayData.FirstScrollingSlot - startSlot - _collapsedSlotsTable.GetIndexCount(startSlot, DisplayData.FirstScrollingSlot);
                     Debug.Assert(collapsedSlotsAbove > 0);
-                    int newFirstScrollingSlot = GetNextVisibleSlot(DisplayData.FirstScrollingSlot);
+                    var newFirstScrollingSlot = GetNextVisibleSlot(DisplayData.FirstScrollingSlot);
                     while (collapsedSlotsAbove > 1 && newFirstScrollingSlot < SlotCount)
                     {
                         collapsedSlotsAbove--;
@@ -2696,11 +2696,11 @@ namespace Avalonia.Controls
                 // the distance to the last visible row and adjust the scrollbar if we collapsed more
                 if (isDisplayed && _verticalOffset > 0)
                 {
-                    int lastVisibleSlot = GetPreviousVisibleSlot(SlotCount);
-                    int slot = GetNextVisibleSlot(oldLastDisplayedSlot);
+                    var lastVisibleSlot = GetPreviousVisibleSlot(SlotCount);
+                    var slot = GetNextVisibleSlot(oldLastDisplayedSlot);
                     // AvailableSlotElementRoom ends up being the amount of the last slot that is partially scrolled off
                     // as a negative value, heightChangeBelowLastDisplayed slot is also a negative value since we're collapsing
-                    double heightToLastVisibleSlot = AvailableSlotElementRoom + heightChangeBelowLastDisplayedSlot;
+                    var heightToLastVisibleSlot = AvailableSlotElementRoom + heightChangeBelowLastDisplayedSlot;
                     while ((heightToLastVisibleSlot > heightChange) && (slot < lastVisibleSlot))
                     {
                         heightToLastVisibleSlot -= GetSlotElementHeight(slot);
@@ -2708,7 +2708,7 @@ namespace Avalonia.Controls
                     }
                     if (heightToLastVisibleSlot > heightChange)
                     {
-                        double newVerticalOffset = _verticalOffset + heightChange - heightToLastVisibleSlot;
+                        var newVerticalOffset = _verticalOffset + heightChange - heightToLastVisibleSlot;
                         if (newVerticalOffset > 0)
                         {
                             SetVerticalOffset(newVerticalOffset);
@@ -2719,7 +2719,7 @@ namespace Avalonia.Controls
                             ResetDisplayedRows();
                             NegVerticalOffset = 0;
                             SetVerticalOffset(0);
-                            int firstDisplayedRow = GetNextVisibleSlot(-1);
+                            var firstDisplayedRow = GetNextVisibleSlot(-1);
                             UpdateDisplayedRows(firstDisplayedRow, CellsHeight);
                         }
                     }
@@ -2737,7 +2737,7 @@ namespace Avalonia.Controls
             Debug.Assert(slot > -1);
             Debug.Assert(rowGroupInfo != null);
 
-            DataGridRowGroupHeader groupHeader = DisplayData.GetUsedGroupHeader() ?? new DataGridRowGroupHeader();
+            var groupHeader = DisplayData.GetUsedGroupHeader() ?? new DataGridRowGroupHeader();
             groupHeader.OwningGrid = this;
             groupHeader.RowGroupInfo = rowGroupInfo;
             groupHeader.DataContext = rowGroupInfo.CollectionViewGroup;
@@ -2750,7 +2750,7 @@ namespace Avalonia.Controls
             // Set the RowGroupHeader's PropertyName. Unfortunately, CollectionViewGroup doesn't have this
             // so we have to set it manually
             Debug.Assert(DataConnection.CollectionView != null && groupHeader.Level < DataConnection.CollectionView.GroupingDepth);
-            string propertyName = DataConnection.CollectionView.GetGroupingPropertyNameAtDepth(groupHeader.Level);
+            var propertyName = DataConnection.CollectionView.GetGroupingPropertyNameAtDepth(groupHeader.Level);
 
             if(string.IsNullOrWhiteSpace(propertyName))
             {
@@ -2782,9 +2782,9 @@ namespace Avalonia.Controls
             }
             else
             {
-                foreach (int slot in RowGroupHeadersTable.GetIndexes())
+                foreach (var slot in RowGroupHeadersTable.GetIndexes())
                 {
-                    DataGridRowGroupInfo groupInfo = RowGroupHeadersTable.GetValueAt(slot);
+                    var groupInfo = RowGroupHeadersTable.GetValueAt(slot);
                     if (groupInfo.CollectionViewGroup.Items == collection)
                     {
                         return groupInfo;
@@ -2821,17 +2821,17 @@ namespace Avalonia.Controls
             Debug.Assert(DataConnection.CollectionView != null);
             Debug.Assert(RowGroupSublevelIndents != null);
 
-            int groupLevelCount = DataConnection.CollectionView.GroupingDepth;
+            var groupLevelCount = DataConnection.CollectionView.GroupingDepth;
             Debug.Assert(groupHeader.Level >= 0 && groupHeader.Level < groupLevelCount);
 
-            double oldValue = RowGroupSublevelIndents[groupHeader.Level];
+            var oldValue = RowGroupSublevelIndents[groupHeader.Level];
             if (groupHeader.Level > 0)
             {
                 oldValue -= RowGroupSublevelIndents[groupHeader.Level - 1];
             }
             // Update the affected values in our table by the amount affected
-            double change = newValue - oldValue;
-            for (int i = groupHeader.Level; i < groupLevelCount; i++)
+            var change = newValue - oldValue;
+            for (var i = groupHeader.Level; i < groupLevelCount; i++)
             {
                 RowGroupSublevelIndents[i] += change;
                 Debug.Assert(RowGroupSublevelIndents[i] >= 0);
@@ -2840,11 +2840,11 @@ namespace Avalonia.Controls
             EnsureRowGroupSpacerColumnWidth(groupLevelCount);
         }
 
-        internal DataGridRowGroupInfo RowGroupInfoFromCollectionViewGroup(DataGridCollectionViewGroup collectionViewGroup)
+        internal DataGridRowGroupInfo? RowGroupInfoFromCollectionViewGroup(DataGridCollectionViewGroup collectionViewGroup)
         {
-            foreach (int slot in RowGroupHeadersTable.GetIndexes())
+            foreach (var slot in RowGroupHeadersTable.GetIndexes())
             {
-                DataGridRowGroupInfo rowGroupInfo = RowGroupHeadersTable.GetValueAt(slot);
+                var rowGroupInfo = RowGroupHeadersTable.GetValueAt(slot);
                 if (rowGroupInfo.CollectionViewGroup == collectionViewGroup)
                 {
                     return rowGroupInfo;
@@ -2858,7 +2858,7 @@ namespace Avalonia.Controls
         /// </summary>
         /// <param name="collectionViewGroup">CollectionViewGroup</param>
         /// <param name="collapseAllSubgroups">Set to true to collapse all Subgroups</param>
-        public void CollapseRowGroup(DataGridCollectionViewGroup collectionViewGroup, bool collapseAllSubgroups)
+        public void CollapseRowGroup(DataGridCollectionViewGroup? collectionViewGroup, bool collapseAllSubgroups)
         {
             if (WaitForLostFocus(delegate { CollapseRowGroup(collectionViewGroup, collapseAllSubgroups); }) ||
                 collectionViewGroup == null || !CommitEdit())
@@ -2870,7 +2870,7 @@ namespace Avalonia.Controls
 
             if (collapseAllSubgroups)
             {
-                foreach (object groupObj in collectionViewGroup.Items)
+                foreach (var groupObj in collectionViewGroup.Items)
                 {
                     if (groupObj is DataGridCollectionViewGroup subGroup)
                     {
@@ -2898,7 +2898,7 @@ namespace Avalonia.Controls
 
             if (expandAllSubgroups)
             {
-                foreach (object groupObj in collectionViewGroup.Items)
+                foreach (var groupObj in collectionViewGroup.Items)
                 {
                     if (groupObj is DataGridCollectionViewGroup subGroup)
                     {
@@ -2913,7 +2913,7 @@ namespace Avalonia.Controls
         // is visible
         private int GetDetailsCountInclusive(int lowerBound, int upperBound)
         {
-            int indexCount = upperBound - lowerBound + 1;
+            var indexCount = upperBound - lowerBound + 1;
             if (indexCount <= 0)
             {
                 return 0;
@@ -3019,9 +3019,9 @@ namespace Avalonia.Controls
         internal void PrintRowGroupInfo()
         {
             Debug.WriteLine("-----------------------------------------------RowGroupHeaders");
-            foreach (int slot in RowGroupHeadersTable.GetIndexes())
+            foreach (var slot in RowGroupHeadersTable.GetIndexes())
             {
-                DataGridRowGroupInfo info = RowGroupHeadersTable.GetValueAt(slot);
+                var info = RowGroupHeadersTable.GetValueAt(slot);
                 Debug.WriteLine(String.Format(System.Globalization.CultureInfo.InvariantCulture, "{0} {1} Slot:{2} Last:{3} Level:{4}", info.CollectionViewGroup.Key, info.IsVisible.ToString(), slot, info.LastSubItemSlot, info.Level));
             }
             Debug.WriteLine("-----------------------------------------------CollapsedSlots");

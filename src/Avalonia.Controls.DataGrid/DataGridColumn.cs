@@ -50,7 +50,7 @@ namespace Avalonia.Controls
             InheritsWidth = true;
         }
 
-        internal DataGrid OwningGrid
+        internal DataGrid? OwningGrid
         {
             get;
             set;

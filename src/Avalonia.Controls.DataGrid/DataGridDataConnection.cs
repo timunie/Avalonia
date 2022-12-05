@@ -23,9 +23,9 @@ namespace Avalonia.Controls
 
         private int _backupSlotForCurrentChanged;
         private int _columnForCurrentChanged;
-        private PropertyInfo[] _dataProperties;
-        private IEnumerable _dataSource;
-        private Type _dataType;
+        private PropertyInfo[]? _dataProperties;
+        private IEnumerable? _dataSource;
+        private Type? _dataType;
         private bool _expectingCurrentChanged;
         private object _itemToSelectOnCurrentChanged;
         private DataGrid _owner;
@@ -99,7 +99,7 @@ namespace Avalonia.Controls
             }
         }
 
-        public IEnumerable DataSource
+        public IEnumerable? DataSource
         {
             get
             {
@@ -115,7 +115,7 @@ namespace Avalonia.Controls
             }
         }
 
-        public Type DataType
+        public Type? DataType
         {
             get
             {
@@ -147,7 +147,7 @@ namespace Avalonia.Controls
             }
         }
 
-        public IList List
+        public IList? List
         {
             get
             {
@@ -163,14 +163,14 @@ namespace Avalonia.Controls
             }
         }
 
-        public IDataGridCollectionView CollectionView
+        public IDataGridCollectionView? CollectionView
         {
             get
             {
                 return DataSource as IDataGridCollectionView;
             }
         }
-        public IDataGridEditableCollectionView EditableCollectionView
+        public IDataGridEditableCollectionView? EditableCollectionView
         {
             get
             {
@@ -222,14 +222,14 @@ namespace Avalonia.Controls
         /// </summary>
         /// <param name="dataItem">The entity to edit</param>
         /// <returns>True if editing was started</returns>
-        public bool BeginEdit(object dataItem)
+        public bool BeginEdit(object? dataItem)
         {
             if (dataItem == null)
             {
                 return false;
             }
 
-            IDataGridEditableCollectionView editableCollectionView = EditableCollectionView;
+            var editableCollectionView = EditableCollectionView;
             if (editableCollectionView != null)
             {
                 if (editableCollectionView.IsEditingItem && (dataItem == editableCollectionView.CurrentEditItem))
@@ -259,7 +259,7 @@ namespace Avalonia.Controls
         /// <returns>True if a cancellation operation was invoked.</returns>
         public bool CancelEdit(object dataItem)
         {
-            IDataGridEditableCollectionView editableCollectionView = EditableCollectionView;
+            var editableCollectionView = EditableCollectionView;
             if (editableCollectionView != null)
             {
                 if (editableCollectionView.CanCancelEdit)
@@ -311,7 +311,7 @@ namespace Avalonia.Controls
         /// <returns>True if a commit operation was invoked.</returns>
         public bool EndEdit(object dataItem)
         {
-            IDataGridEditableCollectionView editableCollectionView = EditableCollectionView;
+            var editableCollectionView = EditableCollectionView;
             if (editableCollectionView != null)
             {
                 // IEditableCollectionView.CommitEdit can potentially change currency. If it does,
@@ -346,11 +346,11 @@ namespace Avalonia.Controls
         }
 
         // Assumes index >= 0, returns null if index >= Count
-        public object GetDataItem(int index)
+        public object? GetDataItem(int index)
         {
             Debug.Assert(index >= 0);
 
-            IList list = List;
+            var list = List;
             if (list != null)
             {
                 return (index < list.Count) ? list[index] : null;
@@ -361,10 +361,10 @@ namespace Avalonia.Controls
                 return (index < collectionView.Count) ? collectionView.GetItemAt(index) : null;
             }
 
-            IEnumerable enumerable = DataSource;
+            var enumerable = DataSource;
             if (enumerable != null)
             {
-                IEnumerator enumerator = enumerable.GetEnumerator();
+                var enumerator = enumerable.GetEnumerator();
                 int i = -1;
                 while (enumerator.MoveNext() && i < index)
                 {
@@ -378,18 +378,18 @@ namespace Avalonia.Controls
             return null;
         }
 
-        public bool GetPropertyIsReadOnly(string propertyName)
+        public bool GetPropertyIsReadOnly(string? propertyName)
         {
             if (DataType != null)
             {
                 if (!String.IsNullOrEmpty(propertyName))
                 {
-                    Type propertyType = DataType;
-                    PropertyInfo propertyInfo = null;
+                    var propertyType = DataType;
+                    PropertyInfo? propertyInfo = null;
                     List<string> propertyNames = TypeHelper.SplitPropertyPath(propertyName);
                     for (int i = 0; i < propertyNames.Count; i++)
                     {
-                        propertyInfo = propertyType.GetPropertyOrIndexer(propertyNames[i], out _);
+                        propertyInfo = propertyType?.GetPropertyOrIndexer(propertyNames[i], out _);
                         if (propertyInfo == null || propertyType.GetIsReadOnly() || propertyInfo.GetIsReadOnly())
                         {
                             // Either the data type is read-only, the property doesn't exist, or it does exist but is read-only
@@ -420,7 +420,7 @@ namespace Avalonia.Controls
 
         public int IndexOf(object dataItem)
         {
-            IList list = List;
+            var list = List;
             if (list != null)
             {
                 return list.IndexOf(dataItem);
@@ -431,14 +431,14 @@ namespace Avalonia.Controls
                 return cv.IndexOf(dataItem);
             }
 
-            IEnumerable enumerable = DataSource;
+            var enumerable = DataSource;
             if (enumerable != null && dataItem != null)
             {
                 int index = 0;
                 foreach (object dataItemTmp in enumerable)
                 {
                     if ((dataItem == null && dataItemTmp == null) ||
-                        dataItem.Equals(dataItemTmp))
+                        (dataItem != null && dataItem.Equals(dataItemTmp)))
                     {
                         return index;
                     }
@@ -464,7 +464,7 @@ namespace Avalonia.Controls
             Debug.Assert(source != null, "source unexpectedly null");
             Debug.Assert(!(source is IDataGridCollectionView), "source is an ICollectionView");
 
-            IDataGridCollectionView collectionView = null;
+            IDataGridCollectionView? collectionView = null;
 
             if (source is IDataGridCollectionViewFactory collectionViewFactory)
             {
@@ -651,13 +651,13 @@ namespace Avalonia.Controls
                     }
                     break;
                 case NotifyCollectionChangedAction.Remove:
-                    IList removedItems = e.OldItems;
+                    var removedItems = e.OldItems;
                     if (removedItems == null || e.OldStartingIndex < 0)
                     {
                         Debug.Assert(false, "Unexpected NotifyCollectionChangedAction.Remove notification");
                         return;
                     }
-                    if (!IsGrouping)
+                    if (!IsGrouping && e.OldItems != null)
                     {
                         // If we're grouping then we handle this through the CollectionViewGroup notifications
                         // According to WPF, Remove is a single item operation
@@ -675,7 +675,7 @@ namespace Avalonia.Controls
                     // Did the data type change during the reset?  If not, we can recycle
                     // the existing rows instead of having to clear them all.  We still need to clear our cached
                     // values for DataType and DataProperties, though, because the collection has been reset.
-                    Type previousDataType = _dataType;
+                    Type? previousDataType = _dataType;
                     _dataType = null;
                     if (previousDataType != DataType)
                     {
@@ -694,7 +694,7 @@ namespace Avalonia.Controls
 
         private void UpdateDataProperties()
         {
-            Type dataType = DataType;
+            var dataType = DataType;
 
             if (DataSource != null && dataType != null && !DataTypeIsPrimitive(dataType))
             {

@@ -159,7 +159,7 @@ namespace Avalonia.Collections
         /// <summary>Sets the specified item in the view as the <see cref="P:System.ComponentModel.ICollectionView.CurrentItem" />.</summary>
         /// <returns>true if the resulting <see cref="P:System.ComponentModel.ICollectionView.CurrentItem" /> is an item in the view; otherwise, false.</returns>
         /// <param name="item">The item to set as the current item.</param>
-        bool MoveCurrentTo(object item);
+        bool MoveCurrentTo(object? item);
 
         /// <summary>Sets the item at the specified index to be the <see cref="P:System.ComponentModel.ICollectionView.CurrentItem" /> in the view.</summary>
         /// <returns>true if the resulting <see cref="P:System.ComponentModel.ICollectionView.CurrentItem" /> is an item in the view; otherwise, false.</returns>

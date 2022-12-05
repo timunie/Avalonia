@@ -510,7 +510,7 @@ namespace Avalonia.Controls.Utils
         /// </summary>
         /// <param name="memberInfo">MemberInfo to check</param>
         /// <returns>true if MemberInfo is read-only, false otherwise</returns>
-        internal static bool GetIsReadOnly(this MemberInfo memberInfo)
+        internal static bool GetIsReadOnly(this MemberInfo? memberInfo)
         {
             if (memberInfo != null)
             {
