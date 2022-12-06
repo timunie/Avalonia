@@ -101,7 +101,7 @@ namespace Avalonia.Controls
             }
         }
 
-        protected override object PrepareCellForEdit(Control editingElement, RoutedEventArgs editingEventArgs)
+        protected override object? PrepareCellForEdit(Control editingElement, RoutedEventArgs editingEventArgs)
         {
             return null;
         }

@@ -88,18 +88,18 @@ namespace Avalonia.Controls
         private List<Exception> _bindingValidationErrors;
         private IDisposable? _validationSubscription;
 
-        private INotifyCollectionChanged _topLevelGroup;
+        private INotifyCollectionChanged? _topLevelGroup;
         private ContentControl? _clipboardContentControl;
 
-        private Visual _bottomRightCorner;
-        private DataGridColumnHeadersPresenter _columnHeadersPresenter;
-        private DataGridRowsPresenter _rowsPresenter;
-        private ScrollBar _vScrollBar;
-        private ScrollBar _hScrollBar;
+        private Visual? _bottomRightCorner;
+        private DataGridColumnHeadersPresenter? _columnHeadersPresenter;
+        private DataGridRowsPresenter? _rowsPresenter;
+        private ScrollBar? _vScrollBar;
+        private ScrollBar? _hScrollBar;
 
-        private ContentControl _topLeftCornerHeader;
-        private ContentControl _topRightCornerHeader;
-        private Control _frozenColumnScrollBarSpacer;
+        private ContentControl? _topLeftCornerHeader;
+        private ContentControl? _topRightCornerHeader;
+        private Control? _frozenColumnScrollBarSpacer;
 
         // the sum of the widths in pixels of the scrolling columns preceding
         // the first displayed scrolling column
@@ -118,7 +118,7 @@ namespace Avalonia.Controls
         private int _editingColumnIndex;
 
         // this is a workaround only for the scenarios where we need it, it is not all encompassing nor always updated
-        private RoutedEventArgs _editingEventArgs;
+        private RoutedEventArgs? _editingEventArgs;
         private bool _executingLostFocusActions;
         private bool _flushCurrentCellChanged;
         private bool _focusEditingControl;
@@ -138,9 +138,9 @@ namespace Avalonia.Controls
         private bool _makeFirstDisplayedCellCurrentCellPending;
         private bool _measured;
         private int? _mouseOverRowIndex;    // -1 is used for the 'new row'
-        private DataGridColumn _previousCurrentColumn;
-        private object _previousCurrentItem;
-        private double[] _rowGroupHeightsByLevel;
+        private DataGridColumn? _previousCurrentColumn;
+        private object? _previousCurrentItem;
+        private double[]? _rowGroupHeightsByLevel;
         private double _rowHeaderDesiredWidth;
         private Size? _rowsPresenterAvailableSize;
         private bool _scrollingByHeight;
@@ -148,7 +148,7 @@ namespace Avalonia.Controls
         private bool _successfullyUpdatedSelection;
         private DataGridSelectedItemsCollection _selectedItems;
         private bool _temporarilyResetCurrentCell;
-        private object _uneditedValue; // Represents the original current cell value at the time it enters editing mode.
+        private object? _uneditedValue; // Represents the original current cell value at the time it enters editing mode.
 
         // An approximation of the sum of the heights in pixels of the scrolling rows preceding
         // the first displayed scrolling row.  Since the scrolled off rows are discarded, the grid
@@ -271,13 +271,13 @@ namespace Avalonia.Controls
         /// <summary>
         /// Identifies the <see cref="ColumnHeaderTheme"/> dependency property.
         /// </summary>
-        public static readonly StyledProperty<ControlTheme> ColumnHeaderThemeProperty =
-            AvaloniaProperty.Register<DataGrid, ControlTheme>(nameof(ColumnHeaderTheme));
+        public static readonly StyledProperty<ControlTheme?> ColumnHeaderThemeProperty =
+            AvaloniaProperty.Register<DataGrid, ControlTheme?>(nameof(ColumnHeaderTheme));
 
         /// <summary>
         /// Gets or sets the theme applied to all column headers.
         /// </summary>
-        public ControlTheme ColumnHeaderTheme
+        public ControlTheme? ColumnHeaderTheme
         {
             get { return GetValue(ColumnHeaderThemeProperty); }
             set { SetValue(ColumnHeaderThemeProperty, value); }
@@ -400,7 +400,7 @@ namespace Avalonia.Controls
 
         private void OnAreRowGroupHeadersFrozenChanged(AvaloniaPropertyChangedEventArgs e)
         {
-            var value = (bool)e.NewValue;
+            var value = (bool)e.NewValue!;
             ProcessFrozenColumnCount();
 
             // Update elements in the RowGroupHeader that were previously frozen
@@ -542,13 +542,13 @@ namespace Avalonia.Controls
             set { SetValue(SelectionModeProperty, value); }
         }
 
-        public static readonly StyledProperty<IBrush> VerticalGridLinesBrushProperty =
-            AvaloniaProperty.Register<DataGrid, IBrush>(nameof(VerticalGridLinesBrush));
+        public static readonly StyledProperty<IBrush?> VerticalGridLinesBrushProperty =
+            AvaloniaProperty.Register<DataGrid, IBrush?>(nameof(VerticalGridLinesBrush));
 
         /// <summary>
         /// Gets or sets the <see cref="T:System.Windows.Media.Brush" /> that is used to paint grid lines separating columns.
         /// </summary>
-        public IBrush VerticalGridLinesBrush
+        public IBrush? VerticalGridLinesBrush
         {
             get { return GetValue(VerticalGridLinesBrushProperty); }
             set { SetValue(VerticalGridLinesBrushProperty, value); }
@@ -579,7 +579,7 @@ namespace Avalonia.Controls
         }
 
         private int _selectedIndex = -1;
-        private object _selectedItem;
+        private object? _selectedItem;
 
         public static readonly DirectProperty<DataGrid, int> SelectedIndexProperty =
             AvaloniaProperty.RegisterDirect<DataGrid, int>(
@@ -645,7 +645,7 @@ namespace Avalonia.Controls
 
         private void OnAutoGenerateColumnsChanged(AvaloniaPropertyChangedEventArgs e)
         {
-            var value = (bool)e.NewValue;
+            var value = (bool)e.NewValue!;
             if (value)
             {
                 InitializeElements(recycleRows: false);
@@ -687,13 +687,13 @@ namespace Avalonia.Controls
             set { SetValue(AreRowDetailsFrozenProperty, value); }
         }
 
-        public static readonly StyledProperty<IDataTemplate> RowDetailsTemplateProperty =
-            AvaloniaProperty.Register<DataGrid, IDataTemplate>(nameof(RowDetailsTemplate));
+        public static readonly StyledProperty<IDataTemplate?> RowDetailsTemplateProperty =
+            AvaloniaProperty.Register<DataGrid, IDataTemplate?>(nameof(RowDetailsTemplate));
 
         /// <summary>
         /// Gets or sets the template that is used to display the content of the details section of rows.
         /// </summary>
-        public IDataTemplate RowDetailsTemplate
+        public IDataTemplate? RowDetailsTemplate
         {
             get { return GetValue(RowDetailsTemplateProperty); }
             set { SetValue(RowDetailsTemplateProperty, value); }
@@ -797,7 +797,7 @@ namespace Avalonia.Controls
 
         private void OnRowDetailsVisibilityModeChanged(AvaloniaPropertyChangedEventArgs e)
         {
-            UpdateRowDetailsVisibilityMode((DataGridRowDetailsVisibilityMode)e.NewValue);
+            UpdateRowDetailsVisibilityMode((DataGridRowDetailsVisibilityMode)e.NewValue!);
         }
 
         private void OnRowDetailsTemplateChanged(AvaloniaPropertyChangedEventArgs e)
@@ -871,7 +871,7 @@ namespace Avalonia.Controls
                 if (DataConnection.DataSource != null)
                 {
                     // Setup the column headers
-                    if (DataConnection.DataType != null)
+                    if (DataConnection.DataType != null)  //TODO: Wy was this needed? ►  && ColumnsInternal != null
                     {
                         foreach (var column in ColumnsInternal.GetDisplayedColumns())
                         {
@@ -909,7 +909,7 @@ namespace Avalonia.Controls
             }
         }
 
-        private void ColumnsInternal_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private void ColumnsInternal_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
             if (e.Action == NotifyCollectionChangedAction.Add
                 || e.Action == NotifyCollectionChangedAction.Remove
@@ -922,23 +922,23 @@ namespace Avalonia.Controls
         internal void UpdatePseudoClasses()
         {
             PseudoClasses.Set(":empty-columns", !ColumnsInternal.GetVisibleColumns().Any());
-            PseudoClasses.Set(":empty-rows", !DataConnection.Any());
+            PseudoClasses.Set(":empty-rows", !DataConnection?.Any() ?? true);
         }
 
         private void OnSelectedIndexChanged(AvaloniaPropertyChangedEventArgs e)
         {
             if (!_areHandlersSuspended)
             {
-                var index = (int)e.NewValue;
+                var index = (int)e.NewValue!;
 
                 // GetDataItem returns null if index is >= Count, we do not check newValue
                 // against Count here to avoid enumerating through an Enumerable twice
                 // Setting SelectedItem coerces the finally value of the SelectedIndex
-                var newSelectedItem = (index < 0) ? null : DataConnection.GetDataItem(index);
+                var newSelectedItem = (index < 0) ? null : DataConnection?.GetDataItem(index);
                 SelectedItem = newSelectedItem;
                 if (SelectedItem != newSelectedItem)
                 {
-                    SetValueNoCallback(SelectedIndexProperty, (int)e.OldValue);
+                    SetValueNoCallback(SelectedIndexProperty, (int)e.OldValue!);
                 }
             }
         }
@@ -947,7 +947,7 @@ namespace Avalonia.Controls
         {
             if (!_areHandlersSuspended)
             {
-                var rowIndex = (e.NewValue == null) ? -1 : DataConnection.IndexOf(e.NewValue);
+                var rowIndex = (e.NewValue == null || DataConnection == null) ? -1 : DataConnection.IndexOf(e.NewValue);
                 if (rowIndex == -1)
                 {
                     // If the Item is null or it's not found, clear the Selection
@@ -961,7 +961,7 @@ namespace Avalonia.Controls
                     // Clear all row selections
                     ClearRowSelection(resetAnchorSlot: true);
 
-                    if (DataConnection.CollectionView != null)
+                    if (DataConnection?.CollectionView != null)
                     {
                         DataConnection.CollectionView.MoveCurrentTo(null);
                     }
@@ -979,7 +979,7 @@ namespace Avalonia.Controls
                         }
                         if (slot >= SlotCount || slot < -1)
                         {
-                            if (DataConnection.CollectionView != null)
+                            if (DataConnection?.CollectionView != null)
                             {
                                 DataConnection.CollectionView.MoveCurrentToPosition(rowIndex);
                             }
@@ -1060,9 +1060,9 @@ namespace Avalonia.Controls
 
         private void OnMinColumnWidthChanged(AvaloniaPropertyChangedEventArgs e)
         {
-            if (!_areHandlersSuspended)
+            if (!_areHandlersSuspended)  // TODO: Why was this? ►►  && ColumnsInternal != null
             {
-                var oldValue = (double)e.OldValue;
+                var oldValue = (double)e.OldValue!;
                 foreach (var column in ColumnsInternal.GetDisplayedColumns())
                 {
                     OnColumnMinWidthChanged(column, Math.Max(column.MinWidth, oldValue));
@@ -1072,9 +1072,9 @@ namespace Avalonia.Controls
 
         private void OnMaxColumnWidthChanged(AvaloniaPropertyChangedEventArgs e)
         {
-            if (!_areHandlersSuspended)
+            if (!_areHandlersSuspended)  // TODO: Why was this?  ►►     && ColumnsInternal != null
             {
-                var oldValue = (double)e.OldValue;
+                var oldValue = (double)e.OldValue!;
                 foreach (var column in ColumnsInternal.GetDisplayedColumns())
                 {
                     OnColumnMaxWidthChanged(column, Math.Min(column.MaxWidth, oldValue));
@@ -1086,7 +1086,7 @@ namespace Avalonia.Controls
         {
             if (!_areHandlersSuspended)
             {
-                var value = (bool)e.NewValue;
+                var value = (bool)e.NewValue!;
                 if (value && !CommitEdit(DataGridEditingUnit.Row, exitEditingMode: true))
                 {
                     CancelEdit(DataGridEditingUnit.Row, raiseEvents: false);
@@ -1107,8 +1107,8 @@ namespace Avalonia.Controls
 
         private void OnHeadersVisibilityChanged(AvaloniaPropertyChangedEventArgs e)
         {
-            var oldValue = (DataGridHeadersVisibility)e.OldValue;
-            var newValue = (DataGridHeadersVisibility)e.NewValue;
+            var oldValue = (DataGridHeadersVisibility)e.OldValue!;
+            var newValue = (DataGridHeadersVisibility)(e.NewValue!);
             bool hasFlags(DataGridHeadersVisibility value, DataGridHeadersVisibility flags) => ((value & flags) == flags);
 
             var newValueCols = hasFlags(newValue, DataGridHeadersVisibility.Column);
@@ -1196,7 +1196,7 @@ namespace Avalonia.Controls
 
         private void OnColumnWidthChanged(AvaloniaPropertyChangedEventArgs e)
         {
-            var value = (DataGridLength)e.NewValue;
+            var value = (DataGridLength)(e.NewValue ?? DataGridLength.Auto);
 
             foreach (var column in ColumnsInternal.GetDisplayedColumns())
             {
@@ -1245,19 +1245,19 @@ namespace Avalonia.Controls
         /// Occurs when the <see cref="P:Avalonia.Controls.DataGridColumn.DisplayIndex" />
         /// property of a column changes.
         /// </summary>
-        public event EventHandler<DataGridColumnEventArgs> ColumnDisplayIndexChanged;
+        public event EventHandler<DataGridColumnEventArgs>? ColumnDisplayIndexChanged;
 
         /// <summary>
         /// Raised when column reordering ends, to allow subscribers to clean up.
         /// </summary>
-        public event EventHandler<DataGridColumnEventArgs> ColumnReordered;
+        public event EventHandler<DataGridColumnEventArgs>? ColumnReordered;
 
         /// <summary>
         /// Raised when starting a column reordering action.  Subscribers to this event can
         /// set tooltip and caret UIElements, constrain tooltip position, indicate that
         /// a preview should be shown, or cancel reordering.
         /// </summary>
-        public event EventHandler<DataGridColumnReorderingEventArgs> ColumnReordering;
+        public event EventHandler<DataGridColumnReorderingEventArgs>? ColumnReordering;
 
         /// <summary>
         /// Occurs when a different cell becomes the current cell.
@@ -1268,7 +1268,7 @@ namespace Avalonia.Controls
         /// Occurs after a <see cref="T:Avalonia.Controls.DataGridRow" />
         /// is instantiated, so that you can customize it before it is used.
         /// </summary>
-        public event EventHandler<DataGridRowEventArgs> LoadingRow;
+        public event EventHandler<DataGridRowEventArgs>? LoadingRow;
 
         /// <summary>
         /// Occurs when a cell in a <see cref="T:Avalonia.Controls.DataGridTemplateColumn" /> enters editing mode.
@@ -1293,7 +1293,7 @@ namespace Avalonia.Controls
         /// Occurs when the <see cref="P:Avalonia.Controls.DataGrid.SelectedItem" /> or
         /// <see cref="P:Avalonia.Controls.DataGrid.SelectedItems" /> property value changes.
         /// </summary>
-        public event EventHandler<SelectionChangedEventArgs> SelectionChanged
+        public event EventHandler<SelectionChangedEventArgs>? SelectionChanged
         {
             add { AddHandler(SelectionChangedEvent, value); }
             remove { RemoveHandler(SelectionChangedEvent, value); }
@@ -1302,30 +1302,30 @@ namespace Avalonia.Controls
         /// <summary>
         /// Occurs when the <see cref="DataGridColumn"/> sorting request is triggered.
         /// </summary>
-        public event EventHandler<DataGridColumnEventArgs> Sorting;
+        public event EventHandler<DataGridColumnEventArgs>? Sorting;
 
         /// <summary>
         /// Occurs when a <see cref="T:Avalonia.Controls.DataGridRow" />
         /// object becomes available for reuse.
         /// </summary>
-        public event EventHandler<DataGridRowEventArgs> UnloadingRow;
+        public event EventHandler<DataGridRowEventArgs>? UnloadingRow;
 
         /// <summary>
         /// Occurs when a new row details template is applied to a row, so that you can customize
         /// the details section before it is used.
         /// </summary>
-        public event EventHandler<DataGridRowDetailsEventArgs> LoadingRowDetails;
+        public event EventHandler<DataGridRowDetailsEventArgs>? LoadingRowDetails;
 
         /// <summary>
         /// Occurs when the <see cref="P:Avalonia.Controls.DataGrid.RowDetailsVisibilityMode" />
         /// property value changes.
         /// </summary>
-        public event EventHandler<DataGridRowDetailsEventArgs> RowDetailsVisibilityChanged;
+        public event EventHandler<DataGridRowDetailsEventArgs>? RowDetailsVisibilityChanged;
 
         /// <summary>
         /// Occurs when a row details element becomes available for reuse.
         /// </summary>
-        public event EventHandler<DataGridRowDetailsEventArgs> UnloadingRowDetails;
+        public event EventHandler<DataGridRowDetailsEventArgs>? UnloadingRowDetails;
 
         /// <summary>
         /// Gets a collection that contains all the columns in the control.
@@ -1410,7 +1410,7 @@ namespace Avalonia.Controls
         /// </summary>
         public IList SelectedItems
         {
-            get { return _selectedItems as IList; }
+            get { return _selectedItems; }
         }
 
         internal DataGridColumnCollection ColumnsInternal
@@ -1479,7 +1479,7 @@ namespace Avalonia.Controls
             }
             set
             {
-                if (_autoSizingColumns && !value && ColumnsInternal != null)
+                if (_autoSizingColumns && !value)
                 {
                     var adjustment = CellsWidth - ColumnsInternal.VisibleEdgedColumnsWidth;
                     AdjustColumnWidths(0, adjustment, false);
@@ -1525,11 +1525,12 @@ namespace Avalonia.Controls
                 {
                     rowsWidth = Math.Max(0, RowsPresenterAvailableSize.Value.Width - ActualRowHeaderWidth);
                 }
+
                 return double.IsPositiveInfinity(rowsWidth) ? ColumnsInternal.VisibleEdgedColumnsWidth : rowsWidth;
             }
         }
 
-        internal DataGridColumnHeadersPresenter ColumnHeaders => _columnHeadersPresenter;
+        internal DataGridColumnHeadersPresenter? ColumnHeaders => _columnHeadersPresenter;
 
         internal List<DataGridColumn> ColumnsItemsInternal => ColumnsInternal.ItemsInternal;
 
@@ -1565,7 +1566,7 @@ namespace Avalonia.Controls
             }
         }
 
-        internal DataGridDataConnection DataConnection
+        internal DataGridDataConnection? DataConnection
         {
             get;
             private set;
@@ -1638,7 +1639,7 @@ namespace Avalonia.Controls
             }
         }
 
-        internal ScrollBar HorizontalScrollBar => _hScrollBar;
+        internal ScrollBar? HorizontalScrollBar => _hScrollBar;
 
         internal IndexToValueTable<DataGridRowGroupInfo> RowGroupHeadersTable
         {
@@ -1692,7 +1693,7 @@ namespace Avalonia.Controls
                         if (IsSlotVisible(newSlot))
                         {
                             var newMouseOverRow = DisplayData.GetDisplayedElement(newSlot) as DataGridRow;
-                            Debug.Assert(newMouseOverRow != null);
+                            // TODO: This doesnt make any sense if we have a null-check below   ►►  Debug.Assert(newMouseOverRow != null);
                             if (newMouseOverRow != null)
                             {
                                 newMouseOverRow.UpdatePseudoClasses();
@@ -1772,7 +1773,7 @@ namespace Avalonia.Controls
             }
             set
             {
-                if (_rowsPresenterAvailableSize.HasValue && value.HasValue && value.Value.Width > RowsPresenterAvailableSize.Value.Width)
+                if (RowsPresenterAvailableSize != null && _rowsPresenterAvailableSize.HasValue && value.HasValue && value.Value.Width > RowsPresenterAvailableSize.Value.Width)
                 {
                     // When the available cells width increases, the horizontal offset can be incorrect.
                     // Store away an adjustment to use during the CellsPresenter's measure, so that the
@@ -1801,7 +1802,7 @@ namespace Avalonia.Controls
             set;
         }
 
-        internal double[] RowGroupSublevelIndents
+        internal double[]? RowGroupSublevelIndents
         {
             get;
             private set;
@@ -1836,16 +1837,12 @@ namespace Avalonia.Controls
         {
             get
             {
-                if (ColumnsInternal != null)
-                {
-                    return ColumnsInternal.VisibleStarColumnCount > 0 &&
-                        (!RowsPresenterAvailableSize.HasValue || !double.IsPositiveInfinity(RowsPresenterAvailableSize.Value.Width));
-                }
-                return false;
+                return ColumnsInternal.VisibleStarColumnCount > 0 &&
+                       (!RowsPresenterAvailableSize.HasValue || !double.IsPositiveInfinity(RowsPresenterAvailableSize.Value.Width));
             }
         }
 
-        internal ScrollBar VerticalScrollBar => _vScrollBar;
+        internal ScrollBar? VerticalScrollBar => _vScrollBar;
 
         internal int VisibleSlotCount
         {
@@ -1856,7 +1853,7 @@ namespace Avalonia.Controls
         /// <summary>
         /// Gets the data item bound to the row that contains the current cell.
         /// </summary>
-        protected object CurrentItem
+        protected object? CurrentItem
         {
             get
             {
@@ -1864,7 +1861,7 @@ namespace Avalonia.Controls
                 {
                     return null;
                 }
-                return DataConnection.GetDataItem(RowIndexFromSlot(CurrentSlot));
+                return DataConnection?.GetDataItem(RowIndexFromSlot(CurrentSlot));
             }
         }
 
@@ -1960,7 +1957,7 @@ namespace Avalonia.Controls
             Debug.Assert(CurrentSlot < SlotCount);
             Debug.Assert(EditingRow == null || EditingRow.Slot == CurrentSlot);
 
-            if (GetColumnEffectiveReadOnlyState(CurrentColumn))
+            if (CurrentColumn != null && GetColumnEffectiveReadOnlyState(CurrentColumn))
             {
                 // Current column is read-only
                 return false;
@@ -2061,7 +2058,7 @@ namespace Avalonia.Controls
                 else
                 {
                     // the row index will be set to -1 if the item is null or not in the list
-                    var rowIndex = DataConnection.IndexOf(item);
+                    var rowIndex = DataConnection?.IndexOf(item) ?? -1;
                     if (rowIndex == -1)
                     {
                         return;
@@ -2081,7 +2078,7 @@ namespace Avalonia.Controls
                     else
                     {
                         rowGroupInfo = RowGroupHeadersTable.GetValueAt(RowGroupHeadersTable.GetPreviousIndex(slot));
-                        Debug.Assert(rowGroupInfo != null);
+                        // TODO: This doesn't make sense ►►  Debug.Assert(rowGroupInfo != null);
                         if (rowGroupInfo != null)
                         {
                             ExpandRowGroupParentChain(rowGroupInfo.Level, rowGroupInfo.Slot);
@@ -2106,7 +2103,7 @@ namespace Avalonia.Controls
         protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
         {
             base.OnAttachedToVisualTree(e);
-            if (DataConnection.DataSource != null && !DataConnection.EventsWired)
+            if (DataConnection?.DataSource != null && !DataConnection.EventsWired)
             {
                 DataConnection.WireEvents(DataConnection.DataSource);
             }
@@ -2116,7 +2113,7 @@ namespace Avalonia.Controls
         {
             base.OnDetachedFromVisualTree(e);
             // When wired to INotifyCollectionChanged, the DataGrid will be cleaned up by GC
-            if (DataConnection.DataSource != null && DataConnection.EventsWired)
+            if (DataConnection?.DataSource != null && DataConnection.EventsWired)
             {
                 DataConnection.UnWireEvents(DataConnection.DataSource);
             }
@@ -2422,9 +2419,9 @@ namespace Avalonia.Controls
         /// </summary>
         public class DisplayIndexComparer : IComparer<DataGridColumn>
         {
-            int IComparer<DataGridColumn>.Compare(DataGridColumn x, DataGridColumn y)
+            int IComparer<DataGridColumn>.Compare(DataGridColumn? x, DataGridColumn? y)
             {
-                return (x.DisplayIndexWithFiller < y.DisplayIndexWithFiller) ? -1 : 1;
+                return (x?.DisplayIndexWithFiller < y?.DisplayIndexWithFiller) ? -1 : 1;
             }
         }
 
@@ -2565,7 +2562,7 @@ namespace Avalonia.Controls
             // Update the SelectedIndex
             var newIndex = -1;
 
-            if (selectedItem != null)
+            if (selectedItem != null && DataConnection != null)
             {
                 newIndex = DataConnection.IndexOf(selectedItem);
             }
@@ -2573,19 +2570,19 @@ namespace Avalonia.Controls
             SetValueNoCallback(SelectedIndexProperty, newIndex);
         }
 
-        internal static DataGridCell GetOwningCell(Control? element)
+        internal static DataGridCell? GetOwningCell(Control? element)
         {
             Debug.Assert(element != null);
             var cell = element as DataGridCell;
             while (element != null && cell == null)
             {
-                element = element.Parent as Control;
+                element = element.Parent;
                 cell = element as DataGridCell;
             }
             return cell;
         }
 
-        internal IEnumerable<object> GetSelectionInclusive(int startRowIndex, int endRowIndex)
+        internal IEnumerable<object?> GetSelectionInclusive(int startRowIndex, int endRowIndex)
         {
             var endSlot = SlotFromRowIndex(endRowIndex);
             foreach (var slot in _selectedItems.GetSlots(SlotFromRowIndex(startRowIndex)))
@@ -2594,7 +2591,7 @@ namespace Avalonia.Controls
                 {
                     break;
                 }
-                yield return DataConnection.GetDataItem(RowIndexFromSlot(slot));
+                yield return DataConnection?.GetDataItem(RowIndexFromSlot(slot));
             }
         }
 
@@ -2653,7 +2650,7 @@ namespace Avalonia.Controls
 
         // Returns the item or the CollectionViewGroup that is used as the DataContext for a given slot.
         // If the DataContext is an item, rowIndex is set to the index of the item within the collection
-        internal object ItemFromSlot(int slot, ref int rowIndex)
+        internal object? ItemFromSlot(int slot, ref int rowIndex)
         {
             if (RowGroupHeadersTable.Contains(slot))
             {
@@ -2662,7 +2659,7 @@ namespace Avalonia.Controls
             else
             {
                 rowIndex = RowIndexFromSlot(slot);
-                return DataConnection.GetDataItem(rowIndex);
+                return DataConnection?.GetDataItem(rowIndex);
             }
         }
 
@@ -2714,9 +2711,16 @@ namespace Avalonia.Controls
                 if (scrollBarValueDifference != 0)
                 {
                     Debug.Assert(_horizontalOffset + scrollBarValueDifference >= 0);
-                    _hScrollBar.Value = _horizontalOffset + scrollBarValueDifference;
+                    if (_hScrollBar != null)
+                    {
+                        _hScrollBar.Value = _horizontalOffset + scrollBarValueDifference;
+                    }
                 }
-                UpdateHorizontalOffset(_hScrollBar.Value);
+
+                if (_hScrollBar != null)
+                {
+                    UpdateHorizontalOffset(_hScrollBar.Value);
+                }
             }
             finally
             {
@@ -2756,7 +2760,7 @@ namespace Avalonia.Controls
         /// <param name="backupSlot">slot to use in case the item is no longer valid</param>
         /// <param name="action">selection action to perform</param>
         /// <param name="scrollIntoView">whether or not the new current item should be scrolled into view</param>
-        internal void ProcessSelectionAndCurrency(int columnIndex, object item, int backupSlot, DataGridSelectionAction action, bool scrollIntoView)
+        internal void ProcessSelectionAndCurrency(int columnIndex, object? item, int backupSlot, DataGridSelectionAction action, bool scrollIntoView)
         {
             _noSelectionChangeCount++;
             _noCurrentCellChangeCount++;
@@ -2773,7 +2777,7 @@ namespace Avalonia.Controls
                 }
                 else
                 {
-                    slot = SlotFromRowIndex(DataConnection.IndexOf(item));
+                    slot = SlotFromRowIndex(DataConnection?.IndexOf(item) ?? -1);
                 }
                 if (slot == -1)
                 {
@@ -2873,7 +2877,7 @@ namespace Avalonia.Controls
             {
                 return;
             }
-            Debug.Assert(MathUtilities.LessThanOrClose(_vScrollBar.Value, _vScrollBar.Maximum));
+            Debug.Assert(_vScrollBar != null && MathUtilities.LessThanOrClose(_vScrollBar.Value, _vScrollBar.Maximum));
 
             _verticalScrollChangesIgnored++;
             try
@@ -2940,6 +2944,7 @@ namespace Avalonia.Controls
                         //Column auto-generation refreshes the rows too
                         AutoGenerateColumnsPrivate();
                     }
+
                     foreach (var column in ColumnsItemsInternal)
                     {
                         //We don't need to refresh the state of AutoGenerated column headers because they're up-to-date
@@ -3059,7 +3064,7 @@ namespace Avalonia.Controls
                     return false;
                 }
 
-                if (DataConnection.CollectionView != null &&
+                if (DataConnection?.CollectionView != null &&
                     DataConnection.CollectionView.CurrentPosition != newCurrentPosition)
                 {
                     DataConnection.MoveCurrentTo(item, slot, columnIndex, action, scrollIntoView);
@@ -3089,7 +3094,7 @@ namespace Avalonia.Controls
             var columnIndex = CurrentColumnIndex;
             if (columnIndex == -1)
             {
-                if (IsColumnOutOfBounds(_desiredCurrentColumnIndex) ||
+                if (IsColumnOutOfBounds(_desiredCurrentColumnIndex) || 
                     (ColumnsInternal.RowGroupSpacerColumn.IsRepresented && _desiredCurrentColumnIndex == ColumnsInternal.RowGroupSpacerColumn.Index))
                 {
                     columnIndex = FirstDisplayedNonFillerColumnIndex;
@@ -3241,7 +3246,7 @@ namespace Avalonia.Controls
 
         private void UpdateRowDetailsVisibilityMode(DataGridRowDetailsVisibilityMode newDetailsMode)
         {
-            var itemCount = DataConnection.Count;
+            var itemCount = DataConnection?.Count ?? 0;
             if (_rowsPresenter != null && itemCount > 0)
             {
                 var newDetailsVisibility = false;
@@ -3318,8 +3323,8 @@ namespace Avalonia.Controls
             Debug.Assert(CurrentSlot >= -1);
             Debug.Assert(CurrentSlot < SlotCount);
             Debug.Assert(EditingRow == null || EditingRow.Slot == CurrentSlot);
-            Debug.Assert(!GetColumnEffectiveReadOnlyState(CurrentColumn));
             Debug.Assert(CurrentColumn != null);
+            Debug.Assert(!GetColumnEffectiveReadOnlyState(CurrentColumn));
             Debug.Assert(CurrentColumn.IsVisible);
 
             if (_editingColumnIndex != -1)
@@ -3387,7 +3392,7 @@ namespace Avalonia.Controls
             Debug.Assert(CurrentSlot >= -1);
             Debug.Assert(CurrentSlot < SlotCount);
 
-            if (DataConnection.BeginEdit(dataGridRow.DataContext))
+            if (DataConnection != null && DataConnection.BeginEdit(dataGridRow.DataContext))
             {
                 EditingRow = dataGridRow;
                 GenerateEditingElements();
@@ -3407,22 +3412,25 @@ namespace Avalonia.Controls
             Debug.Assert(CurrentColumn != null);
 
             var dataItem = EditingRow.DataContext;
-            if (!DataConnection.CancelEdit(dataItem))
+            if (DataConnection != null && !DataConnection.CancelEdit(dataItem))
             {
                 return false;
             }
+
             foreach (var column in Columns)
             {
                 if (!exitEditingMode && column.Index == _editingColumnIndex && column is DataGridBoundColumn)
                 {
                     continue;
                 }
+
                 PopulateCellContent(
                     isCellEdited: !exitEditingMode && column.Index == _editingColumnIndex,
                     dataGridColumn: column,
                     dataGridRow: EditingRow,
                     dataGridCell: EditingRow.Cells[column.Index]);
             }
+
             return true;
         }
 
@@ -3480,11 +3488,11 @@ namespace Avalonia.Controls
                 return false;
             }
 
-            DataConnection.EndEdit(EditingRow.DataContext);
+            DataConnection?.EndEdit(EditingRow.DataContext);
 
             if (!exitEditingMode)
             {
-                DataConnection.BeginEdit(EditingRow.DataContext);
+                DataConnection?.BeginEdit(EditingRow.DataContext);
             }
             return true;
         }
@@ -3740,7 +3748,7 @@ namespace Avalonia.Controls
         /// </summary>
         /// <param name="sender">Editing element</param>
         /// <param name="e">RoutedEventArgs</param>
-        private void EditingElement_LostFocus(object sender, RoutedEventArgs e)
+        private void EditingElement_LostFocus(object? sender, RoutedEventArgs e)
         {
             if (sender is Control editingElement)
             {
@@ -3897,7 +3905,7 @@ namespace Avalonia.Controls
         }
 
         //TODO: Make override?
-        private void DataGrid_GotFocus(object sender, RoutedEventArgs e)
+        private void DataGrid_GotFocus(object? sender, RoutedEventArgs e)
         {
             if (!ContainsFocus)
             {
@@ -3934,7 +3942,7 @@ namespace Avalonia.Controls
         {
         }
 
-        private void DataGrid_KeyDown(object sender, KeyEventArgs e)
+        private void DataGrid_KeyDown(object? sender, KeyEventArgs e)
         {
             if (!e.Handled)
             {
@@ -3942,7 +3950,7 @@ namespace Avalonia.Controls
             }
         }
 
-        private void DataGrid_KeyUp(object sender, KeyEventArgs e)
+        private void DataGrid_KeyUp(object? sender, KeyEventArgs e)
         {
             if (e.Key == Key.Tab && CurrentColumnIndex != -1 && e.Source == this)
             {
@@ -3960,7 +3968,7 @@ namespace Avalonia.Controls
         }
 
         //TODO: Make override?
-        private void DataGrid_LostFocus(object sender, RoutedEventArgs e)
+        private void DataGrid_LostFocus(object? sender, RoutedEventArgs e)
         {
             _focusedObject = null;
             if (ContainsFocus)
@@ -4022,7 +4030,7 @@ namespace Avalonia.Controls
             }
         }
 
-        private void EditingElement_Initialized(object sender, EventArgs e)
+        private void EditingElement_Initialized(object? sender, EventArgs e)
         {
             var element = sender as Control;
             if (element != null)
@@ -4108,10 +4116,7 @@ namespace Avalonia.Controls
                     if (binding.IsValid)
                     {
                         ResetValidationStatus();
-                        if (editingElement != null)
-                        {
-                            DataValidationErrors.ClearErrors(editingElement);
-                        }
+                        DataValidationErrors.ClearErrors(editingElement);
                     }
                     else
                     {
@@ -4130,16 +4135,13 @@ namespace Avalonia.Controls
                             }
                         }
 
-                        if (editingElement != null)
-                        {
-                            var errorList =
-                                binding.ValidationErrors
-                                       .SelectMany(ValidationUtil.UnpackException)
-                                       .Select(ValidationUtil.UnpackDataValidationException)
-                                       .ToList();
+                        var errorList =
+                            binding.ValidationErrors
+                                .SelectMany(ValidationUtil.UnpackException)
+                                .Select(ValidationUtil.UnpackDataValidationException)
+                                .ToList();
 
-                            DataValidationErrors.SetErrors(editingElement, errorList);
-                        }
+                        DataValidationErrors.SetErrors(editingElement, errorList);
                     }
                 }
 
@@ -4168,18 +4170,22 @@ namespace Avalonia.Controls
                     Focus();
                 }
 
-                PopulateCellContent(
-                    isCellEdited: !exitEditingMode,
-                    dataGridColumn: CurrentColumn,
-                    dataGridRow: EditingRow,
-                    dataGridCell: editingCell);
+                if (CurrentColumn != null && EditingRow != null && editingCell != null)
+                {
+                    PopulateCellContent(
+                        isCellEdited: !exitEditingMode,
+                        dataGridColumn: CurrentColumn,
+                        dataGridRow: EditingRow,
+                        dataGridCell: editingCell);
+                    
+                }
 
                 EditingRow.InvalidateDesiredHeight();
                 var column = editingCell.OwningColumn;
                 if (column.Width.IsSizeToCells || column.Width.IsAuto)
                 {// Invalidate desired width and force recalculation
                     column.SetWidthDesiredValue(0);
-                    EditingRow.OwningGrid.AutoSizeColumn(column, editingCell.DesiredSize.Width);
+                    EditingRow.OwningGrid?.AutoSizeColumn(column, editingCell.DesiredSize.Width);
                 }
             }
 
@@ -4197,7 +4203,7 @@ namespace Avalonia.Controls
         //TODO Validation
         private bool EndRowEdit(DataGridEditAction editAction, bool exitEditingMode, bool raiseEvents)
         {
-            if (EditingRow == null || DataConnection.CommittingEdit)
+            if (EditingRow == null || DataConnection == null || DataConnection.CommittingEdit)
             {
                 return true;
             }
@@ -4302,7 +4308,7 @@ namespace Avalonia.Controls
         //TODO TabStop
         private void ExitEdit(bool keepFocus)
         {
-            if (EditingRow == null || DataConnection.CommittingEdit)
+            if (EditingRow == null || DataConnection == null || DataConnection.CommittingEdit)
             {
                 Debug.Assert(_editingColumnIndex == -1);
                 return;
@@ -4330,7 +4336,7 @@ namespace Avalonia.Controls
             }
         }
 
-        private void ExternalEditingElement_LostFocus(object sender, RoutedEventArgs e)
+        private void ExternalEditingElement_LostFocus(object? sender, RoutedEventArgs e)
         {
             if (sender is Control element)
             {
@@ -4358,7 +4364,7 @@ namespace Avalonia.Controls
             if (_collapsedSlotsTable.Contains(CurrentSlot))
             {
                 var rowGroupInfo = RowGroupHeadersTable.GetValueAt(RowGroupHeadersTable.GetPreviousIndex(CurrentSlot));
-                Debug.Assert(rowGroupInfo != null);
+                // TODO: Why do we do this ?   ►► Debug.Assert(rowGroupInfo != null);
                 if (rowGroupInfo != null)
                 {
                     ExpandRowGroupParentChain(rowGroupInfo.Level, rowGroupInfo.Slot);
@@ -4485,7 +4491,7 @@ namespace Avalonia.Controls
             return 0;
         }
 
-        private void HorizontalScrollBar_Scroll(object sender, ScrollEventArgs e)
+        private void HorizontalScrollBar_Scroll(object? sender, ScrollEventArgs e)
         {
             ProcessHorizontalScroll(e.ScrollEventType);
             HorizontalScroll?.Invoke(sender, e);
@@ -4521,7 +4527,7 @@ namespace Avalonia.Controls
             else
             {
                 var rowIndex = RowIndexFromSlot(slot);
-                return rowIndex < 0 || rowIndex >= DataConnection.Count;
+                return rowIndex < 0 || rowIndex >= DataConnection?.Count;
             }
         }
 
@@ -4534,7 +4540,7 @@ namespace Avalonia.Controls
                 FlushCurrentCellChanged();
                 return;
             }
-            if (SlotCount != SlotFromRowIndex(DataConnection.Count))
+            if (DataConnection != null && SlotCount != SlotFromRowIndex(DataConnection.Count))
             {
                 _makeFirstDisplayedCellCurrentCellPending = true;
                 return;
@@ -4543,7 +4549,7 @@ namespace Avalonia.Controls
             // No current cell, therefore no selection either - try to set the current cell to the
             // ItemsSource's ICollectionView.CurrentItem if it exists, otherwise use the first displayed cell.
             var slot = 0;
-            if (DataConnection.CollectionView != null)
+            if (DataConnection?.CollectionView != null)
             {
                 if (DataConnection.CollectionView.IsCurrentBeforeFirst ||
                     DataConnection.CollectionView.IsCurrentAfterLast)
@@ -4605,7 +4611,7 @@ namespace Avalonia.Controls
                     dataGridCell.Content = element;
                     if (element.IsInitialized)
                     {
-                        PreparingCellForEditPrivate(element as Control);
+                        PreparingCellForEditPrivate(element);
                     }
                     else
                     {
@@ -4646,7 +4652,11 @@ namespace Avalonia.Controls
             // Prepare the cell for editing and raise the PreparingCellForEdit event for all columns
             var dataGridColumn = CurrentColumn;
             _uneditedValue = dataGridColumn?.PrepareCellForEditInternal(editingElement, _editingEventArgs);
-            OnPreparingCellForEdit(new DataGridPreparingCellForEditEventArgs(dataGridColumn, EditingRow, _editingEventArgs, editingElement));
+            if (_editingEventArgs != null)
+            {
+                OnPreparingCellForEdit(new DataGridPreparingCellForEditEventArgs(dataGridColumn, EditingRow,
+                    _editingEventArgs, editingElement));
+            }
         }
 
         private bool ProcessAKey(KeyEventArgs e)
@@ -4921,7 +4931,8 @@ namespace Avalonia.Controls
         {
             KeyboardHelper.GetMetaKeyState(e.KeyModifiers, out var ctrl, out var shift);
 
-            if (!shift && !ctrl &&
+            if (!shift && !ctrl && 
+                CurrentColumn != null &&
                 _editingColumnIndex == -1 && CurrentColumnIndex != -1 && GetRowSelection(CurrentSlot) &&
                 !GetColumnEffectiveReadOnlyState(CurrentColumn))
             {
@@ -5295,7 +5306,7 @@ namespace Avalonia.Controls
             Debug.Assert(CurrentSlot != -1);
 
             int neighborVisibleWritableColumnIndex, neighborSlot;
-            DataGridColumn dataGridColumn;
+            DataGridColumn? dataGridColumn;
             if (shift)
             {
                 dataGridColumn = ColumnsInternal.GetPreviousVisibleWritableColumn(ColumnsItemsInternal[CurrentColumnIndex]);
@@ -5482,7 +5493,11 @@ namespace Avalonia.Controls
             {
                 _columnHeadersPresenter.Children.Clear();
             }
-            ColumnsInternal.FillerColumn.IsRepresented = false;
+
+            if (ColumnsInternal.FillerColumn != null)
+            {
+                ColumnsInternal.FillerColumn.IsRepresented = false;
+            }
         }
 
         private bool ResetCurrentCellCore()
@@ -5558,7 +5573,7 @@ namespace Avalonia.Controls
             if (!RowGroupHeadersTable.Contains(slot))
             {
                 var rowIndex = RowIndexFromSlot(slot);
-                if (rowIndex >= 0 && rowIndex < DataConnection.Count)
+                if (rowIndex >= 0 && rowIndex < DataConnection?.Count)
                 {
                     newCurrentItem = DataConnection.GetDataItem(rowIndex);
                 }
@@ -5604,7 +5619,7 @@ namespace Avalonia.Controls
                 }
             }
 
-            if (newCurrentItem != null)
+            if (newCurrentItem != null && DataConnection != null)
             {
                 slot = SlotFromRowIndex(DataConnection.IndexOf(newCurrentItem));
             }
@@ -5663,7 +5678,7 @@ namespace Avalonia.Controls
             }
         }
 
-        private void UpdateCurrentState(Control displayedElement, int columnIndex, bool applyCellState)
+        private void UpdateCurrentState(Control? displayedElement, int columnIndex, bool applyCellState)
         {
             if (displayedElement is DataGridRow row)
             {
@@ -5827,7 +5842,7 @@ namespace Avalonia.Controls
             }
         }
 
-        private void VerticalScrollBar_Scroll(object sender, ScrollEventArgs e)
+        private void VerticalScrollBar_Scroll(object? sender, ScrollEventArgs e)
         {
             ProcessVerticalScroll(e.ScrollEventType);
             VerticalScroll?.Invoke(sender, e);
@@ -5953,9 +5968,9 @@ namespace Avalonia.Controls
         /// <param name="item">item</param>
         /// <param name="groupLevel">groupLevel</param>
         /// <returns>The group the given item falls under or null if the item is not in the ItemsSource</returns>
-        public DataGridCollectionViewGroup GetGroupFromItem(object item, int groupLevel)
+        public DataGridCollectionViewGroup? GetGroupFromItem(object item, int groupLevel)
         {
-            var itemIndex = DataConnection.IndexOf(item);
+            var itemIndex = DataConnection?.IndexOf(item) ?? -1;
             if (itemIndex == -1)
             {
                 return null;
@@ -6003,12 +6018,12 @@ namespace Avalonia.Controls
         /// <summary>
         /// Occurs before a DataGridRowGroupHeader header is used.
         /// </summary>
-        public event EventHandler<DataGridRowGroupHeaderEventArgs> LoadingRowGroup;
+        public event EventHandler<DataGridRowGroupHeaderEventArgs>? LoadingRowGroup;
 
         /// <summary>
         /// Occurs when the DataGridRowGroupHeader is available for reuse.
         /// </summary>
-        public event EventHandler<DataGridRowGroupHeaderEventArgs> UnloadingRowGroup;
+        public event EventHandler<DataGridRowGroupHeaderEventArgs>? UnloadingRowGroup;
 
         // Recursively expands parent RowGroupHeaders from the top down
         private void ExpandRowGroupParentChain(int level, int slot)

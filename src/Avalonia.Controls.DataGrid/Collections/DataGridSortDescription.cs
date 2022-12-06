@@ -35,7 +35,7 @@ namespace Avalonia.Collections
 
         private static object InvokePath(object item, string propertyPath, Type propertyType)
         {
-            object propertyValue = TypeHelper.GetNestedPropertyValue(item, propertyPath, propertyType, out Exception exception);
+            var propertyValue = TypeHelper.GetNestedPropertyValue(item, propertyPath, propertyType, out var exception);
             if (exception != null)
             {
                 throw exception;
@@ -179,7 +179,7 @@ namespace Avalonia.Collections
 
             private int Compare(object x, object y)
             {
-                int result = 0;
+                var result = 0;
 
                 if(_propertyType == null)
                 {
@@ -193,8 +193,8 @@ namespace Avalonia.Collections
                     }
                 }
 
-                object v1 = GetValue(x);
-                object v2 = GetValue(y);
+                var v1 = GetValue(x);
+                var v2 = GetValue(y);
 
                 if (_propertyType != null && _internalComparer == null)
                     _internalComparer = GetComparerForType(_propertyType);
@@ -280,7 +280,7 @@ namespace Avalonia.Collections
 
         private int Compare(object x, object y)
         {
-            int result = _innerComparer.Compare(x, y);
+            var result = _innerComparer.Compare(x, y);
 
             if (Direction == ListSortDirection.Descending)
                 return -result;

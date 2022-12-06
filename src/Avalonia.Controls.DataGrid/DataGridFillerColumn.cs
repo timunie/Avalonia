@@ -43,7 +43,7 @@ namespace Avalonia.Controls
 
         internal override DataGridColumnHeader CreateHeader()
         {
-            DataGridColumnHeader headerCell = base.CreateHeader();
+            var headerCell = base.CreateHeader();
             if (headerCell != null)
             {
                 headerCell.IsEnabled = false;
@@ -62,7 +62,7 @@ namespace Avalonia.Controls
             return null;
         } 
 
-        protected override object PrepareCellForEdit(Control editingElement, RoutedEventArgs editingEventArgs)
+        protected override object? PrepareCellForEdit(Control editingElement, RoutedEventArgs editingEventArgs)
         {
             return null;
         }

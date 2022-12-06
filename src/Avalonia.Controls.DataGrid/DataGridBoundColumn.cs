@@ -99,7 +99,7 @@ namespace Avalonia.Controls
         //TODO Validation
         protected sealed override Control GenerateEditingElement(DataGridCell cell, object dataItem, out ICellEditBinding editBinding)
         {
-            Control element = GenerateEditingElementDirect(cell, dataItem);
+            var element = GenerateEditingElementDirect(cell, dataItem);
             editBinding = null; 
 
             if (Binding != null)

@@ -231,7 +231,7 @@ namespace Avalonia.Controls
                     _rightGridLine.Fill = OwningGrid.VerticalGridLinesBrush;
                 }
 
-                bool newVisibility =
+                var newVisibility =
                     (OwningGrid.GridLinesVisibility == DataGridGridLinesVisibility.Vertical || OwningGrid.GridLinesVisibility == DataGridGridLinesVisibility.All)
                         && (OwningGrid.ColumnsInternal.FillerColumn.IsActive || OwningColumn != lastVisibleColumn);
 

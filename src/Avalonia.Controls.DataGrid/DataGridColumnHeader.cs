@@ -176,7 +176,7 @@ namespace Avalonia.Controls
 
         internal void UpdateSeparatorVisibility(DataGridColumn lastVisibleColumn)
         {
-            bool newVisibility = _desiredSeparatorVisibility;
+            var newVisibility = _desiredSeparatorVisibility;
 
             // Collapse separator for the last column if there is no filler column
             if (OwningColumn != null &&
@@ -238,13 +238,13 @@ namespace Avalonia.Controls
                     // - SortDescriptionsCollection exists, and
                     // - the column's data type is comparable
 
-                    DataGrid owningGrid = OwningGrid;
+                    var owningGrid = OwningGrid;
                     DataGridSortDescription newSort;
 
-                    KeyboardHelper.GetMetaKeyState(keyModifiers, out bool ctrl, out bool shift);
+                    KeyboardHelper.GetMetaKeyState(keyModifiers, out var ctrl, out var shift);
 
-                    DataGridSortDescription sort = OwningColumn.GetSortDescription();
-                    IDataGridCollectionView collectionView = owningGrid.DataConnection.CollectionView;
+                    var sort = OwningColumn.GetSortDescription();
+                    var collectionView = owningGrid.DataConnection.CollectionView;
                     Debug.Assert(collectionView != null);
 
                     using (collectionView.DeferRefresh())
@@ -271,7 +271,7 @@ namespace Avalonia.Controls
 
                                 // changing direction should not affect sort order, so we replace this column's
                                 // sort description instead of just adding it to the end of the collection
-                                int oldIndex = owningGrid.DataConnection.SortDescriptions.IndexOf(sort);
+                                var oldIndex = owningGrid.DataConnection.SortDescriptions.IndexOf(sort);
                                 if (oldIndex >= 0)
                                 {
                                     owningGrid.DataConnection.SortDescriptions.Remove(sort);
@@ -293,7 +293,7 @@ namespace Avalonia.Controls
                             }
                             else
                             {
-                                string propertyName = OwningColumn.GetSortPropertyName();
+                                var propertyName = OwningColumn.GetSortPropertyName();
                                 // no-opt if we couldn't find a property to sort on
                                 if (string.IsNullOrEmpty(propertyName))
                                 {
@@ -365,9 +365,9 @@ namespace Avalonia.Controls
                 _frozenColumnsWidth = OwningGrid.ColumnsInternal.GetVisibleFrozenEdgedColumnsWidth();
                 _lastMousePositionHeaders = this.Translate(OwningGrid.ColumnHeaders, mousePosition);
 
-                double distanceFromLeft = mousePosition.X;
-                double distanceFromRight = Bounds.Width - distanceFromLeft;
-                DataGridColumn currentColumn = OwningColumn;
+                var distanceFromLeft = mousePosition.X;
+                var distanceFromRight = Bounds.Width - distanceFromLeft;
+                var currentColumn = OwningColumn;
                 DataGridColumn previousColumn = null;
                 if (!(OwningColumn is DataGridFillerColumn))
                 {
@@ -409,14 +409,14 @@ namespace Avalonia.Controls
                 else if (_dragMode == DragMode.Reorder)
                 {
                     // Find header we're hovering over
-                    int targetIndex = GetReorderingTargetDisplayIndex(mousePositionHeaders);
+                    var targetIndex = GetReorderingTargetDisplayIndex(mousePositionHeaders);
 
                     if (((!OwningColumn.IsFrozen && targetIndex >= OwningGrid.FrozenColumnCount)
                           || (OwningColumn.IsFrozen && targetIndex < OwningGrid.FrozenColumnCount)))
                     {
                         OwningColumn.DisplayIndex = targetIndex;
 
-                        DataGridColumnEventArgs ea = new DataGridColumnEventArgs(OwningColumn);
+                        var ea = new DataGridColumnEventArgs(OwningColumn);
                         OwningGrid.OnColumnReordered(ea);
                     }
                 }
@@ -442,8 +442,8 @@ namespace Avalonia.Controls
 
             Debug.Assert(OwningGrid.Parent is InputElement);
 
-            double distanceFromLeft = mousePosition.X;
-            double distanceFromRight = Bounds.Width - distanceFromLeft;
+            var distanceFromLeft = mousePosition.X;
+            var distanceFromRight = Bounds.Width - distanceFromLeft;
 
             OnMouseMove_Resize(ref handled, mousePositionHeaders);
 
@@ -459,7 +459,7 @@ namespace Avalonia.Controls
                 return;
             }
 
-            Point mousePosition = e.GetPosition(this);
+            var mousePosition = e.GetPosition(this);
             OnMouseEnter(mousePosition);
             UpdatePseudoClasses();
         }
@@ -482,8 +482,8 @@ namespace Avalonia.Controls
                 return;
             }
 
-            Point mousePosition = e.GetPosition(this);
-            bool handled = e.Handled;
+            var mousePosition = e.GetPosition(this);
+            var handled = e.Handled;
             OnMouseLeftButtonDown(ref handled, e, mousePosition);
             e.Handled = handled;
 
@@ -497,9 +497,9 @@ namespace Avalonia.Controls
                 return;
             }
 
-            Point mousePosition = e.GetPosition(this);
-            Point mousePositionHeaders = e.GetPosition(OwningGrid.ColumnHeaders);
-            bool handled = e.Handled;
+            var mousePosition = e.GetPosition(this);
+            var mousePositionHeaders = e.GetPosition(OwningGrid.ColumnHeaders);
+            var handled = e.Handled;
             OnMouseLeftButtonUp(ref handled, e, mousePosition, mousePositionHeaders);
             e.Handled = handled;
 
@@ -513,8 +513,8 @@ namespace Avalonia.Controls
                 return;
             }
 
-            Point mousePosition = e.GetPosition(this);
-            Point mousePositionHeaders = e.GetPosition(OwningGrid.ColumnHeaders);
+            var mousePosition = e.GetPosition(this);
+            var mousePositionHeaders = e.GetPosition(OwningGrid.ColumnHeaders);
 
             OnMouseMove(e, mousePosition, mousePositionHeaders);
         }
@@ -529,8 +529,8 @@ namespace Avalonia.Controls
         private DataGridColumn GetReorderingTargetColumn(Point mousePositionHeaders, bool scroll, out double scrollAmount)
         {
             scrollAmount = 0;
-            double leftEdge = OwningGrid.ColumnsInternal.RowGroupSpacerColumn.IsRepresented ? OwningGrid.ColumnsInternal.RowGroupSpacerColumn.ActualWidth : 0;
-            double rightEdge = OwningGrid.CellsWidth;
+            var leftEdge = OwningGrid.ColumnsInternal.RowGroupSpacerColumn.IsRepresented ? OwningGrid.ColumnsInternal.RowGroupSpacerColumn.ActualWidth : 0;
+            var rightEdge = OwningGrid.CellsWidth;
             if (OwningColumn.IsFrozen)
             {
                 rightEdge = Math.Min(rightEdge, _frozenColumnsWidth);
@@ -547,7 +547,7 @@ namespace Avalonia.Controls
                     OwningGrid.HorizontalScrollBar.IsVisible &&
                     OwningGrid.HorizontalScrollBar.Value > 0)
                 {
-                    double newVal = mousePositionHeaders.X - leftEdge;
+                    var newVal = mousePositionHeaders.X - leftEdge;
                     scrollAmount = Math.Min(newVal, OwningGrid.HorizontalScrollBar.Value);
                     OwningGrid.UpdateHorizontalOffset(scrollAmount + OwningGrid.HorizontalScrollBar.Value);
                 }
@@ -560,17 +560,17 @@ namespace Avalonia.Controls
                     OwningGrid.HorizontalScrollBar.IsVisible &&
                     OwningGrid.HorizontalScrollBar.Value < OwningGrid.HorizontalScrollBar.Maximum)
                 {
-                    double newVal = mousePositionHeaders.X - rightEdge;
+                    var newVal = mousePositionHeaders.X - rightEdge;
                     scrollAmount = Math.Min(newVal, OwningGrid.HorizontalScrollBar.Maximum - OwningGrid.HorizontalScrollBar.Value);
                     OwningGrid.UpdateHorizontalOffset(scrollAmount + OwningGrid.HorizontalScrollBar.Value);
                 }
                 mousePositionHeaders = mousePositionHeaders.WithX(rightEdge - 1);
             }
 
-            foreach (DataGridColumn column in OwningGrid.ColumnsInternal.GetDisplayedColumns())
+            foreach (var column in OwningGrid.ColumnsInternal.GetDisplayedColumns())
             {
-                Point mousePosition = OwningGrid.ColumnHeaders.Translate(column.HeaderCell, mousePositionHeaders);
-                double columnMiddle = column.HeaderCell.Bounds.Width / 2;
+                var mousePosition = OwningGrid.ColumnHeaders.Translate(column.HeaderCell, mousePositionHeaders);
+                var columnMiddle = column.HeaderCell.Bounds.Width / 2;
                 if (mousePosition.X >= 0 && mousePosition.X <= columnMiddle)
                 {
                     return column;
@@ -591,7 +591,7 @@ namespace Avalonia.Controls
         /// <returns></returns>
         private int GetReorderingTargetDisplayIndex(Point mousePositionHeaders)
         {
-            DataGridColumn targetColumn = GetReorderingTargetColumn(mousePositionHeaders, false /*scroll*/, out double scrollAmount);
+            var targetColumn = GetReorderingTargetColumn(mousePositionHeaders, false /*scroll*/, out var scrollAmount);
             if (targetColumn != null)
             {
                 return targetColumn.DisplayIndex > OwningColumn.DisplayIndex ? targetColumn.DisplayIndex - 1 : targetColumn.DisplayIndex;
@@ -614,7 +614,7 @@ namespace Avalonia.Controls
         /// <returns></returns>
         private bool IsReorderTargeted(Point mousePosition, Control element, bool ignoreVertical)
         {
-            Point position = this.Translate(element, mousePosition);
+            var position = this.Translate(element, mousePosition);
 
             return (position.X < 0 || (position.X >= 0 && position.X <= element.Bounds.Width / 2))
                 && (ignoreVertical || (position.Y >= 0 && position.Y <= element.Bounds.Height));
@@ -679,7 +679,7 @@ namespace Avalonia.Controls
 
             dragIndicator.PseudoClasses.Add(":dragIndicator");
 
-            Control dropLocationIndicator = OwningGrid.DropLocationIndicatorTemplate?.Build();
+            var dropLocationIndicator = OwningGrid.DropLocationIndicatorTemplate?.Build();
 
             // If the user didn't style the dropLocationIndicator's Height, default to the column header's height
             if (dropLocationIndicator != null && double.IsNaN(dropLocationIndicator.Height) && dropLocationIndicator is Control element)
@@ -688,7 +688,7 @@ namespace Avalonia.Controls
             }
 
             // pass the caret's data template to the user for modification
-            DataGridColumnReorderingEventArgs columnReorderingEventArgs = new DataGridColumnReorderingEventArgs(OwningColumn)
+            var columnReorderingEventArgs = new DataGridColumnReorderingEventArgs(OwningColumn)
             {
                 DropLocationIndicator = dropLocationIndicator,
                 DragIndicator = dragIndicator
@@ -743,14 +743,14 @@ namespace Avalonia.Controls
             if (_dragMode == DragMode.Reorder && OwningGrid.ColumnHeaders.DragIndicator != null)
             {
                 // Find header we're hovering over
-                DataGridColumn targetColumn = GetReorderingTargetColumn(mousePositionHeaders, !OwningColumn.IsFrozen /*scroll*/, out double scrollAmount);
+                var targetColumn = GetReorderingTargetColumn(mousePositionHeaders, !OwningColumn.IsFrozen /*scroll*/, out var scrollAmount);
 
                 OwningGrid.ColumnHeaders.DragIndicatorOffset = mousePosition.X - _dragStart.Value.X + scrollAmount;
                 OwningGrid.ColumnHeaders.InvalidateArrange();
 
                 if (OwningGrid.ColumnHeaders.DropLocationIndicator != null)
                 {
-                    Point targetPosition = new Point(0, 0);
+                    var targetPosition = new Point(0, 0);
                     if (targetColumn == null || targetColumn == OwningGrid.ColumnsInternal.FillerColumn || targetColumn.IsFrozen != OwningColumn.IsFrozen)
                     {
                         targetColumn =
@@ -784,8 +784,8 @@ namespace Avalonia.Controls
             {
                 // resize column
 
-                double mouseDelta = mousePositionHeaders.X - _dragStart.Value.X;
-                double desiredWidth = _originalWidth + mouseDelta;
+                var mouseDelta = mousePositionHeaders.X - _dragStart.Value.X;
+                var desiredWidth = _originalWidth + mouseDelta;
 
                 desiredWidth = Math.Max(_dragColumn.ActualMinWidth, Math.Min(_dragColumn.ActualMaxWidth, desiredWidth));
                 _dragColumn.Resize(_dragColumn.Width.Value, _dragColumn.Width.UnitType, _dragColumn.Width.DesiredValue, desiredWidth, true);
@@ -805,9 +805,9 @@ namespace Avalonia.Controls
 
             // set mouse if we can resize column
 
-            double distanceFromLeft = mousePosition.X;
-            double distanceFromRight = Bounds.Width - distanceFromLeft;
-            DataGridColumn currentColumn = OwningColumn;
+            var distanceFromLeft = mousePosition.X;
+            var distanceFromRight = Bounds.Width - distanceFromLeft;
+            var currentColumn = OwningColumn;
             DataGridColumn previousColumn = null;
 
             if (!(OwningColumn is DataGridFillerColumn))

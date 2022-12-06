@@ -30,9 +30,9 @@ namespace Avalonia.Controls.Utils
                 }
                 if (definition.IsInterface)
                 {
-                    foreach (Type type2 in type.GetInterfaces())
+                    foreach (var type2 in type.GetInterfaces())
                     {
-                        Type type3 = FindGenericType(definition, type2);
+                        var type3 = FindGenericType(definition, type2);
                         if (type3 != null)
                         {
                             return type3;
@@ -75,7 +75,7 @@ namespace Avalonia.Controls.Utils
 
                 if (parameters[0].ParameterType == typeof(int))
                 {
-                    int intIndex = -1;
+                    var intIndex = -1;
                     if (Int32.TryParse(stringIndex.Trim(), NumberStyles.None, CultureInfo.InvariantCulture, out intIndex))
                     {
                         index = new object[] { intIndex };
@@ -104,7 +104,7 @@ namespace Avalonia.Controls.Utils
             object[] attributes = type.GetCustomAttributes(typeof(DefaultMemberAttribute), true);
             if (attributes != null && attributes.Length == 1)
             {
-                DefaultMemberAttribute defaultMemberAttribute = attributes[0] as DefaultMemberAttribute;
+                var defaultMemberAttribute = attributes[0] as DefaultMemberAttribute;
                 return defaultMemberAttribute.MemberName;
             }
             else
@@ -123,7 +123,7 @@ namespace Avalonia.Controls.Utils
         /// <returns>DisplayAttribute.ShortName if it exists, null otherwise</returns>
         internal static string GetDisplayName(this Type type, string propertyPath)
         {
-            PropertyInfo propertyInfo = type.GetNestedProperty(propertyPath);
+            var propertyInfo = type.GetNestedProperty(propertyPath);
             if (propertyInfo != null)
             {
                 object[] attributes = propertyInfo.GetCustomAttributes(typeof(DisplayAttribute), true);
@@ -141,7 +141,7 @@ namespace Avalonia.Controls.Utils
 
         internal static Type GetEnumerableItemType(this Type enumerableType)
         {
-            Type type = FindGenericType(typeof(IEnumerable<>), enumerableType);
+            var type = FindGenericType(typeof(IEnumerable<>), enumerableType);
             if (type != null)
             {
                 return type.GetGenericArguments()[0];
@@ -167,10 +167,10 @@ namespace Avalonia.Controls.Utils
                 return null;
             }
 
-            Type type = parentType;
+            var type = parentType;
             PropertyInfo propertyInfo = null;
             List<string> propertyNames = SplitPropertyPath(propertyPath);
-            for (int i = 0; i < propertyNames.Count; i++)
+            for (var i = 0; i < propertyNames.Count; i++)
             {
                 // if we can't find the property or it is not of the correct type,
                 // treat it as a null value
@@ -231,7 +231,7 @@ namespace Avalonia.Controls.Utils
         internal static string GetTypeName(this Type type)
         {
             Type baseType = type.GetNonNullableType();
-            string s = baseType.Name;
+            var s = baseType.Name;
             if (type != baseType)
             {
                 s += '?';
@@ -280,8 +280,8 @@ namespace Avalonia.Controls.Utils
                 return item;
             }
 
-            object propertyValue = item;
-            Type itemType = item.GetType();
+            var propertyValue = item;
+            var itemType = item.GetType();
             if (itemType != null)
             {
                 PropertyInfo propertyInfo = itemType.GetNestedProperty(propertyPath, out exception, ref propertyValue);
@@ -303,14 +303,14 @@ namespace Avalonia.Controls.Utils
         {
             if (item != null)
             {
-                Type parentType = item.GetType();
+                var parentType = item.GetType();
                 if (String.IsNullOrEmpty(propertyPath))
                 {
                     return item;
                 }
                 else if (parentType != null)
                 {
-                    object nestedValue = item;
+                    var nestedValue = item;
                     parentType.GetNestedProperty(propertyPath, ref nestedValue);
                     return nestedValue;
                 }
@@ -372,7 +372,7 @@ namespace Avalonia.Controls.Utils
                 return null;
             }
 
-            string stringIndex = propertyPath.Substring(1, propertyPath.Length - 2);
+            var stringIndex = propertyPath.Substring(1, propertyPath.Length - 2);
             var indexer = FindIndexerInMembers(type.GetDefaultMembers(), stringIndex, out index);
             if (indexer != null)
             {
@@ -437,7 +437,7 @@ namespace Avalonia.Controls.Utils
             if (item != null && !string.IsNullOrEmpty(property) && property[0] == TypeHelper.LeftIndexerToken)
             {
                 // The leaf property name is an indexer, so add the default member name.
-                Type declaringType = item.GetType();
+                var declaringType = item.GetType();
                 if (declaringType != null)
                 {
                     string defaultMemberName = declaringType.GetNonNullableType().GetDefaultMemberName();
@@ -461,7 +461,7 @@ namespace Avalonia.Controls.Utils
             if (!string.IsNullOrEmpty(property) && property[property.Length - 1] == TypeHelper.RightIndexerToken)
             {
                 // The property is an indexer, so remove the default member name.
-                int leftIndexerToken = property.IndexOf(TypeHelper.LeftIndexerToken);
+                var leftIndexerToken = property.IndexOf(TypeHelper.LeftIndexerToken);
                 if (leftIndexerToken >= 0)
                 {
                     return property.Substring(leftIndexerToken);
@@ -482,8 +482,8 @@ namespace Avalonia.Controls.Utils
             List<string> propertyPaths = new List<string>();
             if (!string.IsNullOrEmpty(propertyPath))
             {
-                int startIndex = 0;
-                for (int index = 0; index < propertyPath.Length; index++)
+                var startIndex = 0;
+                for (var index = 0; index < propertyPath.Length; index++)
                 {
                     if (propertyPath[index] == PropertyNameSeparator)
                     {
@@ -518,7 +518,7 @@ namespace Avalonia.Controls.Utils
                 object[] attributes = memberInfo.GetCustomAttributes(typeof(ReadOnlyAttribute), true);
                 if (attributes != null && attributes.Length > 0)
                 {
-                    ReadOnlyAttribute readOnlyAttribute = attributes[0] as ReadOnlyAttribute;
+                    var readOnlyAttribute = attributes[0] as ReadOnlyAttribute;
                     Debug.Assert(readOnlyAttribute != null);
                     return readOnlyAttribute.IsReadOnly;
                 }
@@ -528,7 +528,7 @@ namespace Avalonia.Controls.Utils
 
         internal static Type GetItemType(this IEnumerable list)
         {
-            Type listType = list.GetType();
+            var listType = list.GetType();
             Type itemType = null;
 
             // if it's a generic enumerable, we get the generic type
@@ -546,7 +546,7 @@ namespace Avalonia.Controls.Utils
                 // We haven't located a type yet.. try a different approach.
                 // Does the list have anything in it?
 
-                IEnumerator en = list.GetEnumerator();
+                var en = list.GetEnumerator();
                 if (en.MoveNext() && en.Current != null)
                 {
                     return en.Current.GetType();

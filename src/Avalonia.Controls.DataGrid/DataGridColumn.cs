@@ -32,11 +32,11 @@ namespace Avalonia.Controls
         private bool _settingWidthInternally;
         private int _displayIndexWithFiller;
         private object _header;
-        private IDataTemplate _headerTemplate;
-        private DataGridColumnHeader _headerCell;
-        private Control _editingElement;
-        private ICellEditBinding _editBinding;
-        private IBinding _clipboardContentBinding;
+        private IDataTemplate? _headerTemplate;
+        private DataGridColumnHeader? _headerCell;
+        private Control? _editingElement;
+        private ICellEditBinding? _editBinding;
+        private IBinding? _clipboardContentBinding;
         private ControlTheme _cellTheme;
         private readonly Classes _cellStyleClasses = new Classes();
 
@@ -106,7 +106,7 @@ namespace Avalonia.Controls
         {
             get
             {
-                double minWidth = _minWidth ?? OwningGrid?.MinColumnWidth ?? 0;
+                var minWidth = _minWidth ?? OwningGrid?.MinColumnWidth ?? 0;
                 if (Width.IsStar)
                 {
                     return Math.Max(DataGrid.DATAGRID_minimumStarColumnWidth, minWidth);
@@ -290,8 +290,8 @@ namespace Avalonia.Controls
                 }
                 else if (OwningGrid != null)
                 {
-                    string propertyPath = GetSortPropertyName();
-                    Type propertyType = OwningGrid.DataConnection.DataType.GetNestedPropertyType(propertyPath);
+                    var propertyPath = GetSortPropertyName();
+                    var propertyType = OwningGrid.DataConnection.DataType.GetNestedPropertyType(propertyPath);
 
                     // if the type is nullable, then we will compare the non-nullable type
                     if (TypeHelper.IsNullableType(propertyType))
@@ -510,9 +510,9 @@ namespace Avalonia.Controls
                 }
                 if (!_maxWidth.HasValue || _maxWidth.Value != value)
                 {
-                    double oldValue = ActualMaxWidth;
+                    var oldValue = ActualMaxWidth;
                     _maxWidth = value;
-                    if (OwningGrid != null && OwningGrid.ColumnsInternal != null)
+                    if (OwningGrid != null)
                     {
                         OwningGrid.OnColumnMaxWidthChanged(this, oldValue);
                     }
@@ -546,9 +546,9 @@ namespace Avalonia.Controls
                 }
                 if (!_minWidth.HasValue || _minWidth.Value != value)
                 {
-                    double oldValue = ActualMinWidth;
+                    var oldValue = ActualMinWidth;
                     _minWidth = value;
-                    if (OwningGrid != null && OwningGrid.ColumnsInternal != null)
+                    if (OwningGrid != null)
                     {
                         OwningGrid.OnColumnMinWidthChanged(this, oldValue);
                     }
@@ -577,7 +577,7 @@ namespace Avalonia.Controls
 
                     if (OwningGrid != null)
                     {
-                        DataGridLength width = CoerceWidth(value);
+                        var width = CoerceWidth(value);
                         if (width.IsStar != Width.IsStar)
                         {
                             // If a column has changed either from or to a star value, we want to recalculate all
@@ -621,11 +621,11 @@ namespace Avalonia.Controls
         /// <param name="item">The item associated with a cell.</param>
         /// <param name="binding">The binding to get the value of.</param>
         /// <returns>The resultant cell value.</returns>
-        internal object GetCellValue(object item, IBinding binding)
+        internal object GetCellValue(object? item, IBinding? binding)
         {
             Debug.Assert(OwningGrid != null);
 
-            object content = null;
+            object? content = null;
             if (binding != null)
             {
                 OwningGrid.ClipboardContentControl.DataContext = item;
@@ -636,16 +636,16 @@ namespace Avalonia.Controls
             return content;
         }
 
-        public Control GetCellContent(DataGridRow dataGridRow)
+        public Control? GetCellContent(DataGridRow? dataGridRow)
         {
             Contract.Requires<ArgumentNullException>(dataGridRow != null);
             if (OwningGrid == null)
             {
                 throw DataGridError.DataGrid.NoOwningGrid(GetType());
             }
-            if (dataGridRow.OwningGrid == OwningGrid)
+            if (dataGridRow?.OwningGrid == OwningGrid)
             {
-                DataGridCell dataGridCell = dataGridRow.Cells[Index];
+                var dataGridCell = dataGridRow.Cells[Index];
                 if (dataGridCell != null)
                 {
                     return dataGridCell.Content as Control;
@@ -654,14 +654,14 @@ namespace Avalonia.Controls
             return null;
         }
 
-        public Control GetCellContent(object dataItem)
+        public Control? GetCellContent(object dataItem)
         {
             Contract.Requires<ArgumentNullException>(dataItem != null);
             if (OwningGrid == null)
             {
                 throw DataGridError.DataGrid.NoOwningGrid(GetType());
             }
-            DataGridRow dataGridRow = OwningGrid.GetRowFromItem(dataItem);
+            var dataGridRow = OwningGrid.GetRowFromItem(dataItem);
             if (dataGridRow == null)
             {
                 return null;
@@ -675,10 +675,10 @@ namespace Avalonia.Controls
         /// <param name="element">element contained in a column</param>
         /// <returns>Column that contains the element, or null if not found
         /// </returns>
-        public static DataGridColumn GetColumnContainingElement(Control element)
+        public static DataGridColumn? GetColumnContainingElement(Control? element)
         {
             // Walk up the tree to find the DataGridCell or DataGridColumnHeader that contains the element
-            Visual parent = element;
+            Visual? parent = element;
             while (parent != null)
             {
                 if (parent is DataGridCell cell)
@@ -731,7 +731,7 @@ namespace Avalonia.Controls
         /// <param name="uneditedValue">
         /// The previous, unedited value in the cell being edited.
         /// </param>
-        protected virtual void CancelCellEdit(Control editingElement, object uneditedValue)
+        protected virtual void CancelCellEdit(Control editingElement, object? uneditedValue)
         { }
 
         /// <summary>
@@ -747,7 +747,7 @@ namespace Avalonia.Controls
         /// <returns>
         /// A new editing element that is bound to the column's <see cref="P:Avalonia.Controls.DataGridBoundColumn.Binding" /> property value.
         /// </returns>
-        protected abstract Control GenerateEditingElement(DataGridCell cell, object dataItem, out ICellEditBinding binding);
+        protected abstract Control GenerateEditingElement(DataGridCell cell, object? dataItem, out ICellEditBinding binding);
 
         /// <summary>
         /// When overridden in a derived class, gets a read-only element that is bound to the column's
@@ -786,7 +786,7 @@ namespace Avalonia.Controls
         /// <returns>
         /// The unedited value.
         /// </returns>
-        protected abstract object PrepareCellForEdit(Control editingElement, RoutedEventArgs editingEventArgs);
+        protected abstract object? PrepareCellForEdit(Control editingElement, RoutedEventArgs editingEventArgs);
 
         /// <summary>
         /// Called by the DataGrid control when a column asked for its
@@ -797,7 +797,7 @@ namespace Avalonia.Controls
         protected internal virtual void RefreshCellContent(Control element, string propertyName)
         { }
 
-        internal void CancelCellEditInternal(Control editingElement, object uneditedValue)
+        internal void CancelCellEditInternal(Control editingElement, object? uneditedValue)
         {
             CancelCellEdit(editingElement, uneditedValue);
         }
@@ -812,15 +812,15 @@ namespace Avalonia.Controls
         /// <returns>The resultant (coerced) DataGridLength.</returns>
         internal DataGridLength CoerceWidth(DataGridLength width)
         {
-            double desiredValue = width.DesiredValue;
+            var desiredValue = width.DesiredValue;
             if (double.IsNaN(desiredValue))
             {
-                if (width.IsStar && OwningGrid != null && OwningGrid.ColumnsInternal != null)
+                if (width.IsStar && OwningGrid != null)
                 {
                     double totalStarValues = 0;
                     double totalStarDesiredValues = 0;
                     double totalNonStarDisplayWidths = 0;
-                    foreach (DataGridColumn column in OwningGrid.ColumnsInternal.GetDisplayedColumns(c => c.IsVisible && c != this && !double.IsNaN(c.Width.DesiredValue)))
+                    foreach (var column in OwningGrid.ColumnsInternal.GetDisplayedColumns(c => c.IsVisible && c != this && !double.IsNaN(c.Width.DesiredValue)))
                     {
                         if (column.Width.IsStar)
                         {
@@ -853,7 +853,7 @@ namespace Avalonia.Controls
                 }
             }
 
-            double displayValue = width.DisplayValue;
+            var displayValue = width.DisplayValue;
             if (double.IsNaN(displayValue))
             {
                 displayValue = desiredValue;
@@ -892,7 +892,7 @@ namespace Avalonia.Controls
             };
             result[!ContentControl.ContentProperty] = this[!HeaderProperty];
             result[!ContentControl.ContentTemplateProperty] = this[!HeaderTemplateProperty];
-            if (OwningGrid.ColumnHeaderTheme is {} columnTheme)
+            if (OwningGrid?.ColumnHeaderTheme is {} columnTheme)
             {
                 result.SetValue(StyledElement.ThemeProperty, columnTheme, BindingPriority.TemplatedParent);
             }
@@ -913,7 +913,7 @@ namespace Avalonia.Controls
             return GenerateElement(cell, dataItem);
         }
 
-        internal object PrepareCellForEditInternal(Control editingElement, RoutedEventArgs editingEventArgs)
+        internal object? PrepareCellForEditInternal(Control editingElement, RoutedEventArgs editingEventArgs)
         {
             var result = PrepareCellForEdit(editingElement, editingEventArgs);
             editingElement.Focus();
@@ -934,34 +934,44 @@ namespace Avalonia.Controls
         /// <param name="userInitiated">Whether or not this resize was initiated by a user action.</param>
         internal void Resize(double value, DataGridLengthUnitType unitType, double desiredValue, double displayValue, bool userInitiated)
         {
-            double newValue = value;
-            double newDesiredValue = desiredValue;
-            double newDisplayValue = Math.Max(ActualMinWidth, Math.Min(ActualMaxWidth, displayValue));
-            DataGridLengthUnitType newUnitType = unitType;
+            var newValue = value;
+            var newDesiredValue = desiredValue;
+            var newDisplayValue = Math.Max(ActualMinWidth, Math.Min(ActualMaxWidth, displayValue));
+            var newUnitType = unitType;
 
-            int starColumnsCount = 0;
+            var starColumnsCount = 0;
             double totalDisplayWidth = 0;
-            foreach (DataGridColumn column in OwningGrid.ColumnsInternal.GetVisibleColumns())
+
+            if (OwningGrid == null) return;
+            
+            foreach (var column in OwningGrid.ColumnsInternal.GetVisibleColumns())
             {
                 column.EnsureWidth();
                 totalDisplayWidth += column.ActualWidth;
                 starColumnsCount += (column != this && column.Width.IsStar) ? 1 : 0;
             }
-            bool hasInfiniteAvailableWidth = !OwningGrid.RowsPresenterAvailableSize.HasValue || double.IsPositiveInfinity(OwningGrid.RowsPresenterAvailableSize.Value.Width);
+
+            var hasInfiniteAvailableWidth = !OwningGrid.RowsPresenterAvailableSize.HasValue ||
+                                            double.IsPositiveInfinity(OwningGrid.RowsPresenterAvailableSize.Value
+                                                .Width);
 
             // If we're using star sizing, we can only resize the column as much as the columns to the
             // right will allow (i.e. until they hit their max or min widths).
-            if (!hasInfiniteAvailableWidth && (starColumnsCount > 0 || (unitType == DataGridLengthUnitType.Star && Width.IsStar && userInitiated)))
+            if (!hasInfiniteAvailableWidth && (starColumnsCount > 0 ||
+                                               (unitType == DataGridLengthUnitType.Star && Width.IsStar &&
+                                                userInitiated)))
             {
-                double limitedDisplayValue = Width.DisplayValue;
-                double availableIncrease = Math.Max(0, OwningGrid.CellsWidth - totalDisplayWidth);
-                double desiredChange = newDisplayValue - Width.DisplayValue;
+                var limitedDisplayValue = Width.DisplayValue;
+                var availableIncrease = Math.Max(0, OwningGrid.CellsWidth - totalDisplayWidth);
+                var desiredChange = newDisplayValue - Width.DisplayValue;
                 if (desiredChange > availableIncrease)
                 {
                     // The desired change is greater than the amount of available space,
                     // so we need to decrease the widths of columns to the right to make room.
                     desiredChange -= availableIncrease;
-                    double actualChange = desiredChange + OwningGrid.DecreaseColumnWidths(DisplayIndex + 1, -desiredChange, userInitiated);
+                    var actualChange = desiredChange +
+                                       OwningGrid.DecreaseColumnWidths(DisplayIndex + 1, -desiredChange,
+                                           userInitiated);
                     limitedDisplayValue += availableIncrease + actualChange;
                 }
                 else if (desiredChange > 0)
@@ -973,8 +983,11 @@ namespace Avalonia.Controls
                 else
                 {
                     // The desired change is negative, so we need to increase the widths of columns to the right.
-                    limitedDisplayValue += desiredChange + OwningGrid.IncreaseColumnWidths(DisplayIndex + 1, -desiredChange, userInitiated);
+                    limitedDisplayValue += desiredChange +
+                                           OwningGrid.IncreaseColumnWidths(DisplayIndex + 1, -desiredChange,
+                                               userInitiated);
                 }
+
                 if (ActualCanUserResize || (Width.IsStar && !userInitiated))
                 {
                     newDisplayValue = limitedDisplayValue;
@@ -998,8 +1011,9 @@ namespace Avalonia.Controls
                 }
             }
 
-            DataGridLength oldWidth = Width;
-            SetWidthInternalNoCallback(new DataGridLength(Math.Min(double.MaxValue, newValue), newUnitType, newDesiredValue, newDisplayValue));
+            var oldWidth = Width;
+            SetWidthInternalNoCallback(new DataGridLength(Math.Min(double.MaxValue, newValue), newUnitType,
+                newDesiredValue, newDisplayValue));
             if (Width != oldWidth)
             {
                 OwningGrid.OnColumnWidthChanged(this);
@@ -1030,7 +1044,7 @@ namespace Avalonia.Controls
         /// <param name="width">The new Width.</param>
         internal void SetWidthInternal(DataGridLength width)
         {
-            bool originalValue = _settingWidthInternally;
+            var originalValue = _settingWidthInternally;
             _settingWidthInternally = true;
             try
             {
@@ -1062,7 +1076,7 @@ namespace Avalonia.Controls
         }
 
         //TODO Binding
-        internal Control GenerateEditingElementInternal(DataGridCell cell, object dataItem)
+        internal Control? GenerateEditingElementInternal(DataGridCell cell, object? dataItem)
         {
             if (_editingElement == null)
             {
@@ -1106,7 +1120,7 @@ namespace Avalonia.Controls
         {
             if (OwningGrid != null
                 && OwningGrid.DataConnection != null
-                && OwningGrid.DataConnection.SortDescriptions != null)
+                && OwningGrid.DataConnection?.SortDescriptions != null)
             {
                 if(CustomSortComparer != null)
                 {
@@ -1116,7 +1130,7 @@ namespace Avalonia.Controls
                                   .FirstOrDefault(s => s.SourceComparer == CustomSortComparer);
                 }
 
-                string propertyName = GetSortPropertyName();
+                var propertyName = GetSortPropertyName();
 
                 return OwningGrid.DataConnection.SortDescriptions.FirstOrDefault(s => s.HasPropertyPath && s.PropertyPath == propertyName);
             }
@@ -1126,7 +1140,7 @@ namespace Avalonia.Controls
 
         internal string GetSortPropertyName()
         {
-            string result = SortMemberPath;
+            var result = SortMemberPath;
 
             if (String.IsNullOrEmpty(result))
             {

@@ -89,12 +89,12 @@ namespace Avalonia.Controls.Primitives
             }
 
             double frozenLeftEdge = 0;
-            double scrollingLeftEdge = -OwningGrid.HorizontalOffset;
+            var scrollingLeftEdge = -OwningGrid.HorizontalOffset;
 
             double cellLeftEdge;
-            foreach (DataGridColumn column in OwningGrid.ColumnsInternal.GetVisibleColumns())
+            foreach (var column in OwningGrid.ColumnsInternal.GetVisibleColumns())
             {
-                DataGridCell cell = OwningRow.Cells[column.Index];
+                var cell = OwningRow.Cells[column.Index];
                 Debug.Assert(cell.OwningColumn == column);
                 Debug.Assert(column.IsVisible);
 
@@ -130,8 +130,8 @@ namespace Avalonia.Controls.Primitives
             // because cells could be transparent
             if (!cell.OwningColumn.IsFrozen && frozenLeftEdge > cellLeftEdge)
             {
-                RectangleGeometry rg = new RectangleGeometry();
-                double xClip = Math.Round(Math.Min(width, frozenLeftEdge - cellLeftEdge));
+                var rg = new RectangleGeometry();
+                var xClip = Math.Round(Math.Min(width, frozenLeftEdge - cellLeftEdge));
                 rg.Rect = new Rect(xClip, 0, Math.Max(0, width - xClip), height);
                 cell.Clip = rg;
             }
@@ -160,7 +160,7 @@ namespace Avalonia.Controls.Primitives
                 else
                 {
                     // Clip
-                    RectangleGeometry rg = new RectangleGeometry();
+                    var rg = new RectangleGeometry();
                     rg.Rect = Rect.Empty;
                     cell.Clip = rg;
                 }
@@ -173,8 +173,8 @@ namespace Avalonia.Controls.Primitives
 
         internal void EnsureFillerVisibility()
         {
-            DataGridFillerColumn fillerColumn = OwningGrid.ColumnsInternal.FillerColumn;
-            bool newVisibility = fillerColumn.IsActive;
+            var fillerColumn = OwningGrid.ColumnsInternal.FillerColumn;
+            var newVisibility = fillerColumn.IsActive;
             if (OwningRow.FillerCell.IsVisible != newVisibility)
             {
                 OwningRow.FillerCell.IsVisible = newVisibility;
@@ -187,10 +187,10 @@ namespace Avalonia.Controls.Primitives
             // This must be done after the Filler visibility is determined.  This also must be done
             // regardless of whether or not the filler visibility actually changed values because
             // we could scroll in a cell that didn't have EnsureGridLine called yet
-            DataGridColumn lastVisibleColumn = OwningGrid.ColumnsInternal.LastVisibleColumn;
+            var lastVisibleColumn = OwningGrid.ColumnsInternal.LastVisibleColumn;
             if (lastVisibleColumn != null)
             {
-                DataGridCell cell = OwningRow.Cells[lastVisibleColumn.Index];
+                var cell = OwningRow.Cells[lastVisibleColumn.Index];
                 cell.EnsureGridLine(lastVisibleColumn);
             }
         }
@@ -231,19 +231,19 @@ namespace Avalonia.Controls.Primitives
 
             double frozenLeftEdge = 0;
             double totalDisplayWidth = 0;
-            double scrollingLeftEdge = -OwningGrid.HorizontalOffset;
+            var scrollingLeftEdge = -OwningGrid.HorizontalOffset;
             OwningGrid.ColumnsInternal.EnsureVisibleEdgedColumnsWidth();
-            DataGridColumn lastVisibleColumn = OwningGrid.ColumnsInternal.LastVisibleColumn;
-            foreach (DataGridColumn column in OwningGrid.ColumnsInternal.GetVisibleColumns())
+            var lastVisibleColumn = OwningGrid.ColumnsInternal.LastVisibleColumn;
+            foreach (var column in OwningGrid.ColumnsInternal.GetVisibleColumns())
             {
-                DataGridCell cell = OwningRow.Cells[column.Index];
+                var cell = OwningRow.Cells[column.Index];
                 // Measure the entire first row to make the horizontal scrollbar more accurate
-                bool shouldDisplayCell = ShouldDisplayCell(column, frozenLeftEdge, scrollingLeftEdge) || OwningRow.Index == 0;
+                var shouldDisplayCell = ShouldDisplayCell(column, frozenLeftEdge, scrollingLeftEdge) || OwningRow.Index == 0;
                 EnsureCellDisplay(cell, shouldDisplayCell);
                 if (shouldDisplayCell)
                 {
-                    DataGridLength columnWidth = column.Width;
-                    bool autoGrowWidth = columnWidth.IsSizeToCells || columnWidth.IsAuto;
+                    var columnWidth = column.Width;
+                    var autoGrowWidth = columnWidth.IsSizeToCells || columnWidth.IsAuto;
                     if (column != lastVisibleColumn)
                     {
                         cell.EnsureGridLine(lastVisibleColumn);
@@ -255,7 +255,7 @@ namespace Avalonia.Controls.Primitives
                     {
                         // In the edge-case where we're given infinite width and we have star columns, the 
                         // star columns grow to their predefined limit of 10,000 (or their MaxWidth)
-                        double newDisplayWidth = column.Width.IsStar ?
+                        var newDisplayWidth = column.Width.IsStar ?
                             Math.Min(column.ActualMaxWidth, DataGrid.DATAGRID_maximumStarColumnWidth) :
                             Math.Max(column.ActualMinWidth, Math.Min(column.ActualMaxWidth, column.Width.DesiredValue));
                         column.SetWidthDisplayValue(newDisplayWidth);
@@ -293,7 +293,7 @@ namespace Avalonia.Controls.Primitives
             // then we will resize all the columns to fit the available space.
             if (OwningGrid.UsesStarSizing && !OwningGrid.AutoSizingColumns)
             {
-                double adjustment = OwningGrid.CellsWidth - totalDisplayWidth;
+                var adjustment = OwningGrid.CellsWidth - totalDisplayWidth;
                 totalDisplayWidth += adjustment - OwningGrid.AdjustColumnWidths(0, adjustment, false);
 
                 // Since we didn't know the final widths of the columns until we resized,
@@ -302,9 +302,9 @@ namespace Avalonia.Controls.Primitives
                 if (autoSizeHeight)
                     DesiredHeight = 0;
 
-                foreach (DataGridColumn column in OwningGrid.ColumnsInternal.GetVisibleColumns())
+                foreach (var column in OwningGrid.ColumnsInternal.GetVisibleColumns())
                 {
-                    DataGridCell cell = OwningRow.Cells[column.Index];
+                    var cell = OwningRow.Cells[column.Index];
                     column.ComputeLayoutRoundedWidth(leftEdge);
                     cell.Measure(new Size(column.LayoutRoundedWidth, measureHeight));
                     if (autoSizeHeight)
@@ -347,8 +347,8 @@ namespace Avalonia.Controls.Primitives
             }
 
             scrollingLeftEdge += OwningGrid.HorizontalAdjustment;
-            double leftEdge = column.IsFrozen ? frozenLeftEdge : scrollingLeftEdge;
-            double rightEdge = leftEdge + column.ActualWidth;
+            var leftEdge = column.IsFrozen ? frozenLeftEdge : scrollingLeftEdge;
+            var rightEdge = leftEdge + column.ActualWidth;
             return 
                 MathUtilities.GreaterThan(rightEdge, 0) &&
                 MathUtilities.LessThanOrClose(leftEdge, OwningGrid.CellsWidth) &&

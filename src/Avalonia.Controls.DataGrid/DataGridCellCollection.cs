@@ -50,7 +50,7 @@ namespace Avalonia.Controls
 
         public void RemoveAt(int cellIndex)
         {
-            DataGridCell dataGridCell = _cells[cellIndex];
+            var dataGridCell = _cells[cellIndex];
             _cells.RemoveAt(cellIndex);
             dataGridCell.OwningRow = null;
             CellRemoved?.Invoke(this, new DataGridCellEventArgs(dataGridCell));

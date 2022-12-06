@@ -86,7 +86,7 @@ namespace Avalonia.Controls
             _recyclableRows.Push(row);
         }
 
-        internal DataGridRowGroupHeader GetUsedGroupHeader()
+        internal DataGridRowGroupHeader? GetUsedGroupHeader()
         {
             if (_recyclableGroupHeaders.Count > 0)
             {
@@ -95,7 +95,7 @@ namespace Avalonia.Controls
             else if (_fullyRecycledGroupHeaders.Count > 0)
             {
                 // For fully recycled rows, we need to set the Visibility back to Visible
-                DataGridRowGroupHeader groupHeader = _fullyRecycledGroupHeaders.Pop();
+                var groupHeader = _fullyRecycledGroupHeaders.Pop();
                 groupHeader.IsVisible = true;
                 return groupHeader;
             }
@@ -114,7 +114,7 @@ namespace Avalonia.Controls
             ResetSlotIndexes();
             if (recycle)
             {
-                foreach (Control element in _scrollingElements)
+                foreach (var element in _scrollingElements)
                 {
                     if (element is DataGridRow row)
                     {
@@ -165,7 +165,7 @@ namespace Avalonia.Controls
             }
         }
 
-        internal void CorrectSlotsAfterInsertion(int slot, Control element, bool isCollapsed)
+        internal void CorrectSlotsAfterInsertion(int slot, Control? element, bool isCollapsed)
         {
             if (slot < FirstScrollingSlot)
             {
@@ -187,7 +187,7 @@ namespace Avalonia.Controls
 
         private int GetCircularListIndex(int slot, bool wrap)
         {
-            int index = slot - FirstScrollingSlot - _headScrollingElements - _owner.GetCollapsedSlotCount(FirstScrollingSlot, slot);
+            var index = slot - FirstScrollingSlot - _headScrollingElements - _owner.GetCollapsedSlotCount(FirstScrollingSlot, slot);
             return wrap ? index % _scrollingElements.Count : index;
         }
 
@@ -196,7 +196,7 @@ namespace Avalonia.Controls
             // Fully recycle Recyclable rows and transfer them to Recycled rows
             while (_recyclableRows.Count > 0)
             {
-                DataGridRow row = _recyclableRows.Pop();
+                var row = _recyclableRows.Pop();
                 Debug.Assert(row != null);
                 row.IsVisible = false;
                 Debug.Assert(!_fullyRecycledRows.Contains(row));
@@ -205,7 +205,7 @@ namespace Avalonia.Controls
             // Fully recycle Recyclable GroupHeaders and transfer them to Recycled GroupHeaders
             while (_recyclableGroupHeaders.Count > 0)
             {
-                DataGridRowGroupHeader groupHeader = _recyclableGroupHeaders.Pop();
+                var groupHeader = _recyclableGroupHeaders.Pop();
                 Debug.Assert(groupHeader != null);
                 groupHeader.IsVisible = false;
                 Debug.Assert(!_fullyRecycledGroupHeaders.Contains(groupHeader));
@@ -213,7 +213,7 @@ namespace Avalonia.Controls
             }
         }
 
-        internal Control GetDisplayedElement(int slot)
+        internal Control? GetDisplayedElement(int slot)
         {
             Debug.Assert(slot >= FirstScrollingSlot);
             Debug.Assert(slot <= LastScrollingSlot);
@@ -221,7 +221,7 @@ namespace Avalonia.Controls
             return _scrollingElements[GetCircularListIndex(slot, true /*wrap*/)];
         }
 
-        internal DataGridRow GetDisplayedRow(int rowIndex)
+        internal DataGridRow? GetDisplayedRow(int rowIndex)
         {
 
             return GetDisplayedElement(_owner.SlotFromRowIndex(rowIndex)) as DataGridRow;
@@ -233,11 +233,11 @@ namespace Avalonia.Controls
             return GetScrollingElements(null);
         }
 
-        internal IEnumerable<Control> GetScrollingElements(Predicate<object> filter)
+        internal IEnumerable<Control> GetScrollingElements(Predicate<object>? filter)
         {
-            for (int i = 0; i < _scrollingElements.Count; i++)
+            for (var i = 0; i < _scrollingElements.Count; i++)
             {
-                Control element = _scrollingElements[(_headScrollingElements + i) % _scrollingElements.Count];
+                var element = _scrollingElements[(_headScrollingElements + i) % _scrollingElements.Count];
                 if (filter == null || filter(element))
                 {
                     // _scrollingRows is a circular list that wraps
@@ -251,7 +251,7 @@ namespace Avalonia.Controls
             return GetScrollingElements(element => element is DataGridRow);
         }
 
-        internal DataGridRow GetUsedRow()
+        internal DataGridRow? GetUsedRow()
         {
             if (_recyclableRows.Count > 0)
             {
@@ -260,7 +260,7 @@ namespace Avalonia.Controls
             else if (_fullyRecycledRows.Count > 0)
             {
                 // For fully recycled rows, we need to set the Visibility back to Visible
-                DataGridRow row = _fullyRecycledRows.Pop();
+                var row = _fullyRecycledRows.Pop();
                 row.IsVisible = true;
                 return row;
             }
@@ -290,7 +290,7 @@ namespace Avalonia.Controls
                         LastScrollingSlot = _owner.GetNextVisibleSlot(LastScrollingSlot);
                     }
                 }
-                int insertIndex = GetCircularListIndex(slot, false /*wrap*/);
+                var insertIndex = GetCircularListIndex(slot, false /*wrap*/);
                 if (insertIndex > _scrollingElements.Count)
                 {
                     // We need to wrap around from the bottom to the top of our circular list; as a result the head of the list moves forward
@@ -318,7 +318,7 @@ namespace Avalonia.Controls
         internal void UnloadScrollingElement(int slot, bool updateSlotInformation, bool wasDeleted)
         {
             Debug.Assert(_owner.IsSlotVisible(slot));
-            int elementIndex = GetCircularListIndex(slot, false /*wrap*/);
+            var elementIndex = GetCircularListIndex(slot, false /*wrap*/);
             if (elementIndex > _scrollingElements.Count)
             {
                 // We need to wrap around from the top to the bottom of our circular list
@@ -347,7 +347,7 @@ namespace Avalonia.Controls
 #if DEBUG
         internal void PrintDisplay()
         {
-            foreach (Control element in GetScrollingElements())
+            foreach (var element in GetScrollingElements())
             {
                 if (element is DataGridRow row)
                 {

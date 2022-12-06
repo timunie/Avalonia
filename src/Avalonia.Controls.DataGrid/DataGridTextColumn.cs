@@ -147,11 +147,11 @@ namespace Avalonia.Controls
         /// </summary>
         /// <param name="editingElement">The element that the column displays for a cell in editing mode.</param>
         /// <param name="uneditedValue">The previous, unedited value in the cell being edited.</param>
-        protected override void CancelCellEdit(Control editingElement, object uneditedValue)
+        protected override void CancelCellEdit(Control editingElement, object? uneditedValue)
         {
             if (editingElement is TextBox textBox)
             {
-                string uneditedString = uneditedValue as string;
+                var uneditedString = uneditedValue as string;
                 textBox.Text = uneditedString ?? string.Empty;
             }
         }
@@ -210,12 +210,12 @@ namespace Avalonia.Controls
         /// <param name="editingElement">The element that the column displays for a cell in editing mode.</param>
         /// <param name="editingEventArgs">Information about the user gesture that is causing a cell to enter editing mode.</param>
         /// <returns>The unedited value. </returns>
-        protected override object PrepareCellForEdit(Control editingElement, RoutedEventArgs editingEventArgs)
+        protected override object? PrepareCellForEdit(Control editingElement, RoutedEventArgs editingEventArgs)
         {
             if (editingElement is TextBox textBox)
             {
-                string uneditedText = textBox.Text ?? String.Empty;
-                int len = uneditedText.Length;
+                var uneditedText = textBox.Text ?? String.Empty;
+                var len = uneditedText.Length;
                 if (editingEventArgs is KeyEventArgs keyEventArgs && keyEventArgs.Key == Key.F2)
                 {
                     // Put caret at the end of the text

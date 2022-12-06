@@ -65,7 +65,7 @@ namespace Avalonia.Controls
         /// <param name="uneditedValue">
         /// The previous, unedited value in the cell being edited.
         /// </param>
-        protected override void CancelCellEdit(Control editingElement, object uneditedValue)
+        protected override void CancelCellEdit(Control editingElement, object? uneditedValue)
         {
             if (editingElement is CheckBox editingCheckBox)
             {
@@ -109,8 +109,8 @@ namespace Avalonia.Controls
         /// </returns>
         protected override Control GenerateElement(DataGridCell cell, object dataItem)
         {
-            bool isEnabled = false;
-            CheckBox checkBoxElement = new CheckBox();
+            var isEnabled = false;
+            var checkBoxElement = new CheckBox();
             if (EnsureOwningGrid())
             {
                 if (cell.RowIndex != -1 && cell.ColumnIndex != -1 &&
@@ -148,7 +148,7 @@ namespace Avalonia.Controls
         /// <returns>
         /// The unedited value. 
         /// </returns>
-        protected override object PrepareCellForEdit(Control editingElement, RoutedEventArgs editingEventArgs)
+        protected override object? PrepareCellForEdit(Control editingElement, RoutedEventArgs editingEventArgs)
         {
             if (editingElement is CheckBox editingCheckBox)
             {
@@ -176,14 +176,14 @@ namespace Avalonia.Controls
                     }
                 }
 
-                bool? uneditedValue = editingCheckBox.IsChecked;
+                var uneditedValue = editingCheckBox.IsChecked;
                 if(editingEventArgs is PointerPressedEventArgs args)
                 {
                     void ProcessPointerArgs()
                     {
                         // Editing was triggered by a mouse click
-                        Point position = args.GetPosition(editingCheckBox);
-                        Rect rect = new Rect(0, 0, editingCheckBox.Bounds.Width, editingCheckBox.Bounds.Height);
+                        var position = args.GetPosition(editingCheckBox);
+                        var rect = new Rect(0, 0, editingCheckBox.Bounds.Width, editingCheckBox.Bounds.Height);
                         if(rect.Contains(position))
                         {
                             EditValue();
@@ -281,7 +281,7 @@ namespace Avalonia.Controls
             {
                 if (OwningGrid.DisplayData.GetDisplayedElement(OwningGrid.CurrentSlot) is DataGridRow row)
                 {
-                    CheckBox checkBox = GetCellContent(row) as CheckBox;
+                    var checkBox = GetCellContent(row) as CheckBox;
                     if (checkBox != null)
                     {
                         checkBox.IsEnabled = true;
@@ -298,7 +298,7 @@ namespace Avalonia.Controls
             {
                 if (OwningGrid.DisplayData.GetDisplayedElement(OwningGrid.CurrentSlot) is DataGridRow row)
                 {
-                    CheckBox checkBox = GetCellContent(row) as CheckBox;
+                    var checkBox = GetCellContent(row) as CheckBox;
                     if (checkBox == _currentCheckBox)
                     {
                         OwningGrid.BeginEdit();

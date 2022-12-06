@@ -178,7 +178,7 @@ namespace Avalonia.Controls
             }
         }
 
-        public DataGridSortDescriptionCollection SortDescriptions
+        public DataGridSortDescriptionCollection? SortDescriptions
         {
             get
             {
@@ -365,7 +365,7 @@ namespace Avalonia.Controls
             if (enumerable != null)
             {
                 var enumerator = enumerable.GetEnumerator();
-                int i = -1;
+                var i = -1;
                 while (enumerator.MoveNext() && i < index)
                 {
                     i++;
@@ -387,7 +387,7 @@ namespace Avalonia.Controls
                     var propertyType = DataType;
                     PropertyInfo? propertyInfo = null;
                     List<string> propertyNames = TypeHelper.SplitPropertyPath(propertyName);
-                    for (int i = 0; i < propertyNames.Count; i++)
+                    for (var i = 0; i < propertyNames.Count; i++)
                     {
                         propertyInfo = propertyType?.GetPropertyOrIndexer(propertyNames[i], out _);
                         if (propertyInfo == null || propertyType.GetIsReadOnly() || propertyInfo.GetIsReadOnly())
@@ -434,8 +434,8 @@ namespace Avalonia.Controls
             var enumerable = DataSource;
             if (enumerable != null && dataItem != null)
             {
-                int index = 0;
-                foreach (object dataItemTmp in enumerable)
+                var index = 0;
+                foreach (var dataItemTmp in enumerable)
                 {
                     if ((dataItem == null && dataItemTmp == null) ||
                         (dataItem != null && dataItem.Equals(dataItemTmp)))
@@ -484,7 +484,7 @@ namespace Avalonia.Controls
         {
             if (dataType != null)
             {
-                Type type = TypeHelper.GetNonNullableType(dataType);  // no-opt if dataType isn't nullable
+                var type = TypeHelper.GetNonNullableType(dataType);  // no-opt if dataType isn't nullable
                 return type.IsPrimitive || type == typeof(string) || type == typeof(DateTime) || type == typeof(Decimal);
             }
             else
@@ -493,7 +493,7 @@ namespace Avalonia.Controls
             }
         }
 
-        internal void MoveCurrentTo(object item, int backupSlot, int columnIndex, DataGridSelectionAction action, bool scrollIntoView)
+        internal void MoveCurrentTo(object? item, int backupSlot, int columnIndex, DataGridSelectionAction action, bool scrollIntoView)
         {
             if (CollectionView != null)
             {
@@ -510,7 +510,7 @@ namespace Avalonia.Controls
             }
         }
 
-        internal void UnWireEvents(IEnumerable value)
+        internal void UnWireEvents(IEnumerable? value)
         {
             if (value is INotifyCollectionChanged notifyingDataSource)
             {
@@ -560,7 +560,7 @@ namespace Avalonia.Controls
                 // this case, we need to update the item.
                 if (_itemToSelectOnCurrentChanged is DataGridCollectionViewGroup collectionViewGroup)
                 {
-                    DataGridRowGroupInfo groupInfo = _owner.RowGroupInfoFromCollectionViewGroup(collectionViewGroup);
+                    var groupInfo = _owner.RowGroupInfoFromCollectionViewGroup(collectionViewGroup);
                     if (groupInfo == null)
                     {
                         // Move to the next slot if the target slot isn't visible                        
@@ -575,7 +575,7 @@ namespace Avalonia.Controls
                             _backupSlotForCurrentChanged = _owner.GetPreviousVisibleSlot(_owner.SlotCount);
                         }
                         // Update the itemToSelect
-                        int newCurrentPosition = -1;
+                        var newCurrentPosition = -1;
                         _itemToSelectOnCurrentChanged = _owner.ItemFromSlot(_backupSlotForCurrentChanged, ref newCurrentPosition);
                     }
                 }
@@ -621,7 +621,7 @@ namespace Avalonia.Controls
             }
 
             // refresh sort description
-            foreach (DataGridColumn column in _owner.ColumnsItemsInternal)
+            foreach (var column in _owner.ColumnsItemsInternal)
             {
                 column.HeaderCell.UpdatePseudoClasses();
             }
@@ -661,7 +661,7 @@ namespace Avalonia.Controls
                     {
                         // If we're grouping then we handle this through the CollectionViewGroup notifications
                         // According to WPF, Remove is a single item operation
-                        foreach (object item in e.OldItems)
+                        foreach (var item in e.OldItems)
                         {
                             Debug.Assert(item != null);
                             _owner.RemoveRowAt(e.OldStartingIndex, item);
@@ -675,7 +675,7 @@ namespace Avalonia.Controls
                     // Did the data type change during the reset?  If not, we can recycle
                     // the existing rows instead of having to clear them all.  We still need to clear our cached
                     // values for DataType and DataProperties, though, because the collection has been reset.
-                    Type? previousDataType = _dataType;
+                    var previousDataType = _dataType;
                     _dataType = null;
                     if (previousDataType != DataType)
                     {

@@ -235,12 +235,12 @@ namespace Avalonia.Controls
                 return base.ArrangeOverride(finalSize);
             }
 
-            Size size = base.ArrangeOverride(finalSize);
+            var size = base.ArrangeOverride(finalSize);
             if (_rootElement != null)
             {
                 if (OwningGrid.AreRowGroupHeadersFrozen)
                 {
-                    foreach (Control child in _rootElement.Children)
+                    foreach (var child in _rootElement.Children)
                     {
                         child.Clip = null;
                     }
@@ -248,21 +248,21 @@ namespace Avalonia.Controls
                 else
                 {
                     double frozenLeftEdge = 0;
-                    foreach (Control child in _rootElement.Children)
+                    foreach (var child in _rootElement.Children)
                     {
                         if (DataGridFrozenGrid.GetIsFrozen(child) && child.IsVisible)
                         {
-                            TranslateTransform transform = new TranslateTransform();
+                            var transform = new TranslateTransform();
                             // Automatic layout rounding doesn't apply to transforms so we need to Round this
                             transform.X = Math.Round(OwningGrid.HorizontalOffset);
                             child.RenderTransform = transform;
 
-                            double childLeftEdge = child.Translate(this, new Point(child.Bounds.Width, 0)).X - transform.X;
+                            var childLeftEdge = child.Translate(this, new Point(child.Bounds.Width, 0)).X - transform.X;
                             frozenLeftEdge = Math.Max(frozenLeftEdge, childLeftEdge + OwningGrid.HorizontalOffset);
                         }
                     }
                     // Clip the non-frozen elements so they don't overlap the frozen ones
-                    foreach (Control child in _rootElement.Children)
+                    foreach (var child in _rootElement.Children)
                     {
                         if (!DataGridFrozenGrid.GetIsFrozen(child))
                         {
@@ -278,7 +278,7 @@ namespace Avalonia.Controls
         {
             if (_rootElement != null)
             {
-                foreach (Control child in _rootElement.Children)
+                foreach (var child in _rootElement.Children)
                 {
                     child.RenderTransform = null;
                 }
@@ -322,10 +322,10 @@ namespace Avalonia.Controls
 
         private void EnsureChildClip(Visual child, double frozenLeftEdge)
         {
-            double childLeftEdge = child.Translate(this, new Point(0, 0)).X;
+            var childLeftEdge = child.Translate(this, new Point(0, 0)).X;
             if (frozenLeftEdge > childLeftEdge)
             {
-                double xClip = Math.Round(frozenLeftEdge - childLeftEdge);
+                var xClip = Math.Round(frozenLeftEdge - childLeftEdge);
                 var rg = new RectangleGeometry();
                 rg.Rect =
                     new Rect(xClip, 0,

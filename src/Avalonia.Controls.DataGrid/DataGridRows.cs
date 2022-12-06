@@ -249,7 +249,7 @@ namespace Avalonia.Controls
         /// </summary>
         /// <param name="dataItem">backend data item</param>
         /// <returns>null if the DataSource is null, the provided item in not in the source, or the item is not displayed; otherwise, the associated Row</returns>
-        internal DataGridRow GetRowFromItem(object dataItem)
+        internal DataGridRow? GetRowFromItem(object? dataItem)
         {
             var rowIndex = DataConnection.IndexOf(dataItem);
             if (rowIndex < 0)
@@ -266,7 +266,7 @@ namespace Avalonia.Controls
             return _selectedItems.ContainsSlot(slot);
         }
 
-        internal void InsertElementAt(int slot, int rowIndex, object item, DataGridRowGroupInfo groupInfo, bool isCollapsed)
+        internal void InsertElementAt(int slot, int rowIndex, object? item, DataGridRowGroupInfo? groupInfo, bool isCollapsed)
         {
             Debug.Assert(slot >= 0 && slot <= SlotCount);
 
@@ -1237,7 +1237,7 @@ namespace Avalonia.Controls
             }
         }
 
-        private void InsertElement(int slot, Control element, bool updateVerticalScrollBarOnly, bool isCollapsed, bool isRow)
+        private void InsertElement(int slot, Control? element, bool updateVerticalScrollBarOnly, bool isCollapsed, bool isRow)
         {
             Debug.Assert(slot >= 0 && slot <= SlotCount);
 
@@ -1300,7 +1300,7 @@ namespace Avalonia.Controls
             }
         }
 
-        private void OnInsertedElement_Phase1(int slot, Control element, bool isCollapsed, bool isRow)
+        private void OnInsertedElement_Phase1(int slot, Control? element, bool isCollapsed, bool isRow)
         {
             Debug.Assert(slot >= 0);
 
@@ -1581,7 +1581,7 @@ namespace Avalonia.Controls
             }
         }
 
-        private void RemoveElementAt(int slot, object item, bool isRow)
+        private void RemoveElementAt(int slot, object? item, bool isRow)
         {
             Debug.Assert(slot >= 0 && slot < SlotCount);
 
@@ -2885,7 +2885,7 @@ namespace Avalonia.Controls
         /// </summary>
         /// <param name="collectionViewGroup">CollectionViewGroup</param>
         /// <param name="expandAllSubgroups">Set to true to expand all Subgroups</param>
-        public void ExpandRowGroup(DataGridCollectionViewGroup collectionViewGroup, bool expandAllSubgroups)
+        public void ExpandRowGroup(DataGridCollectionViewGroup? collectionViewGroup, bool expandAllSubgroups)
         {
             if (WaitForLostFocus(delegate { ExpandRowGroup(collectionViewGroup, expandAllSubgroups); }) ||
                 collectionViewGroup == null || !CommitEdit())

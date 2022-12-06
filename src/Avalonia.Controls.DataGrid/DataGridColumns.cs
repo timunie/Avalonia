@@ -102,8 +102,9 @@ namespace Avalonia.Controls
 
         internal bool ColumnRequiresRightGridLine(DataGridColumn dataGridColumn, bool includeLastRightGridLineWhenPresent)
         {
-            return (GridLinesVisibility == DataGridGridLinesVisibility.Vertical || GridLinesVisibility == DataGridGridLinesVisibility.All) && VerticalGridLinesBrush != null &&
-                   (dataGridColumn != ColumnsInternal.LastVisibleColumn || (includeLastRightGridLineWhenPresent && ColumnsInternal.FillerColumn.IsActive));
+            return ColumnsInternal.FillerColumn != null 
+                   && (GridLinesVisibility == DataGridGridLinesVisibility.Vertical || GridLinesVisibility == DataGridGridLinesVisibility.All) && VerticalGridLinesBrush != null &&
+                      (dataGridColumn != ColumnsInternal.LastVisibleColumn || (includeLastRightGridLineWhenPresent && ColumnsInternal.FillerColumn.IsActive));
         }
 
         internal DataGridColumnCollection CreateColumnsInstance()
@@ -152,7 +153,7 @@ namespace Avalonia.Controls
                 }
                 else
                 {
-                    return DataConnection.GetPropertyIsReadOnly(path) || isReadOnly;
+                    return DataConnection != null && (DataConnection.GetPropertyIsReadOnly(path) || isReadOnly);
                 }
             }
 
@@ -251,7 +252,7 @@ namespace Avalonia.Controls
         internal void OnColumnDisplayIndexChanged(DataGridColumn dataGridColumn)
         {
             Debug.Assert(dataGridColumn != null);
-            DataGridColumnEventArgs e = new DataGridColumnEventArgs(dataGridColumn);
+            var e = new DataGridColumnEventArgs(dataGridColumn);
 
             // Call protected method to raise event
             if (dataGridColumn != ColumnsInternal.RowGroupSpacerColumn)
@@ -288,7 +289,7 @@ namespace Avalonia.Controls
             {
                 InDisplayIndexAdjustments = true;
 
-                bool trackChange = targetColumn != ColumnsInternal.RowGroupSpacerColumn;
+                var trackChange = targetColumn != ColumnsInternal.RowGroupSpacerColumn;
 
                 DataGridColumn column;
                 // Move is legal - let's adjust the affected display indexes.
@@ -296,13 +297,17 @@ namespace Avalonia.Controls
                 {
                     // DisplayIndex decreases. All columns with newDisplayIndex <= DisplayIndex < targetColumn.DisplayIndex
                     // get their DisplayIndex incremented.
-                    for (int i = newDisplayIndex; i < targetColumn.DisplayIndexWithFiller; i++)
+                    for (var i = newDisplayIndex; i < targetColumn.DisplayIndexWithFiller; i++)
                     {
                         column = ColumnsInternal.GetColumnAtDisplayIndex(i);
-                        column.DisplayIndexWithFiller = column.DisplayIndexWithFiller + 1;
-                        if (trackChange)
+                        if (column != null)
                         {
-                            column.DisplayIndexHasChanged = true; // OnColumnDisplayIndexChanged needs to be raised later on
+                            column.DisplayIndexWithFiller = column.DisplayIndexWithFiller + 1;
+                            if (trackChange)
+                            {
+                                column.DisplayIndexHasChanged =
+                                    true; // OnColumnDisplayIndexChanged needs to be raised later on
+                            }
                         }
                     }
                 }
@@ -310,13 +315,17 @@ namespace Avalonia.Controls
                 {
                     // DisplayIndex increases. All columns with targetColumn.DisplayIndex < DisplayIndex <= newDisplayIndex
                     // get their DisplayIndex decremented.
-                    for (int i = newDisplayIndex; i > targetColumn.DisplayIndexWithFiller; i--)
+                    for (var i = newDisplayIndex; i > targetColumn.DisplayIndexWithFiller; i--)
                     {
                         column = ColumnsInternal.GetColumnAtDisplayIndex(i);
-                        column.DisplayIndexWithFiller = column.DisplayIndexWithFiller - 1;
-                        if (trackChange)
+                        if (column != null)
                         {
-                            column.DisplayIndexHasChanged = true; // OnColumnDisplayIndexChanged needs to be raised later on
+                            column.DisplayIndexWithFiller = column.DisplayIndexWithFiller - 1;
+                            if (trackChange)
+                            {
+                                column.DisplayIndexHasChanged =
+                                    true; // OnColumnDisplayIndexChanged needs to be raised later on
+                            }
                         }
                     }
                 }
@@ -340,7 +349,7 @@ namespace Avalonia.Controls
             // Update Binding in Displayed rows by regenerating the affected elements
             if (_rowsPresenter != null)
             {
-                foreach (DataGridRow row in GetAllRows())
+                foreach (var row in GetAllRows())
                 {
                     PopulateCellContent(false /*isCellEdited*/, column, row, row.Cells[column.Index]);
                 }
@@ -431,7 +440,7 @@ namespace Avalonia.Controls
             if (updatedColumn.IsVisible &&
                 ColumnsInternal.VisibleColumnCount == 1 && CurrentColumnIndex == -1)
             {
-                Debug.Assert(SelectedIndex == DataConnection.IndexOf(SelectedItem));
+                Debug.Assert(SelectedIndex == DataConnection?.IndexOf(SelectedItem));
                 if (SelectedIndex != -1)
                 {
                     SetAndSelectCurrentCell(updatedColumn.Index, SelectedIndex, true /*forceCurrentCellSelection*/);
@@ -460,7 +469,7 @@ namespace Avalonia.Controls
                 CurrentColumn == targetColumn)
             {
                 // Column of the current cell is made invisible. Trying to move the current cell to a neighbor column. May throw an exception.
-                DataGridColumn dataGridColumn = ColumnsInternal.GetNextVisibleColumn(targetColumn);
+                var dataGridColumn = ColumnsInternal.GetNextVisibleColumn(targetColumn);
                 if (dataGridColumn == null)
                 {
                     dataGridColumn = ColumnsInternal.GetPreviousVisibleNonFillerColumn(targetColumn);
@@ -487,8 +496,11 @@ namespace Avalonia.Controls
 
         internal void OnFillerColumnWidthNeeded(double finalWidth)
         {
-            DataGridFillerColumn fillerColumn = ColumnsInternal.FillerColumn;
-            double totalColumnsWidth = ColumnsInternal.VisibleEdgedColumnsWidth;
+            var fillerColumn = ColumnsInternal.FillerColumn;
+            var totalColumnsWidth = ColumnsInternal.VisibleEdgedColumnsWidth;
+            
+            if (fillerColumn == null) return;
+            
             if (finalWidth > totalColumnsWidth)
             {
                 fillerColumn.FillerWidth = finalWidth - totalColumnsWidth;
@@ -532,9 +544,9 @@ namespace Avalonia.Controls
             // Insert the missing data cells
             if (SlotCount > 0)
             {
-                int newColumnCount = ColumnsItemsInternal.Count;
+                var newColumnCount = ColumnsItemsInternal.Count;
 
-                foreach (DataGridRow row in GetAllRows())
+                foreach (var row in GetAllRows())
                 {
                     if (row.Cells.Count < newColumnCount)
                     {
@@ -609,11 +621,11 @@ namespace Avalonia.Controls
             UpdateDisplayedColumns();
 
             // Fix the existing rows by removing cells at correct index
-            int newColumnCount = ColumnsItemsInternal.Count;
+            var newColumnCount = ColumnsItemsInternal.Count;
 
             if (_rowsPresenter != null)
             {
-                foreach (DataGridRow row in GetAllRows())
+                foreach (var row in GetAllRows())
                 {
                     if (row.Cells.Count > newColumnCount)
                     {
@@ -634,15 +646,15 @@ namespace Avalonia.Controls
             DataGridCellCoordinates newCurrentCellCoordinates;
 
             _temporarilyResetCurrentCell = false;
-            int columnIndex = dataGridColumn.Index;
+            var columnIndex = dataGridColumn.Index;
 
             // Reset the current cell's address if there is one.
             if (CurrentColumnIndex != -1)
             {
-                int newCurrentColumnIndex = CurrentColumnIndex;
+                var newCurrentColumnIndex = CurrentColumnIndex;
                 if (columnIndex == newCurrentColumnIndex)
                 {
-                    DataGridColumn dataGridColumnNext = ColumnsInternal.GetNextVisibleColumn(ColumnsItemsInternal[columnIndex]);
+                    var dataGridColumnNext = ColumnsInternal.GetNextVisibleColumn(ColumnsItemsInternal[columnIndex]);
                     if (dataGridColumnNext != null)
                     {
                         if (dataGridColumnNext.Index > columnIndex)
@@ -656,7 +668,7 @@ namespace Avalonia.Controls
                     }
                     else
                     {
-                        DataGridColumn dataGridColumnPrevious = ColumnsInternal.GetPreviousVisibleNonFillerColumn(ColumnsItemsInternal[columnIndex]);
+                        var dataGridColumnPrevious = ColumnsInternal.GetPreviousVisibleNonFillerColumn(ColumnsItemsInternal[columnIndex]);
                         if (dataGridColumnPrevious != null)
                         {
                             if (dataGridColumnPrevious.Index > columnIndex)
@@ -686,7 +698,7 @@ namespace Avalonia.Controls
                     {
                         CancelEdit(DataGridEditingUnit.Row, false /*raiseEvents*/);
                     }
-                    bool success = SetCurrentCellCore(-1, -1);
+                    var success = SetCurrentCellCore(-1, -1);
                     Debug.Assert(success);
                 }
                 else
@@ -694,7 +706,7 @@ namespace Avalonia.Controls
                     // Underlying data of deleted column is gone. It cannot be accessed anymore.
                     // Do not end editing mode so that CellValidation doesn't get raised, since that event needs the current formatted value.
                     _temporarilyResetCurrentCell = true;
-                    bool success = SetCurrentCellCore(-1, -1);
+                    var success = SetCurrentCellCore(-1, -1);
                     Debug.Assert(success);
                 }
             }
@@ -746,9 +758,9 @@ namespace Avalonia.Controls
             Debug.Assert(dataGridColumn != null);
 
             // Take care of the non-displayed loaded rows
-            for (int index = 0; index < _loadedRows.Count;)
+            for (var index = 0; index < _loadedRows.Count;)
             {
-                DataGridRow dataGridRow = _loadedRows[index];
+                var dataGridRow = _loadedRows[index];
                 Debug.Assert(dataGridRow != null);
                 if (!IsSlotVisible(dataGridRow.Slot))
                 {
@@ -760,7 +772,7 @@ namespace Avalonia.Controls
             // Take care of the displayed rows
             if (_rowsPresenter != null)
             {
-                foreach (DataGridRow row in GetAllRows())
+                foreach (var row in GetAllRows())
                 {
                     RefreshCellElement(dataGridColumn, row, propertyName);
                 }
@@ -781,20 +793,20 @@ namespace Avalonia.Controls
         /// <returns>The remaining amount of adjustment.</returns>
         private double AdjustStarColumnWidths(int displayIndex, double adjustment, bool userInitiated)
         {
-            double remainingAdjustment = adjustment;
+            var remainingAdjustment = adjustment;
             if (MathUtilities.IsZero(remainingAdjustment))
             {
                 return remainingAdjustment;
             }
-            bool increase = remainingAdjustment > 0;
+            var increase = remainingAdjustment > 0;
 
             // Make an initial pass through the star columns to total up some values.
-            bool scaleStarWeights = false;
+            var scaleStarWeights = false;
             double totalStarColumnsWidth = 0;
             double totalStarColumnsWidthLimit = 0;
             double totalStarWeights = 0;
             List<DataGridColumn> starColumns = new List<DataGridColumn>();
-            foreach (DataGridColumn column in ColumnsInternal.GetDisplayedColumns(c => c.Width.IsStar && c.IsVisible && (c.ActualCanUserResize || !userInitiated)))
+            foreach (var column in ColumnsInternal.GetDisplayedColumns(c => c.Width.IsStar && c.IsVisible && (c.ActualCanUserResize || !userInitiated)))
             {
                 if (column.DisplayIndex < displayIndex)
                 {
@@ -809,9 +821,9 @@ namespace Avalonia.Controls
 
             // Set the new desired widths according to how much all the star columns can be adjusted without any
             // of them being limited by their minimum or maximum widths (as that would distort their ratios).
-            double adjustmentLimit = totalStarColumnsWidthLimit - totalStarColumnsWidth;
+            var adjustmentLimit = totalStarColumnsWidthLimit - totalStarColumnsWidth;
             adjustmentLimit = increase ? Math.Min(adjustmentLimit, adjustment) : Math.Max(adjustmentLimit, adjustment);
-            foreach (DataGridColumn starColumn in starColumns)
+            foreach (var starColumn in starColumns)
             {
                 starColumn.SetWidthDesiredValue((totalStarColumnsWidth + adjustmentLimit) * starColumn.Width.Value / totalStarWeights);
             }
@@ -825,8 +837,8 @@ namespace Avalonia.Controls
             // all the star columns were adjusted at the same time, and therefore, their ratios have not changed.
             if (scaleStarWeights)
             {
-                double starRatio = (totalStarColumnsWidth + adjustment - remainingAdjustment) / totalStarColumnsWidth;
-                foreach (DataGridColumn starColumn in starColumns)
+                var starRatio = (totalStarColumnsWidth + adjustment - remainingAdjustment) / totalStarColumnsWidth;
+                foreach (var starColumn in starColumns)
                 {
                     starColumn.SetWidthStarValue(Math.Min(double.MaxValue, starRatio * starColumn.Width.Value));
                 }
@@ -852,7 +864,7 @@ namespace Avalonia.Controls
             {
                 return remainingAdjustment;
             }
-            bool increase = remainingAdjustment > 0;
+            var increase = remainingAdjustment > 0;
 
             double totalStarWeights = 0;
             double totalStarColumnsWidth = 0;
@@ -863,12 +875,12 @@ namespace Avalonia.Controls
             // could have different star ratios, though, this distance is then adjusted according to its star value.  A column with
             // a larger star value, for example, will change size more rapidly than a column with a lower star value.
             List<KeyValuePair<DataGridColumn, double>> starColumnPairs = new List<KeyValuePair<DataGridColumn, double>>();
-            foreach (DataGridColumn column in ColumnsInternal.GetDisplayedColumns(
+            foreach (var column in ColumnsInternal.GetDisplayedColumns(
                 c => c.Width.IsStar && c.DisplayIndex >= displayIndex && c.IsVisible && c.Width.Value > 0 && (c.ActualCanUserResize || !userInitiated)))
             {
-                int insertIndex = 0;
-                double distanceToTarget = Math.Min(column.ActualMaxWidth, Math.Max(targetWidth(column), column.ActualMinWidth)) - column.Width.DisplayValue;
-                double factor = (increase ? Math.Max(0, distanceToTarget) : Math.Min(0, distanceToTarget)) / column.Width.Value;
+                var insertIndex = 0;
+                var distanceToTarget = Math.Min(column.ActualMaxWidth, Math.Max(targetWidth(column), column.ActualMinWidth)) - column.Width.DisplayValue;
+                var factor = (increase ? Math.Max(0, distanceToTarget) : Math.Min(0, distanceToTarget)) / column.Width.Value;
                 foreach (KeyValuePair<DataGridColumn, double> starColumnPair in starColumnPairs)
                 {
                     if (increase ? factor <= starColumnPair.Value : factor >= starColumnPair.Value)
@@ -886,9 +898,9 @@ namespace Avalonia.Controls
             // or the total remaining amount to adjust has been depleted.
             foreach (KeyValuePair<DataGridColumn, double> starColumnPair in starColumnPairs)
             {
-                double distanceToTarget = starColumnPair.Value * starColumnPair.Key.Width.Value;
-                double distanceAvailable = (starColumnPair.Key.Width.Value * remainingAdjustment) / totalStarWeights;
-                double adjustment = increase ? Math.Min(distanceToTarget, distanceAvailable) : Math.Max(distanceToTarget, distanceAvailable);
+                var distanceToTarget = starColumnPair.Value * starColumnPair.Key.Width.Value;
+                var distanceAvailable = (starColumnPair.Key.Width.Value * remainingAdjustment) / totalStarWeights;
+                var adjustment = increase ? Math.Min(distanceToTarget, distanceAvailable) : Math.Max(distanceToTarget, distanceAvailable);
 
                 remainingAdjustment -= adjustment;
                 totalStarWeights -= starColumnPair.Key.Width.Value;
@@ -900,13 +912,13 @@ namespace Avalonia.Controls
 
         private bool ComputeDisplayedColumns()
         {
-            bool invalidate = false;
-            int numVisibleScrollingCols = 0;
-            int visibleScrollingColumnsTmp = 0;
-            double displayWidth = CellsWidth;
+            var invalidate = false;
+            var numVisibleScrollingCols = 0;
+            var visibleScrollingColumnsTmp = 0;
+            var displayWidth = CellsWidth;
             double cx = 0;
-            int firstDisplayedFrozenCol = -1;
-            int firstDisplayedScrollingCol = DisplayData.FirstDisplayedScrollingCol;
+            var firstDisplayedFrozenCol = -1;
+            var firstDisplayedScrollingCol = DisplayData.FirstDisplayedScrollingCol;
 
             // the same problem with negative numbers:
             // if the width passed in is negative, then return 0
@@ -917,7 +929,7 @@ namespace Avalonia.Controls
                 return invalidate;
             }
 
-            foreach (DataGridColumn dataGridColumn in ColumnsInternal.GetVisibleFrozenColumns())
+            foreach (var dataGridColumn in ColumnsInternal.GetVisibleFrozenColumns())
             {
                 if (firstDisplayedFrozenCol == -1)
                 {
@@ -934,7 +946,7 @@ namespace Avalonia.Controls
 
             if (cx < displayWidth && firstDisplayedScrollingCol >= 0)
             {
-                DataGridColumn dataGridColumn = ColumnsItemsInternal[firstDisplayedScrollingCol];
+                var dataGridColumn = ColumnsItemsInternal[firstDisplayedScrollingCol];
                 if (dataGridColumn.IsFrozen)
                 {
                     dataGridColumn = ColumnsInternal.FirstVisibleScrollingColumn;
@@ -1016,7 +1028,7 @@ namespace Avalonia.Controls
                     numVisibleScrollingCols = visibleScrollingColumnsTmp;
                 }
 
-                int jumpFromFirstVisibleScrollingCol = numVisibleScrollingCols - 1;
+                var jumpFromFirstVisibleScrollingCol = numVisibleScrollingCols - 1;
                 if (cx > displayWidth)
                 {
                     jumpFromFirstVisibleScrollingCol--;
@@ -1032,7 +1044,7 @@ namespace Avalonia.Controls
                 {
                     Debug.Assert(firstDisplayedScrollingCol >= 0);
                     dataGridColumn = ColumnsItemsInternal[firstDisplayedScrollingCol];
-                    for (int jump = 0; jump < jumpFromFirstVisibleScrollingCol; jump++)
+                    for (var jump = 0; jump < jumpFromFirstVisibleScrollingCol; jump++)
                     {
                         dataGridColumn = ColumnsInternal.GetNextVisibleColumn(dataGridColumn);
                         Debug.Assert(dataGridColumn != null);
@@ -1058,7 +1070,7 @@ namespace Avalonia.Controls
                 return -1;
             }
 
-            DataGridColumn dataGridColumn = ColumnsInternal.FirstVisibleScrollingColumn;
+            var dataGridColumn = ColumnsInternal.FirstVisibleScrollingColumn;
 
             if (_horizontalOffset == 0)
             {
@@ -1120,7 +1132,7 @@ namespace Avalonia.Controls
                 // as do the DisplayIndexMap values of modified column Indexes
                 DataGridColumn column;
                 ColumnsInternal.DisplayIndexMap.RemoveAt(deletedColumn.DisplayIndexWithFiller);
-                for (int displayIndex = 0; displayIndex < ColumnsInternal.DisplayIndexMap.Count; displayIndex++)
+                for (var displayIndex = 0; displayIndex < ColumnsInternal.DisplayIndexMap.Count; displayIndex++)
                 {
                     if (ColumnsInternal.DisplayIndexMap[displayIndex] > deletedColumn.Index)
                     {
@@ -1129,8 +1141,12 @@ namespace Avalonia.Controls
                     if (displayIndex >= deletedColumn.DisplayIndexWithFiller)
                     {
                         column = ColumnsInternal.GetColumnAtDisplayIndex(displayIndex);
-                        column.DisplayIndexWithFiller = column.DisplayIndexWithFiller - 1;
-                        column.DisplayIndexHasChanged = true; // OnColumnDisplayIndexChanged needs to be raised later on
+                        if (column != null)
+                        {
+                            column.DisplayIndexWithFiller = column.DisplayIndexWithFiller - 1;
+                            column.DisplayIndexHasChanged =
+                                true; // OnColumnDisplayIndexChanged needs to be raised later on
+                        }
                     }
                 }
 
@@ -1162,7 +1178,7 @@ namespace Avalonia.Controls
                 // The DisplayIndex of columns greater than the inserted column need to be incremented,
                 // as do the DisplayIndexMap values of modified column Indexes
                 DataGridColumn column;
-                for (int displayIndex = 0; displayIndex < ColumnsInternal.DisplayIndexMap.Count; displayIndex++)
+                for (var displayIndex = 0; displayIndex < ColumnsInternal.DisplayIndexMap.Count; displayIndex++)
                 {
                     if (ColumnsInternal.DisplayIndexMap[displayIndex] >= insertedColumn.Index)
                     {
@@ -1171,8 +1187,12 @@ namespace Avalonia.Controls
                     if (displayIndex >= insertedColumn.DisplayIndexWithFiller)
                     {
                         column = ColumnsInternal.GetColumnAtDisplayIndex(displayIndex);
-                        column.DisplayIndexWithFiller++;
-                        column.DisplayIndexHasChanged = true; // OnColumnDisplayIndexChanged needs to be raised later on
+                        if (column != null)
+                        {
+                            column.DisplayIndexWithFiller++;
+                            column.DisplayIndexHasChanged =
+                                true; // OnColumnDisplayIndexChanged needs to be raised later on
+                        }
                     }
                 }
                 ColumnsInternal.DisplayIndexMap.Insert(insertedColumn.DisplayIndexWithFiller, insertedColumn.Index);
@@ -1189,10 +1209,10 @@ namespace Avalonia.Controls
 
         private void CorrectColumnFrozenStates()
         {
-            int index = 0;
+            var index = 0;
             double frozenColumnWidth = 0;
             double oldFrozenColumnWidth = 0;
-            foreach (DataGridColumn column in ColumnsInternal.GetDisplayedColumns())
+            foreach (var column in ColumnsInternal.GetDisplayedColumns())
             {
                 if (column.IsFrozen)
                 {
@@ -1218,7 +1238,7 @@ namespace Avalonia.Controls
         private void CorrectColumnIndexesAfterDeletion(DataGridColumn deletedColumn)
         {
             Debug.Assert(deletedColumn != null);
-            for (int columnIndex = deletedColumn.Index; columnIndex < ColumnsItemsInternal.Count; columnIndex++)
+            for (var columnIndex = deletedColumn.Index; columnIndex < ColumnsItemsInternal.Count; columnIndex++)
             {
                 ColumnsItemsInternal[columnIndex].Index = ColumnsItemsInternal[columnIndex].Index - 1;
                 Debug.Assert(ColumnsItemsInternal[columnIndex].Index == columnIndex);
@@ -1229,7 +1249,7 @@ namespace Avalonia.Controls
         {
             Debug.Assert(insertedColumn != null);
             Debug.Assert(insertionCount > 0);
-            for (int columnIndex = insertedColumn.Index + insertionCount; columnIndex < ColumnsItemsInternal.Count; columnIndex++)
+            for (var columnIndex = insertedColumn.Index + insertionCount; columnIndex < ColumnsItemsInternal.Count; columnIndex++)
             {
                 ColumnsItemsInternal[columnIndex].Index = columnIndex;
             }
@@ -1254,7 +1274,7 @@ namespace Avalonia.Controls
                 return amount;
             }
 
-            double adjustment = Math.Max(
+            var adjustment = Math.Max(
                 column.ActualMinWidth - column.Width.DisplayValue,
                 Math.Max(targetWidth - column.Width.DisplayValue, amount));
 
@@ -1281,7 +1301,7 @@ namespace Avalonia.Controls
                 return amount;
             }
 
-            foreach (DataGridColumn column in ColumnsInternal.GetDisplayedColumns(reverse,
+            foreach (var column in ColumnsInternal.GetDisplayedColumns(reverse,
                 column =>
                     column.IsVisible &&
                     column.Width.UnitType != DataGridLengthUnitType.Star &&
@@ -1300,7 +1320,7 @@ namespace Avalonia.Controls
 
         private void FlushDisplayIndexChanged(bool raiseEvent)
         {
-            foreach (DataGridColumn column in ColumnsItemsInternal)
+            foreach (var column in ColumnsItemsInternal)
             {
                 if (column.DisplayIndexHasChanged)
                 {
@@ -1332,7 +1352,7 @@ namespace Avalonia.Controls
             Debug.Assert(ColumnsItemsInternal[index].IsVisible);
 
             double x = 0;
-            foreach (DataGridColumn column in ColumnsInternal.GetVisibleColumns())
+            foreach (var column in ColumnsInternal.GetVisibleColumns())
             {
                 if (index == column.Index)
                 {
@@ -1345,7 +1365,7 @@ namespace Avalonia.Controls
 
         private double GetNegHorizontalOffsetFromHorizontalOffset(double horizontalOffset)
         {
-            foreach (DataGridColumn column in ColumnsInternal.GetVisibleScrollingColumns())
+            foreach (var column in ColumnsInternal.GetVisibleScrollingColumns())
             {
                 if (GetEdgedColumnWidth(column) > horizontalOffset)
                 {
@@ -1375,7 +1395,7 @@ namespace Avalonia.Controls
                 return amount;
             }
 
-            double adjustment = Math.Min(
+            var adjustment = Math.Min(
                 column.ActualMaxWidth - column.Width.DisplayValue,
                 Math.Min(targetWidth - column.Width.DisplayValue, amount));
 
@@ -1402,7 +1422,7 @@ namespace Avalonia.Controls
                 return amount;
             }
 
-            foreach (DataGridColumn column in ColumnsInternal.GetDisplayedColumns(reverse,
+            foreach (var column in ColumnsInternal.GetDisplayedColumns(reverse,
                 column =>
                     column.IsVisible &&
                     column.Width.UnitType != DataGridLengthUnitType.Star &&
@@ -1435,7 +1455,7 @@ namespace Avalonia.Controls
             Debug.Assert(dataGridColumn != null);
             Debug.Assert(dataGridRow != null);
 
-            DataGridCell dataGridCell = dataGridRow.Cells[dataGridColumn.Index];
+            var dataGridCell = dataGridRow.Cells[dataGridColumn.Index];
             Debug.Assert(dataGridCell != null);
             if (dataGridCell.Content is Control element)
             {
@@ -1445,7 +1465,7 @@ namespace Avalonia.Controls
 
         private void RemoveAutoGeneratedColumns()
         {
-            int index = 0;
+            var index = 0;
             _autoGeneratingColumnOperationCount++;
             try
             {
@@ -1496,14 +1516,14 @@ namespace Avalonia.Controls
                          (DisplayData.LastTotallyDisplayedScrollingCol != columnIndex &&
                           ColumnsInternal.DisplayInOrder(DisplayData.LastTotallyDisplayedScrollingCol, columnIndex)))
                 {
-                    double xColumnLeftEdge = GetColumnXFromIndex(columnIndex);
-                    double xColumnRightEdge = xColumnLeftEdge + GetEdgedColumnWidth(ColumnsItemsInternal[columnIndex]);
-                    double change = xColumnRightEdge - HorizontalOffset - CellsWidth;
-                    double widthRemaining = change;
+                    var xColumnLeftEdge = GetColumnXFromIndex(columnIndex);
+                    var xColumnRightEdge = xColumnLeftEdge + GetEdgedColumnWidth(ColumnsItemsInternal[columnIndex]);
+                    var change = xColumnRightEdge - HorizontalOffset - CellsWidth;
+                    var widthRemaining = change;
 
-                    DataGridColumn newFirstDisplayedScrollingCol = ColumnsItemsInternal[DisplayData.FirstDisplayedScrollingCol];
-                    DataGridColumn nextColumn = ColumnsInternal.GetNextVisibleColumn(newFirstDisplayedScrollingCol);
-                    double newColumnWidth = GetEdgedColumnWidth(newFirstDisplayedScrollingCol) - _negHorizontalOffset;
+                    var newFirstDisplayedScrollingCol = ColumnsItemsInternal[DisplayData.FirstDisplayedScrollingCol];
+                    var nextColumn = ColumnsInternal.GetNextVisibleColumn(newFirstDisplayedScrollingCol);
+                    var newColumnWidth = GetEdgedColumnWidth(newFirstDisplayedScrollingCol) - _negHorizontalOffset;
                     while (nextColumn != null && widthRemaining >= newColumnWidth)
                     {
                         widthRemaining -= newColumnWidth;
@@ -1517,7 +1537,7 @@ namespace Avalonia.Controls
                     if (newFirstDisplayedScrollingCol.Index == columnIndex)
                     {
                         _negHorizontalOffset = 0;
-                        double frozenColumnWidth = ColumnsInternal.GetVisibleFrozenEdgedColumnsWidth();
+                        var frozenColumnWidth = ColumnsInternal.GetVisibleFrozenEdgedColumnsWidth();
                         // If the entire column cannot be displayed, we want to start showing it from its LeftEdge
                         if (newColumnWidth > (CellsWidth - frozenColumnWidth))
                         {
@@ -1542,7 +1562,7 @@ namespace Avalonia.Controls
         {
             DataGridColumn newFirstVisibleScrollingCol = null;
             DataGridColumn dataGridColumnTmp;
-            int colCount = 0;
+            var colCount = 0;
             if (columns > 0)
             {
                 if (DisplayData.LastTotallyDisplayedScrollingCol >= 0)
@@ -1600,7 +1620,7 @@ namespace Avalonia.Controls
             }
 
             double newColOffset = 0;
-            foreach (DataGridColumn dataGridColumn in ColumnsInternal.GetVisibleScrollingColumns())
+            foreach (var dataGridColumn in ColumnsInternal.GetVisibleScrollingColumns())
             {
                 if (dataGridColumn == newFirstVisibleScrollingCol)
                 {
@@ -1662,37 +1682,37 @@ namespace Avalonia.Controls
         private void GenerateColumnsFromProperties()
         {
             // Autogenerated Columns are added at the end so the user columns appear first
-            if (DataConnection.DataProperties != null && DataConnection.DataProperties.Length > 0)
+            if (DataConnection?.DataProperties != null && DataConnection.DataProperties.Length > 0)
             {
-                List<KeyValuePair<int, DataGridAutoGeneratingColumnEventArgs>> columnOrderPairs = new List<KeyValuePair<int, DataGridAutoGeneratingColumnEventArgs>>();
+                var columnOrderPairs = new List<KeyValuePair<int, DataGridAutoGeneratingColumnEventArgs>>();
 
                 // Generate the columns
-                foreach (PropertyInfo propertyInfo in DataConnection.DataProperties)
+                foreach (var propertyInfo in DataConnection.DataProperties)
                 {
-                    string columnHeader = propertyInfo.Name;
-                    int columnOrder = DATAGRID_defaultColumnDisplayOrder;
+                    var columnHeader = propertyInfo.Name;
+                    var columnOrder = DATAGRID_defaultColumnDisplayOrder;
 
                     // Check if DisplayAttribute is defined on the property
                     object[] attributes = propertyInfo.GetCustomAttributes(typeof(DisplayAttribute), true);
                     if (attributes != null && attributes.Length > 0)
                     {
-                        DisplayAttribute displayAttribute = attributes[0] as DisplayAttribute;
+                        var displayAttribute = attributes[0] as DisplayAttribute;
                         Debug.Assert(displayAttribute != null);
 
-                        bool? autoGenerateField = displayAttribute.GetAutoGenerateField();
+                        var autoGenerateField = displayAttribute.GetAutoGenerateField();
                         if (autoGenerateField.HasValue && autoGenerateField.Value == false)
                         {
                             // Abort column generation because we aren't supposed to auto-generate this field
                             continue;
                         }
 
-                        string header = displayAttribute.GetShortName();
+                        var header = displayAttribute.GetShortName();
                         if (header != null)
                         {
                             columnHeader = header;
                         }
 
-                        int? order = displayAttribute.GetOrder();
+                        var order = displayAttribute.GetOrder();
                         if (order.HasValue)
                         {
                             columnOrder = order.Value;
@@ -1700,7 +1720,7 @@ namespace Avalonia.Controls
                     }
 
                     // Generate a single column and determine its relative order
-                    int insertIndex = 0;
+                    var insertIndex = 0;
                     if (columnOrder == int.MaxValue)
                     {
                         insertIndex = columnOrderPairs.Count;
@@ -1716,7 +1736,7 @@ namespace Avalonia.Controls
                             insertIndex++;
                         }
                     }
-                    DataGridAutoGeneratingColumnEventArgs columnArgs = GenerateColumn(propertyInfo.PropertyType, propertyInfo.Name, columnHeader);
+                    var columnArgs = GenerateColumn(propertyInfo.PropertyType, propertyInfo.Name, columnHeader);
                     columnOrderPairs.Insert(insertIndex, new KeyValuePair<int, DataGridAutoGeneratingColumnEventArgs>(columnOrder, columnArgs));
                 }
 
@@ -1726,16 +1746,16 @@ namespace Avalonia.Controls
                     AddGeneratedColumn(columnOrderPair.Value);
                 }
             }
-            else if (DataConnection.DataIsPrimitive)
+            else if (DataConnection?.DataIsPrimitive ?? false)
             {
-                AddGeneratedColumn(GenerateColumn(DataConnection.DataType, string.Empty, DataConnection.DataType.Name));
+                AddGeneratedColumn(GenerateColumn(DataConnection.DataType, string.Empty, DataConnection.DataType?.Name));
             }
         }
 
         private static DataGridAutoGeneratingColumnEventArgs GenerateColumn(Type propertyType, string propertyName, string header)
         {
             // Create a new DataBoundColumn for the Property
-            DataGridBoundColumn newColumn = GetDataGridColumnFromType(propertyType);
+            var newColumn = GetDataGridColumnFromType(propertyType);
             newColumn.Binding = new Binding(propertyName);
             newColumn.Header = header;
             newColumn.IsAutoGenerated = true;

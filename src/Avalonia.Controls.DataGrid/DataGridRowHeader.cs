@@ -121,9 +121,9 @@ namespace Avalonia.Controls.Primitives
             {
                 return base.MeasureOverride(availableSize);
             }
-            double measureHeight = double.IsNaN(OwningGrid.RowHeight) ? availableSize.Height : OwningGrid.RowHeight;
-            double measureWidth = double.IsNaN(OwningGrid.RowHeaderWidth) ? availableSize.Width : OwningGrid.RowHeaderWidth;
-            Size measuredSize = base.MeasureOverride(new Size(measureWidth, measureHeight));
+            var measureHeight = double.IsNaN(OwningGrid.RowHeight) ? availableSize.Height : OwningGrid.RowHeight;
+            var measureWidth = double.IsNaN(OwningGrid.RowHeaderWidth) ? availableSize.Width : OwningGrid.RowHeaderWidth;
+            var measuredSize = base.MeasureOverride(new Size(measureWidth, measureHeight));
 
             // Auto grow the row header or force it to a fixed width based on the DataGrid's setting
             if (!double.IsNaN(OwningGrid.RowHeaderWidth) || measuredSize.Width < OwningGrid.ActualRowHeaderWidth)

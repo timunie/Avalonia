@@ -36,7 +36,7 @@ namespace Avalonia.Controls
             set;
         }
 
-        internal DataGridFillerColumn FillerColumn
+        internal DataGridFillerColumn? FillerColumn
         {
             get;
             private set;

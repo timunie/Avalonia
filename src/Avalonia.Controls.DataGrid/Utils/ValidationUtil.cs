@@ -24,8 +24,8 @@ namespace Avalonia.Controls.Utils
         /// <returns>True if found.</returns>
         public static bool ContainsMemberName(this ValidationResult validationResult, string target)
         {
-            int memberNameCount = 0;
-            foreach (string memberName in validationResult.MemberNames)
+            var memberNameCount = 0;
+            foreach (var memberName in validationResult.MemberNames)
             {
                 if (string.Equals(target, memberName))
                 {
@@ -44,12 +44,12 @@ namespace Avalonia.Controls.Utils
         /// <returns>Equal ValidationResult if found, null otherwise.</returns>
         public static ValidationResult FindEqualValidationResult(this ICollection<ValidationResult> collection, ValidationResult target)
         {
-            foreach (ValidationResult oldValidationResult in collection)
+            foreach (var oldValidationResult in collection)
             {
                 if (oldValidationResult.ErrorMessage == target.ErrorMessage)
                 {
-                    bool movedOld = true;
-                    bool movedTarget = true;
+                    var movedOld = true;
+                    var movedTarget = true;
                     IEnumerator<string> oldEnumerator = oldValidationResult.MemberNames.GetEnumerator();
                     IEnumerator<string> targetEnumerator = target.MemberNames.GetEnumerator();
                     while (movedOld && movedTarget)

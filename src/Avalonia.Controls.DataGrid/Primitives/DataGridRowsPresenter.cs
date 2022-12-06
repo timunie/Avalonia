@@ -97,9 +97,9 @@ namespace Avalonia.Controls.Primitives
 
             OwningGrid.OnFillerColumnWidthNeeded(finalSize.Width);
 
-            double rowDesiredWidth = OwningGrid.RowHeadersDesiredWidth + OwningGrid.ColumnsInternal.VisibleEdgedColumnsWidth + OwningGrid.ColumnsInternal.FillerColumn.FillerWidth;
-            double topEdge = -OwningGrid.NegVerticalOffset;
-            foreach (Control element in OwningGrid.DisplayData.GetScrollingElements())
+            var rowDesiredWidth = OwningGrid.RowHeadersDesiredWidth + OwningGrid.ColumnsInternal.VisibleEdgedColumnsWidth + OwningGrid.ColumnsInternal.FillerColumn.FillerWidth;
+            var topEdge = -OwningGrid.NegVerticalOffset;
+            foreach (var element in OwningGrid.DisplayData.GetScrollingElements())
             {
                 if (element is DataGridRow row)
                 {
@@ -112,14 +112,14 @@ namespace Avalonia.Controls.Primitives
                 }
                 else if (element is DataGridRowGroupHeader groupHeader)
                 {
-                    double leftEdge = (OwningGrid.AreRowGroupHeadersFrozen) ? 0 : -OwningGrid.HorizontalOffset;
+                    var leftEdge = (OwningGrid.AreRowGroupHeadersFrozen) ? 0 : -OwningGrid.HorizontalOffset;
                     groupHeader.Arrange(new Rect(leftEdge, topEdge, rowDesiredWidth - leftEdge, element.DesiredSize.Height));
                 }
 
                 topEdge += element.DesiredSize.Height;
             }
 
-            double finalHeight = Math.Max(topEdge + OwningGrid.NegVerticalOffset, finalSize.Height);
+            var finalHeight = Math.Max(topEdge + OwningGrid.NegVerticalOffset, finalSize.Height);
 
             // Clip the RowsPresenter so rows cannot overlap other elements in certain styling scenarios
             var rg = new RectangleGeometry
@@ -147,7 +147,7 @@ namespace Avalonia.Controls.Primitives
             {
                 if (VisualRoot is TopLevel topLevel)
                 {
-                    double maxHeight = topLevel.IsArrangeValid ?
+                    var maxHeight = topLevel.IsArrangeValid ?
                                         topLevel.Bounds.Height :
                                         LayoutHelper.ApplyLayoutConstraints(topLevel, availableSize).Height;
 
@@ -161,8 +161,8 @@ namespace Avalonia.Controls.Primitives
             }
 
             // If the Width of our RowsPresenter changed then we need to invalidate our rows
-            bool invalidateRows = (!OwningGrid.RowsPresenterAvailableSize.HasValue || availableSize.Width != OwningGrid.RowsPresenterAvailableSize.Value.Width)
-                                  && !double.IsInfinity(availableSize.Width);
+            var invalidateRows = (!OwningGrid.RowsPresenterAvailableSize.HasValue || availableSize.Width != OwningGrid.RowsPresenterAvailableSize.Value.Width)
+                                 && !double.IsInfinity(availableSize.Width);
 
             // The DataGrid uses the RowsPresenter available size in order to autogrow
             // and calculate the scrollbars
@@ -171,13 +171,13 @@ namespace Avalonia.Controls.Primitives
 
             OwningGrid.OnRowsMeasure();
 
-            double totalHeight = -OwningGrid.NegVerticalOffset;
-            double totalCellsWidth = OwningGrid.ColumnsInternal.VisibleEdgedColumnsWidth;
+            var totalHeight = -OwningGrid.NegVerticalOffset;
+            var totalCellsWidth = OwningGrid.ColumnsInternal.VisibleEdgedColumnsWidth;
 
             double headerWidth = 0;
-            foreach (Control element in OwningGrid.DisplayData.GetScrollingElements())
+            foreach (var element in OwningGrid.DisplayData.GetScrollingElements())
             {
-                DataGridRow row = element as DataGridRow;
+                var row = element as DataGridRow;
                 if (row != null)
                 {
                     if (invalidateRows)
@@ -217,7 +217,7 @@ namespace Avalonia.Controls.Primitives
 #if DEBUG
         internal void PrintChildren()
         {
-            foreach (Control element in Children)
+            foreach (var element in Children)
             {
                 if (element is DataGridRow row)
                 {

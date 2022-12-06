@@ -58,9 +58,9 @@ namespace Avalonia.Controls.Primitives
             {
                 return base.ArrangeOverride(finalSize);
             }
-            double rowGroupSpacerWidth = OwningGrid.ColumnsInternal.RowGroupSpacerColumn.Width.Value;
-            double leftEdge = rowGroupSpacerWidth;
-            double xClip = OwningGrid.AreRowGroupHeadersFrozen ? rowGroupSpacerWidth : 0;
+            var rowGroupSpacerWidth = OwningGrid.ColumnsInternal.RowGroupSpacerColumn.Width.Value;
+            var leftEdge = rowGroupSpacerWidth;
+            var xClip = OwningGrid.AreRowGroupHeadersFrozen ? rowGroupSpacerWidth : 0;
             double width;
             if (OwningGrid.AreRowDetailsFrozen)
             {
@@ -74,9 +74,9 @@ namespace Avalonia.Controls.Primitives
             }
             // Details should not extend through the indented area
             width -= rowGroupSpacerWidth;
-            double height = Math.Max(0, double.IsNaN(ContentHeight) ? 0 : ContentHeight);
+            var height = Math.Max(0, double.IsNaN(ContentHeight) ? 0 : ContentHeight);
 
-            foreach (Control child in Children)
+            foreach (var child in Children)
             {
                 child.Arrange(new Rect(leftEdge, 0, width, height));
             }
@@ -115,18 +115,18 @@ namespace Avalonia.Controls.Primitives
                 return Size.Empty;
             }
 
-            double desiredWidth = OwningGrid.AreRowDetailsFrozen ?
+            var desiredWidth = OwningGrid.AreRowDetailsFrozen ?
                 OwningGrid.CellsWidth :
                 Math.Max(OwningGrid.CellsWidth, OwningGrid.ColumnsInternal.VisibleEdgedColumnsWidth);
 
             desiredWidth -= OwningGrid.ColumnsInternal.RowGroupSpacerColumn.Width.Value;
 
-            foreach (Control child in Children)
+            foreach (var child in Children)
             {
                 child.Measure(new Size(desiredWidth, double.PositiveInfinity));
             }
 
-            double desiredHeight = Math.Max(0, double.IsNaN(ContentHeight) ? 0 : ContentHeight);
+            var desiredHeight = Math.Max(0, double.IsNaN(ContentHeight) ? 0 : ContentHeight);
 
             return new Size(desiredWidth, desiredHeight);
         }

@@ -40,13 +40,13 @@ namespace Avalonia.Controls
         internal const string DATAGRIDROW_elementRoot = "PART_Root";
         internal const string DATAGRIDROW_elementRowHeader = "PART_RowHeader";
 
-        private DataGridCellsPresenter _cellsElement;
-        private DataGridCell _fillerCell;
+        private DataGridCellsPresenter? _cellsElement;
+        private DataGridCell? _fillerCell;
         private DataGridRowHeader? _headerElement;
         private double _lastHorizontalOffset;
         private int? _mouseOverColumnIndex;
         private bool _isValid = true;
-        private Rectangle _bottomGridLine;
+        private Rectangle? _bottomGridLine;
         private bool _areHandlersSuspended;
 
         // In the case where Details scales vertically when it's arranged at a different width, we
@@ -58,26 +58,26 @@ namespace Avalonia.Controls
 
         private bool _detailsLoaded;
         private bool _detailsVisibilityNotificationPending;
-        private Control _detailsContent;
-        private IDisposable _detailsContentSizeSubscription;
-        private DataGridDetailsPresenter _detailsElement;
+        private Control? _detailsContent;
+        private IDisposable? _detailsContentSizeSubscription;
+        private DataGridDetailsPresenter? _detailsElement;
 
         // Locally cache whether or not details are visible so we don't run redundant storyboards
         // The Details Template that is actually applied to the Row
-        private IDataTemplate _appliedDetailsTemplate;
+        private IDataTemplate? _appliedDetailsTemplate;
 
         private bool? _appliedDetailsVisibility;
 
         /// <summary>
         /// Identifies the Header dependency property.
         /// </summary>
-        public static readonly StyledProperty<object> HeaderProperty =
-            AvaloniaProperty.Register<DataGridRow, object>(nameof(Header));
+        public static readonly StyledProperty<object?> HeaderProperty =
+            AvaloniaProperty.Register<DataGridRow, object?>(nameof(Header));
 
         /// <summary>
         /// Gets or sets the row header.
         /// </summary>
-        public object Header
+        public object? Header
         {
             get { return GetValue(HeaderProperty); }
             set { SetValue(HeaderProperty, value); }
@@ -97,13 +97,13 @@ namespace Avalonia.Controls
             internal set { SetAndRaise(IsValidProperty, ref _isValid, value); }
         }
 
-        public static readonly StyledProperty<IDataTemplate> DetailsTemplateProperty =
-            AvaloniaProperty.Register<DataGridRow, IDataTemplate>(nameof(DetailsTemplate));
+        public static readonly StyledProperty<IDataTemplate?> DetailsTemplateProperty =
+            AvaloniaProperty.Register<DataGridRow, IDataTemplate?>(nameof(DetailsTemplate));
 
         /// <summary>
         /// Gets or sets the template that is used to display the details section of the row.
         /// </summary>
-        public IDataTemplate DetailsTemplate
+        public IDataTemplate? DetailsTemplate
         {
             get { return GetValue(DetailsTemplateProperty); }
             set { SetValue(DetailsTemplateProperty, value); }
@@ -171,12 +171,12 @@ namespace Avalonia.Controls
 
         private void OnDetailsTemplateChanged(AvaloniaPropertyChangedEventArgs e)
         {
-            var oldValue = (IDataTemplate)e.OldValue;
-            var newValue = (IDataTemplate)e.NewValue;
+            var oldValue = e.OldValue as IDataTemplate;
+            var newValue = e.NewValue as IDataTemplate;
 
             if (!_areHandlersSuspended && OwningGrid != null)
             {
-                IDataTemplate actualDetailsTemplate(IDataTemplate template) => (template ?? OwningGrid.RowDetailsTemplate);
+                IDataTemplate? actualDetailsTemplate(IDataTemplate? template) => (template ?? OwningGrid.RowDetailsTemplate);
 
                 // We don't always want to apply the new Template because they might have set the same one
                 // we inherited from the DataGrid
@@ -206,7 +206,7 @@ namespace Avalonia.Controls
             }
         }
 
-        internal DataGrid OwningGrid
+        internal DataGrid? OwningGrid
         {
             get;
             set;
@@ -251,7 +251,7 @@ namespace Avalonia.Controls
                         IsVisible = false,
                         OwningRow = this
                     };
-                    if (OwningGrid.CellTheme is {} cellTheme)
+                    if (OwningGrid?.CellTheme is {} cellTheme)
                     {
                         _fillerCell.SetValue(ThemeProperty, cellTheme, BindingPriority.TemplatedParent);
                     }
@@ -363,8 +363,8 @@ namespace Avalonia.Controls
             {
                 if (_mouseOverColumnIndex != value)
                 {
-                    DataGridCell oldMouseOverCell = null;
-                    if (_mouseOverColumnIndex != null && OwningGrid.IsSlotVisible(Slot))
+                    DataGridCell? oldMouseOverCell = null;
+                    if (OwningGrid != null && _mouseOverColumnIndex != null && OwningGrid.IsSlotVisible(Slot))
                     {
                         if (_mouseOverColumnIndex > -1)
                         {
@@ -387,7 +387,7 @@ namespace Avalonia.Controls
             }
         }
 
-        internal Panel RootElement
+        internal Panel? RootElement
         {
             get;
             private set;
@@ -438,11 +438,11 @@ namespace Avalonia.Controls
         /// <param name="element">element contained in a row</param>
         /// <returns>Row that contains the element, or null if not found
         /// </returns>
-        public static DataGridRow GetRowContainingElement(Control element)
+        public static DataGridRow GetRowContainingElement(Control? element)
         {
             // Walk up the tree to find the DataGridRow that contains the element
-            Visual parent = element;
-            DataGridRow row = parent as DataGridRow;
+            Visual? parent = element;
+            var row = parent as DataGridRow;
             while ((parent != null) && (row == null))
             {
                 parent = parent.GetVisualParent();
@@ -475,7 +475,7 @@ namespace Avalonia.Controls
                 InvalidateHorizontalArrange();
             }
 
-            Size size = base.ArrangeOverride(finalSize);
+            var size = base.ArrangeOverride(finalSize);
 
             if (_checkDetailsContentHeight)
             {
@@ -485,11 +485,11 @@ namespace Avalonia.Controls
 
             if (RootElement != null)
             {
-                foreach (Control child in RootElement.Children)
+                foreach (var child in RootElement.Children)
                 {
                     if (DataGridFrozenGrid.GetIsFrozen(child))
                     {
-                        TranslateTransform transform = new TranslateTransform();
+                        var transform = new TranslateTransform();
                         // Automatic layout rounding doesn't apply to transforms so we need to Round this
                         transform.X = Math.Round(OwningGrid.HorizontalOffset);
                         child.RenderTransform = transform;
@@ -499,7 +499,7 @@ namespace Avalonia.Controls
 
             if (_bottomGridLine != null)
             {
-                RectangleGeometry gridlineClipGeometry = new RectangleGeometry();
+                var gridlineClipGeometry = new RectangleGeometry();
                 gridlineClipGeometry.Rect = new Rect(OwningGrid.HorizontalOffset, 0, Math.Max(0, DesiredSize.Width - OwningGrid.HorizontalOffset), _bottomGridLine.DesiredSize.Height);
                 _bottomGridLine.Clip = gridlineClipGeometry;
             }
@@ -538,7 +538,7 @@ namespace Avalonia.Controls
                 _detailsElement.InvalidateMeasure();
             }
 
-            Size desiredSize = base.MeasureOverride(availableSize);
+            var desiredSize = base.MeasureOverride(availableSize);
             return desiredSize.WithWidth(Math.Max(desiredSize.Width, OwningGrid.CellsWidth));
         }
 
@@ -553,7 +553,7 @@ namespace Avalonia.Controls
                 UpdatePseudoClasses();
             }
 
-            bool updateVerticalScrollBar = false;
+            var updateVerticalScrollBar = false;
             if (_cellsElement != null)
             {
                 // If we're applying a new template, we  want to remove the cells from the previous _cellsElement
@@ -630,7 +630,7 @@ namespace Avalonia.Controls
 
         internal void ApplyHeaderStatus()
         {
-            if (_headerElement != null && OwningGrid.AreRowHeadersVisible)
+            if (OwningGrid != null && _headerElement != null && OwningGrid.AreRowHeadersVisible)
             {
                 _headerElement.UpdatePseudoClasses();
             }
@@ -695,7 +695,7 @@ namespace Avalonia.Controls
                 {
                     // It looks like setting Visibility sometimes has side effects so make sure the value is actually
                     // different before setting it
-                    bool newVisibility = OwningGrid.GridLinesVisibility == DataGridGridLinesVisibility.Horizontal || OwningGrid.GridLinesVisibility == DataGridGridLinesVisibility.All;
+                    var newVisibility = OwningGrid.GridLinesVisibility == DataGridGridLinesVisibility.Horizontal || OwningGrid.GridLinesVisibility == DataGridGridLinesVisibility.All;
 
                     if (newVisibility != _bottomGridLine.IsVisible)
                     {
@@ -749,12 +749,12 @@ namespace Avalonia.Controls
             _bottomGridLine = null;
         }
 
-        private void DataGridCellCollection_CellAdded(object sender, DataGridCellEventArgs e)
+        private void DataGridCellCollection_CellAdded(object? sender, DataGridCellEventArgs e)
         {
             _cellsElement?.Children.Add(e.Cell);
         }
 
-        private void DataGridCellCollection_CellRemoved(object sender, DataGridCellEventArgs e)
+        private void DataGridCellCollection_CellRemoved(object? sender, DataGridCellEventArgs e)
         {
             _cellsElement?.Children.Remove(e.Cell);
         }
@@ -787,7 +787,7 @@ namespace Avalonia.Controls
 
         // Returns the actual template that should be sued for Details: either explicity set on this row
         // or inherited from the DataGrid
-        private IDataTemplate ActualDetailsTemplate
+        private IDataTemplate? ActualDetailsTemplate
         {
             get
             {
@@ -820,7 +820,7 @@ namespace Avalonia.Controls
                 {
                     if (_detailsLoaded)
                     {
-                        OwningGrid.OnUnloadingRowDetails(this, _detailsContent);
+                        OwningGrid?.OnUnloadingRowDetails(this, _detailsContent);
                     }
                     _detailsContent.DataContext = null;
                     if (!recycle)
@@ -905,7 +905,10 @@ namespace Avalonia.Controls
                         // Update the new desired height for RowDetails
                         _detailsDesiredHeight = newValue;
 
-                        _detailsElement.ContentHeight = newValue;
+                        if (_detailsElement != null)
+                        {
+                            _detailsElement.ContentHeight = newValue;
+                        }
 
                         // Calling this when details are not visible invalidates during layout when we have no work
                         // to do.  In certain scenarios, this could cause a layout cycle
@@ -928,7 +931,7 @@ namespace Avalonia.Controls
             if (_detailsContent != null)
                 DetailsContent_SizeChanged(_detailsContent.Bounds.Inflate(newValue));
         }
-        private void DetailsContent_LayoutUpdated(object sender, EventArgs e)
+        private void DetailsContent_LayoutUpdated(object? sender, EventArgs e)
         {
             if (_detailsContent != null)
             {
@@ -997,7 +1000,7 @@ namespace Avalonia.Controls
         {
             if (_detailsElement != null && AreDetailsVisible)
             {
-                IDataTemplate oldDetailsTemplate = _appliedDetailsTemplate;
+                var oldDetailsTemplate = _appliedDetailsTemplate;
                 if (ActualDetailsTemplate != null && ActualDetailsTemplate != _appliedDetailsTemplate)
                 {
                     if (_detailsContent != null)
@@ -1006,7 +1009,7 @@ namespace Avalonia.Controls
                         _detailsContentSizeSubscription = null;
                         if (_detailsLoaded)
                         {
-                            OwningGrid.OnUnloadingRowDetails(this, _detailsContent);
+                            OwningGrid?.OnUnloadingRowDetails(this, _detailsContent);
                             _detailsLoaded = false;
                         }
                     }
@@ -1045,7 +1048,7 @@ namespace Avalonia.Controls
                 {
                     _detailsLoaded = true;
                     _detailsContent.DataContext = DataContext;
-                    OwningGrid.OnLoadingRowDetails(this, _detailsContent);
+                    OwningGrid?.OnLoadingRowDetails(this, _detailsContent);
                 }
                 if (initializeDetailsPreferredHeight && double.IsNaN(_detailsDesiredHeight) &&
                     _appliedDetailsTemplate != null && _detailsElement.Children.Count > 0)
@@ -1071,7 +1074,7 @@ namespace Avalonia.Controls
                 {
                     var columns = owner.ColumnsItemsInternal;
                     var nc = columns.Count;
-                    for (int ci = 0; ci < nc; ci++)
+                    for (var ci = 0; ci < nc; ci++)
                     {
                         if (columns[ci] is DataGridTemplateColumn column)
                         {

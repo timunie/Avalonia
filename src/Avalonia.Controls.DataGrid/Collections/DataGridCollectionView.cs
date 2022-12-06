@@ -550,7 +550,7 @@ namespace Avalonia.Collections
                 if (_editItem != value)
                 {
                     Debug.Assert(value == null || _editItem == null, "Old and new _editItem values are unexpectedly non null");
-                    bool oldCanCancelEdit = CanCancelEdit;
+                    var oldCanCancelEdit = CanCancelEdit;
                     _editItem = value;
                     OnPropertyChanged(nameof(IsEditingItem));
                     OnPropertyChanged(nameof(CurrentEditItem));
@@ -822,15 +822,15 @@ namespace Avalonia.Collections
                 }
 
                 // to see whether or not to fire an OnPropertyChanged
-                int oldCount = Count;
+                var oldCount = Count;
 
                 if (_pageSize != value)
                 {
                     // Remember current currency values for upcoming OnPropertyChanged notifications
-                    object oldCurrentItem = CurrentItem;
-                    int oldCurrentPosition = CurrentPosition;
-                    bool oldIsCurrentAfterLast = IsCurrentAfterLast;
-                    bool oldIsCurrentBeforeFirst = IsCurrentBeforeFirst;
+                    var oldCurrentItem = CurrentItem;
+                    var oldCurrentPosition = CurrentPosition;
+                    var oldIsCurrentAfterLast = IsCurrentAfterLast;
+                    var oldIsCurrentBeforeFirst = IsCurrentBeforeFirst;
 
                     // Check if there is a current edited or new item so changes can be committed first.
                     if (CurrentAddItem != null || CurrentEditItem != null)
@@ -1209,7 +1209,7 @@ namespace Avalonia.Collections
             _trackingEnumerator = _sourceCollection.GetEnumerator();
 
             int addIndex;
-            int removeIndex = -1;
+            var removeIndex = -1;
 
             // Adjust index based on where it should be displayed in view.
             if (PageSize > 0)
@@ -1231,7 +1231,7 @@ namespace Avalonia.Collections
             // if we need to remove an item from the view due to paging
             if (removeIndex > -1)
             {
-                object removeItem = GetItemAt(removeIndex);
+                var removeItem = GetItemAt(removeIndex);
                 if (IsGrouping)
                 {
                     _group.RemoveFromSubgroups(removeItem);
@@ -1248,10 +1248,10 @@ namespace Avalonia.Collections
             _internalList.Insert(ConvertToInternalIndex(addIndex), newItem);
             OnPropertyChanged(nameof(ItemCount));
 
-            object oldCurrentItem = CurrentItem;
-            int oldCurrentPosition = CurrentPosition;
-            bool oldIsCurrentAfterLast = IsCurrentAfterLast;
-            bool oldIsCurrentBeforeFirst = IsCurrentBeforeFirst;
+            var oldCurrentItem = CurrentItem;
+            var oldCurrentPosition = CurrentPosition;
+            var oldIsCurrentAfterLast = IsCurrentAfterLast;
+            var oldIsCurrentBeforeFirst = IsCurrentBeforeFirst;
 
             AdjustCurrencyForAdd(null, addIndex);
 
@@ -1309,7 +1309,7 @@ namespace Avalonia.Collections
                 return;
             }
 
-            object editItem = CurrentEditItem;
+            var editItem = CurrentEditItem;
             CurrentEditItem = null;
 
             if (editItem is IEditableObject ieo)
@@ -1342,7 +1342,7 @@ namespace Avalonia.Collections
             }
 
             // get index of item before it is removed
-            int index = IndexOf(CurrentAddItem);
+            var index = IndexOf(CurrentAddItem);
 
             // remove the new item from the underlying collection
             try
@@ -1369,9 +1369,9 @@ namespace Avalonia.Collections
             // fire the correct events
             if (CurrentAddItem != null)
             {
-                object newItem = EndAddNew(true);
+                var newItem = EndAddNew(true);
 
-                int addIndex = -1;
+                var addIndex = -1;
 
                 // Adjust index based on where it should be displayed in view.
                 if (PageSize > 0 && !OnLastLocalPage)
@@ -1395,10 +1395,10 @@ namespace Avalonia.Collections
 
                 OnPropertyChanged(nameof(ItemCount));
 
-                object oldCurrentItem = CurrentItem;
-                int oldCurrentPosition = CurrentPosition;
-                bool oldIsCurrentAfterLast = IsCurrentAfterLast;
-                bool oldIsCurrentBeforeFirst = IsCurrentBeforeFirst;
+                var oldCurrentItem = CurrentItem;
+                var oldCurrentPosition = CurrentPosition;
+                var oldIsCurrentAfterLast = IsCurrentAfterLast;
+                var oldIsCurrentBeforeFirst = IsCurrentBeforeFirst;
 
                 AdjustCurrencyForRemove(index);
 
@@ -1414,7 +1414,7 @@ namespace Avalonia.Collections
                 // if we need to add an item into the view due to paging
                 if (addIndex > -1)
                 {
-                    int internalIndex = ConvertToInternalIndex(addIndex);
+                    var internalIndex = ConvertToInternalIndex(addIndex);
                     object addItem = null;
                     if (IsGrouping)
                     {
@@ -1454,7 +1454,7 @@ namespace Avalonia.Collections
                 return;
             }
 
-            object editItem = CurrentEditItem;
+            var editItem = CurrentEditItem;
             CurrentEditItem = null;
 
             if (editItem is IEditableObject ieo)
@@ -1465,12 +1465,12 @@ namespace Avalonia.Collections
             if (UsesLocalArray)
             {
                 // first remove the item from the array so that we can insert into the correct position
-                int removeIndex = IndexOf(editItem);
-                int internalRemoveIndex = InternalIndexOf(editItem);
+                var removeIndex = IndexOf(editItem);
+                var internalRemoveIndex = InternalIndexOf(editItem);
                 _internalList.Remove(editItem);
 
                 // check whether to restore currency to the item being edited
-                object restoreCurrencyTo = (editItem == CurrentItem) ? editItem : null;
+                var restoreCurrencyTo = (editItem == CurrentItem) ? editItem : null;
 
                 if (removeIndex >= 0 && IsGrouping)
                 {
@@ -1483,10 +1483,10 @@ namespace Avalonia.Collections
                     }
                 }
 
-                object oldCurrentItem = CurrentItem;
-                int oldCurrentPosition = CurrentPosition;
-                bool oldIsCurrentAfterLast = IsCurrentAfterLast;
-                bool oldIsCurrentBeforeFirst = IsCurrentBeforeFirst;
+                var oldCurrentItem = CurrentItem;
+                var oldCurrentPosition = CurrentPosition;
+                var oldIsCurrentAfterLast = IsCurrentAfterLast;
+                var oldIsCurrentBeforeFirst = IsCurrentBeforeFirst;
 
                 // only adjust currency and fire the event if we actually removed the item
                 if (removeIndex >= 0)
@@ -1502,7 +1502,7 @@ namespace Avalonia.Collections
                 }
 
                 // check to see that the item will be added back in
-                bool passedFilter = PassesFilter(editItem);
+                var passedFilter = PassesFilter(editItem);
 
                 // if we removed all items from the current page,
                 // move to the previous page. we do not need to 
@@ -1517,12 +1517,12 @@ namespace Avalonia.Collections
                 // next process adding it into the correct location
                 ProcessInsertToCollection(editItem, internalRemoveIndex);
 
-                int pageStartIndex = PageIndex * PageSize;
-                int nextPageStartIndex = pageStartIndex + PageSize;
+                var pageStartIndex = PageIndex * PageSize;
+                var nextPageStartIndex = pageStartIndex + PageSize;
 
                 if (IsGrouping)
                 {
-                    int leafIndex = -1;
+                    var leafIndex = -1;
                     if (passedFilter && PageSize > 0)
                     {
                         _temporaryGroup.AddToSubgroups(editItem, false /*loading*/);
@@ -1535,7 +1535,7 @@ namespace Avalonia.Collections
                        (pageStartIndex <= leafIndex && nextPageStartIndex > leafIndex)))
                     {
                         _group.AddToSubgroups(editItem, false /*loading*/);
-                        int addIndex = IndexOf(editItem);
+                        var addIndex = IndexOf(editItem);
                         AdjustCurrencyForEdit(restoreCurrencyTo, addIndex);
                         OnCollectionChanged(
                             new NotifyCollectionChangedEventArgs(
@@ -1545,7 +1545,7 @@ namespace Avalonia.Collections
                     }
                     else if (PageSize > 0)
                     {
-                        int addIndex = -1;
+                        var addIndex = -1;
                         if (passedFilter && leafIndex < pageStartIndex)
                         {
                             // if the item was added to an earlier page, then we need to bring
@@ -1559,7 +1559,7 @@ namespace Avalonia.Collections
                             addIndex = nextPageStartIndex - 1;
                         }
 
-                        object addItem = _temporaryGroup.LeafAt(addIndex);
+                        var addItem = _temporaryGroup.LeafAt(addIndex);
                         if (addItem != null)
                         {
                             _group.AddToSubgroups(addItem, false /*loading*/);
@@ -1576,7 +1576,7 @@ namespace Avalonia.Collections
                 else
                 {
                     // if we are still within the view
-                    int addIndex = IndexOf(editItem);
+                    var addIndex = IndexOf(editItem);
                     if (addIndex >= 0)
                     {
                         AdjustCurrencyForEdit(restoreCurrencyTo, addIndex);
@@ -1589,8 +1589,8 @@ namespace Avalonia.Collections
                     else if (PageSize > 0)
                     {
                         // calculate whether the item was inserted into the previous page
-                        bool insertedToPreviousPage = PassesFilter(editItem) &&
-                            (InternalIndexOf(editItem) < ConvertToInternalIndex(0));
+                        var insertedToPreviousPage = PassesFilter(editItem) &&
+                                                     (InternalIndexOf(editItem) < ConvertToInternalIndex(0));
                         addIndex = insertedToPreviousPage ? 0 : Count - 1;
 
                         // don't fire the event if we are on the last page
@@ -1638,10 +1638,10 @@ namespace Avalonia.Collections
             }
 
             // End the AddNew transaction
-            object newItem = EndAddNew(false);
+            var newItem = EndAddNew(false);
 
             // keep track of the current item
-            object previousCurrentItem = CurrentItem;
+            var previousCurrentItem = CurrentItem;
 
             // Modify our _trackingEnumerator so that it shows that our collection is "up to date" 
             // and will not refresh for now.
@@ -1650,8 +1650,8 @@ namespace Avalonia.Collections
             if (UsesLocalArray)
             {
                 // first remove the item from the array so that we can insert into the correct position
-                int removeIndex = Count - 1;
-                int internalIndex = _internalList.IndexOf(newItem);
+                var removeIndex = Count - 1;
+                var internalIndex = _internalList.IndexOf(newItem);
                 _internalList.Remove(newItem);
 
                 if (IsGrouping)
@@ -1663,10 +1663,10 @@ namespace Avalonia.Collections
                     }
                 }
 
-                object oldCurrentItem = CurrentItem;
-                int oldCurrentPosition = CurrentPosition;
-                bool oldIsCurrentAfterLast = IsCurrentAfterLast;
-                bool oldIsCurrentBeforeFirst = IsCurrentBeforeFirst;
+                var oldCurrentItem = CurrentItem;
+                var oldCurrentPosition = CurrentPosition;
+                var oldIsCurrentAfterLast = IsCurrentAfterLast;
+                var oldIsCurrentBeforeFirst = IsCurrentBeforeFirst;
 
                 AdjustCurrencyForRemove(removeIndex);
 
@@ -1678,17 +1678,17 @@ namespace Avalonia.Collections
                         removeIndex));
 
                 // check to see that the item will be added back in
-                bool passedFilter = PassesFilter(newItem);
+                var passedFilter = PassesFilter(newItem);
 
                 // next process adding it into the correct location
                 ProcessInsertToCollection(newItem, internalIndex);
 
-                int pageStartIndex = PageIndex * PageSize;
-                int nextPageStartIndex = pageStartIndex + PageSize;
+                var pageStartIndex = PageIndex * PageSize;
+                var nextPageStartIndex = pageStartIndex + PageSize;
 
                 if (IsGrouping)
                 {
-                    int leafIndex = -1;
+                    var leafIndex = -1;
                     if (passedFilter && PageSize > 0)
                     {
                         _temporaryGroup.AddToSubgroups(newItem, false /*loading*/);
@@ -1701,7 +1701,7 @@ namespace Avalonia.Collections
                        (pageStartIndex <= leafIndex && nextPageStartIndex > leafIndex)))
                     {
                         _group.AddToSubgroups(newItem, false /*loading*/);
-                        int addIndex = IndexOf(newItem);
+                        var addIndex = IndexOf(newItem);
 
                         // adjust currency to either the previous current item if possible
                         // or to the item at the end of the list where the new item was.
@@ -1731,7 +1731,7 @@ namespace Avalonia.Collections
                         }
                         else if (PageSize > 0)
                         {
-                            int addIndex = -1;
+                            var addIndex = -1;
                             if (passedFilter && leafIndex < pageStartIndex)
                             {
                                 // if the item was added to an earlier page, then we need to bring
@@ -1745,7 +1745,7 @@ namespace Avalonia.Collections
                                 addIndex = nextPageStartIndex - 1;
                             }
 
-                            object addItem = _temporaryGroup.LeafAt(addIndex);
+                            var addItem = _temporaryGroup.LeafAt(addIndex);
                             if (addItem != null)
                             {
                                 _group.AddToSubgroups(addItem, false /*loading*/);
@@ -1777,7 +1777,7 @@ namespace Avalonia.Collections
                 else
                 {
                     // if we are still within the view
-                    int addIndex = IndexOf(newItem);
+                    var addIndex = IndexOf(newItem);
                     if (addIndex >= 0)
                     {
                         AdjustCurrencyForAdd(newItem, addIndex);
@@ -1795,7 +1795,7 @@ namespace Avalonia.Collections
                         }
                         else if (PageSize > 0)
                         {
-                            bool insertedToPreviousPage = InternalIndexOf(newItem) < ConvertToInternalIndex(0);
+                            var insertedToPreviousPage = InternalIndexOf(newItem) < ConvertToInternalIndex(0);
                             addIndex = insertedToPreviousPage ? 0 : Count - 1;
 
                             // don't fire the event if we are on the last page
@@ -1913,7 +1913,7 @@ namespace Avalonia.Collections
                     return list.GetEnumerator();
                 }
 
-                for (int index = _pageSize * PageIndex;
+                for (var index = _pageSize * PageIndex;
                     index < (int)Math.Min(_pageSize * (PageIndex + 1), InternalList.Count);
                     index++)
                 {
@@ -1990,7 +1990,7 @@ namespace Avalonia.Collections
                 return Count - 1;
             }
 
-            int internalIndex = InternalIndexOf(item);
+            var internalIndex = InternalIndexOf(item);
 
             if (PageSize > 0 && internalIndex != -1)
             {
@@ -2054,7 +2054,7 @@ namespace Avalonia.Collections
         {
             VerifyRefreshNotDeferred();
 
-            int index = Count - 1;
+            var index = Count - 1;
 
             return MoveCurrentToPosition(index);
         }
@@ -2067,7 +2067,7 @@ namespace Avalonia.Collections
         {
             VerifyRefreshNotDeferred();
 
-            int index = CurrentPosition + 1;
+            var index = CurrentPosition + 1;
 
             if (index <= Count)
             {
@@ -2100,8 +2100,8 @@ namespace Avalonia.Collections
             if ((position != CurrentPosition || !IsCurrentInSync)
                 && OkToChangeCurrent())
             {
-                bool oldIsCurrentAfterLast = IsCurrentAfterLast;
-                bool oldIsCurrentBeforeFirst = IsCurrentBeforeFirst;
+                var oldIsCurrentAfterLast = IsCurrentAfterLast;
+                var oldIsCurrentBeforeFirst = IsCurrentBeforeFirst;
 
                 SetCurrentToPosition(position);
                 OnCurrentChanged();
@@ -2131,7 +2131,7 @@ namespace Avalonia.Collections
         {
             VerifyRefreshNotDeferred();
 
-            int index = CurrentPosition - 1;
+            var index = CurrentPosition - 1;
 
             if (index >= -1)
             {
@@ -2234,10 +2234,10 @@ namespace Avalonia.Collections
             if (CurrentAddItem != null || CurrentEditItem != null)
             {
                 // Remember current currency values for upcoming OnPropertyChanged notifications
-                object oldCurrentItem = CurrentItem;
-                int oldCurrentPosition = CurrentPosition;
-                bool oldIsCurrentAfterLast = IsCurrentAfterLast;
-                bool oldIsCurrentBeforeFirst = IsCurrentBeforeFirst;
+                var oldCurrentItem = CurrentItem;
+                var oldCurrentPosition = CurrentPosition;
+                var oldIsCurrentAfterLast = IsCurrentAfterLast;
+                var oldIsCurrentBeforeFirst = IsCurrentBeforeFirst;
 
                 // Currently CommitNew()/CommitEdit()/CancelNew()/CancelEdit() can't handle committing or 
                 // cancelling an item that is no longer on the current page. That's acceptable and means that
@@ -2330,7 +2330,7 @@ namespace Avalonia.Collections
         /// <param name="item">Item we want to remove</param>
         public void Remove(object item)
         {
-            int index = IndexOf(item);
+            var index = IndexOf(item);
             if (index >= 0)
             {
                 RemoveAt(index);
@@ -2363,11 +2363,11 @@ namespace Avalonia.Collections
             VerifyRefreshNotDeferred();
 
             // convert the index from "view-relative" to "list-relative"
-            object item = GetItemAt(index);
+            var item = GetItemAt(index);
 
             // before we remove the item, see if we are not on the last page
             // and will have to bring in a new item to replace it
-            bool replaceItem = PageSize > 0 && !OnLastLocalPage;
+            var replaceItem = PageSize > 0 && !OnLastLocalPage;
 
             try
             {
@@ -2404,10 +2404,10 @@ namespace Avalonia.Collections
                 _group.RemoveFromSubgroups(item);
             }
 
-            object oldCurrentItem = CurrentItem;
-            int oldCurrentPosition = CurrentPosition;
-            bool oldIsCurrentAfterLast = IsCurrentAfterLast;
-            bool oldIsCurrentBeforeFirst = IsCurrentBeforeFirst;
+            var oldCurrentItem = CurrentItem;
+            var oldCurrentPosition = CurrentPosition;
+            var oldIsCurrentAfterLast = IsCurrentAfterLast;
+            var oldIsCurrentBeforeFirst = IsCurrentBeforeFirst;
 
             AdjustCurrencyForRemove(index);
 
@@ -2437,7 +2437,7 @@ namespace Avalonia.Collections
                 // we first need to add the item into the current group
                 if (IsGrouping)
                 {
-                    object newItem = _temporaryGroup.LeafAt((PageSize * (PageIndex + 1)) - 1);
+                    var newItem = _temporaryGroup.LeafAt((PageSize * (PageIndex + 1)) - 1);
                     if (newItem != null)
                     {
                         _group.AddToSubgroups(newItem, loading: false);
@@ -2462,7 +2462,7 @@ namespace Avalonia.Collections
         /// <returns>child object</returns>
         private static object InvokePath(object item, string propertyPath, Type propertyType)
         {
-            object propertyValue = TypeHelper.GetNestedPropertyValue(item, propertyPath, propertyType, out Exception exception);
+            var propertyValue = TypeHelper.GetNestedPropertyValue(item, propertyPath, propertyType, out var exception);
             if (exception != null)
             {
                 throw exception;
@@ -2479,7 +2479,7 @@ namespace Avalonia.Collections
         {
             if (newCurrentItem != null)
             {
-                int newItemIndex = IndexOf(newCurrentItem);
+                var newItemIndex = IndexOf(newCurrentItem);
 
                 // if we already have the correct currency set, we don't 
                 // want to unnecessarily fire events
@@ -2508,7 +2508,7 @@ namespace Avalonia.Collections
                 OnCurrentChanging();
 
                 // adjust current index if insertion is earlier
-                int newPosition = CurrentPosition + 1;
+                var newPosition = CurrentPosition + 1;
                 if (newPosition >= Count)
                 {
                     // if currency was on last item and it got shifted up,
@@ -2539,7 +2539,7 @@ namespace Avalonia.Collections
                 OnCurrentChanging();
 
                 // adjust current index if insertion is earlier
-                int newPosition = CurrentPosition + 1;
+                var newPosition = CurrentPosition + 1;
                 if (newPosition < Count)
                 {
                     // CurrentItem might be out of sync if underlying list is not INCC
@@ -2609,11 +2609,11 @@ namespace Avalonia.Collections
             Debug.Assert(_pageIndex != pageIndex, "Unexpected _pageIndex == pageIndex");
 
             // to see whether or not to fire an OnPropertyChanged
-            int oldCount = Count;
-            object oldCurrentItem = CurrentItem;
-            int oldCurrentPosition = CurrentPosition;
-            bool oldIsCurrentAfterLast = IsCurrentAfterLast;
-            bool oldIsCurrentBeforeFirst = IsCurrentBeforeFirst;
+            var oldCount = Count;
+            var oldCurrentItem = CurrentItem;
+            var oldCurrentPosition = CurrentPosition;
+            var oldIsCurrentAfterLast = IsCurrentAfterLast;
+            var oldIsCurrentBeforeFirst = IsCurrentBeforeFirst;
 
             _pageIndex = pageIndex;
 
@@ -2678,7 +2678,7 @@ namespace Avalonia.Collections
         {
             _internalList = new List<object>();
 
-            IEnumerator enumerator = SourceCollection.GetEnumerator();
+            var enumerator = SourceCollection.GetEnumerator();
 
             while (enumerator.MoveNext())
             {
@@ -2694,7 +2694,7 @@ namespace Avalonia.Collections
         /// <returns>The new item we ended adding</returns>
         private object EndAddNew(bool cancel)
         {
-            object newItem = CurrentAddItem;
+            var newItem = CurrentAddItem;
 
             CurrentAddItem = null;    // leave "adding-new" mode
 
@@ -2749,7 +2749,7 @@ namespace Avalonia.Collections
         {
             if (!_itemConstructorIsValid)
             {
-                Type itemType = ItemType;
+                var itemType = ItemType;
                 if (itemType != null)
                 {
                     _itemConstructor = itemType.GetConstructor(Type.EmptyTypes);
@@ -2791,16 +2791,16 @@ namespace Avalonia.Collections
         /// <returns>The type of the items in the collection</returns>
         private Type GetItemType(bool useRepresentativeItem)
         {
-            Type collectionType = SourceCollection.GetType();
+            var collectionType = SourceCollection.GetType();
             Type[] interfaces = collectionType.GetInterfaces();
 
             // Look for IEnumerable<T>.  All generic collections should implement
             //   We loop through the interface list, rather than call
             // GetInterface(IEnumerableT), so that we handle an ambiguous match
             // (by using the first match) without an exception.
-            for (int i = 0; i < interfaces.Length; ++i)
+            for (var i = 0; i < interfaces.Length; ++i)
             {
-                Type interfaceType = interfaces[i];
+                var interfaceType = interfaces[i];
                 if (interfaceType.Name == typeof(IEnumerable<>).Name)
                 {
                     // found IEnumerable<>, extract T
@@ -2816,7 +2816,7 @@ namespace Avalonia.Collections
             if (useRepresentativeItem)
             {
                 // get type of a representative item
-                object item = GetRepresentativeItem();
+                var item = GetRepresentativeItem();
                 if (item != null)
                 {
                     return item.GetType();
@@ -2837,10 +2837,10 @@ namespace Avalonia.Collections
                 return null;
             }
 
-            IEnumerator enumerator = GetEnumerator();
+            var enumerator = GetEnumerator();
             while (enumerator.MoveNext())
             {
-                object item = enumerator.Current;
+                var item = enumerator.Current;
                 // Since this collection view does not support a NewItemPlaceholder, 
                 // simply return the first non-null item.
                 if (item != null)
@@ -2885,7 +2885,7 @@ namespace Avalonia.Collections
         /// <returns>False if a listener cancels the change, True otherwise</returns>
         private bool OkToChangeCurrent()
         {
-            DataGridCurrentChangingEventArgs args = new DataGridCurrentChangingEventArgs();
+            var args = new DataGridCurrentChangingEventArgs();
             OnCurrentChanging(args);
             return !args.Cancel;
         }
@@ -2929,7 +2929,7 @@ namespace Avalonia.Collections
                 OnPropertyChanged(nameof(Count));
             }
 
-            bool listIsEmpty = IsEmpty;
+            var listIsEmpty = IsEmpty;
             if (listIsEmpty != CheckFlag(CollectionViewFlags.CachedIsEmpty))
             {
                 SetFlag(CollectionViewFlags.CachedIsEmpty, listIsEmpty);
@@ -3107,7 +3107,7 @@ namespace Avalonia.Collections
             {
                 for (int num = 0, count = _internalList.Count; num < count; ++num)
                 {
-                    object item = _internalList[num];
+                    var item = _internalList[num];
                     if (item != null && (!IsAddingNew || !object.Equals(CurrentAddItem, item)))
                     {
                         _group.AddToSubgroups(item, loading: true);
@@ -3157,7 +3157,7 @@ namespace Avalonia.Collections
             {
                 for (int num = 0, count = _internalList.Count; num < count; ++num)
                 {
-                    object item = _internalList[num];
+                    var item = _internalList[num];
                     if (item != null && (!IsAddingNew || !object.Equals(CurrentAddItem, item)))
                     {
                         _temporaryGroup.AddToSubgroups(item, loading: true);
@@ -3198,7 +3198,7 @@ namespace Avalonia.Collections
             {
                 for (int num = 0, count = Count; num < count; ++num)
                 {
-                    object item = GetItemAt(num);
+                    var item = GetItemAt(num);
                     if (item != null && (!IsAddingNew || !object.Equals(CurrentAddItem, item)))
                     {
                         _group.AddToSubgroups(item, loading: true);
@@ -3236,7 +3236,7 @@ namespace Avalonia.Collections
             // filter the collection's array into the local array
             List<object> localList = new List<object>();
 
-            foreach (object item in enumerable)
+            foreach (var item in enumerable)
             {
                 if (Filter == null || PassesFilter(item))
                 {
@@ -3275,7 +3275,7 @@ namespace Avalonia.Collections
                 addIndex);
 
             // next check if we need to add an item into the current group
-            bool needsGrouping = false;
+            var needsGrouping = false;
             if (Count == 1 && GroupDescriptions.Count > 0)
             {
                 // if this is the first item being added
@@ -3290,7 +3290,7 @@ namespace Avalonia.Collections
 
             if (IsGrouping)
             {
-                int leafIndex = -1;
+                var leafIndex = -1;
 
                 if (PageSize > 0)
                 {
@@ -3304,7 +3304,7 @@ namespace Avalonia.Collections
                 {
                     needsGrouping = true;
 
-                    int pageStartIndex = PageIndex * PageSize;
+                    var pageStartIndex = PageIndex * PageSize;
 
                     // if the item was inserted on a previous page
                     if (pageStartIndex > leafIndex && PageSize > 0)
@@ -3347,15 +3347,15 @@ namespace Avalonia.Collections
                 this._group.AddToSubgroups(addedItem, false /*loading*/);
             }
 
-            int addedIndex = IndexOf(addedItem);
+            var addedIndex = IndexOf(addedItem);
 
             // if the item is within the current page
             if (addedIndex >= 0)
             {
-                object oldCurrentItem = CurrentItem;
-                int oldCurrentPosition = CurrentPosition;
-                bool oldIsCurrentAfterLast = IsCurrentAfterLast;
-                bool oldIsCurrentBeforeFirst = IsCurrentBeforeFirst;
+                var oldCurrentItem = CurrentItem;
+                var oldCurrentPosition = CurrentPosition;
+                var oldIsCurrentAfterLast = IsCurrentAfterLast;
+                var oldIsCurrentBeforeFirst = IsCurrentBeforeFirst;
 
                 AdjustCurrencyForAdd(null, addedIndex);
 
@@ -3371,7 +3371,7 @@ namespace Avalonia.Collections
             else if (PageSize > 0)
             {
                 // otherwise if the item was added into a previous page
-                int internalIndex = InternalIndexOf(addedItem);
+                var internalIndex = InternalIndexOf(addedItem);
 
                 if (internalIndex < ConvertToInternalIndex(0))
                 {
@@ -3451,7 +3451,7 @@ namespace Avalonia.Collections
         //TODO Paging
         private void ProcessRemoveEvent(object removedItem, bool isReplace)
         {
-            int internalRemoveIndex = -1;
+            var internalRemoveIndex = -1;
 
             if (IsGrouping)
             {
@@ -3463,13 +3463,13 @@ namespace Avalonia.Collections
                 internalRemoveIndex = InternalIndexOf(removedItem);
             }
 
-            int removeIndex = IndexOf(removedItem);
+            var removeIndex = IndexOf(removedItem);
 
             // remove the item from the collection
             _internalList.Remove(removedItem);
 
             // only fire the remove if it was removed from either the current page, or a previous page
-            bool needToRemove = (PageSize == 0 && removeIndex >= 0) || (internalRemoveIndex < (PageIndex + 1) * PageSize);
+            var needToRemove = (PageSize == 0 && removeIndex >= 0) || (internalRemoveIndex < (PageIndex + 1) * PageSize);
 
             if (IsGrouping)
             {
@@ -3486,10 +3486,10 @@ namespace Avalonia.Collections
 
             if (needToRemove)
             {
-                object oldCurrentItem = CurrentItem;
-                int oldCurrentPosition = CurrentPosition;
-                bool oldIsCurrentAfterLast = IsCurrentAfterLast;
-                bool oldIsCurrentBeforeFirst = IsCurrentBeforeFirst;
+                var oldCurrentItem = CurrentItem;
+                var oldCurrentPosition = CurrentPosition;
+                var oldIsCurrentAfterLast = IsCurrentAfterLast;
+                var oldIsCurrentBeforeFirst = IsCurrentBeforeFirst;
 
                 AdjustCurrencyForRemove(removeIndex);
 
@@ -3521,7 +3521,7 @@ namespace Avalonia.Collections
                     // we first need to add the item into the current group
                     if (IsGrouping)
                     {
-                        object newItem = _temporaryGroup.LeafAt((PageSize * (PageIndex + 1)) - 1);
+                        var newItem = _temporaryGroup.LeafAt((PageSize * (PageIndex + 1)) - 1);
                         if (newItem != null)
                         {
                             _group.AddToSubgroups(newItem, false /*loading*/);
@@ -3631,7 +3631,7 @@ namespace Avalonia.Collections
             EventHandler<PageChangingEventArgs> handler = PageChanging;
             if (handler != null)
             {
-                PageChangingEventArgs pageChangingEventArgs = new PageChangingEventArgs(newPageIndex);
+                var pageChangingEventArgs = new PageChangingEventArgs(newPageIndex);
                 handler(this, pageChangingEventArgs);
                 return pageChangingEventArgs.Cancel;
             }
@@ -3670,10 +3670,10 @@ namespace Avalonia.Collections
         //TODO Paging
         private void RefreshOverride()
         {
-            object oldCurrentItem = CurrentItem;
-            int oldCurrentPosition = CurrentPosition;
-            bool oldIsCurrentAfterLast = IsCurrentAfterLast;
-            bool oldIsCurrentBeforeFirst = IsCurrentBeforeFirst;
+            var oldCurrentItem = CurrentItem;
+            var oldCurrentPosition = CurrentPosition;
+            var oldIsCurrentAfterLast = IsCurrentAfterLast;
+            var oldIsCurrentBeforeFirst = IsCurrentBeforeFirst;
 
             // set IsGrouping to false
             _isGrouping = false;
@@ -3759,7 +3759,7 @@ namespace Avalonia.Collections
             {
                 // try to set currency back to old current item
                 // if there are duplicates, use the position of the first matching item
-                int newPosition = IndexOf(oldCurrentItem);
+                var newPosition = IndexOf(oldCurrentItem);
 
                 // if the old current item is no longer in view
                 if (newPosition < 0)
@@ -3798,7 +3798,7 @@ namespace Avalonia.Collections
         /// <param name="newPosition">New CurrentPosition</param>
         private void SetCurrent(object newItem, int newPosition)
         {
-            int count = (newItem != null) ? 0 : (IsEmpty ? 0 : Count);
+            var count = (newItem != null) ? 0 : (IsEmpty ? 0 : Count);
             SetCurrent(newItem, newPosition, count);
         }
 
@@ -3949,7 +3949,7 @@ namespace Avalonia.Collections
             IComparer<object> comparer = new CultureSensitiveComparer(Culture);
             var itemType = ItemType;
 
-            foreach (DataGridSortDescription sort in SortDescriptions)
+            foreach (var sort in SortDescriptions)
             {
                 sort.Initialize(itemType); 
 
@@ -4271,10 +4271,10 @@ namespace Avalonia.Collections
             /// </remarks>
             public int Compare(object x, object y)
             {
-                int result = 0;
+                var result = 0;
 
                 // compare both objects by each of the properties until property values don't match
-                for (int k = 0; k < _comparers.Length; ++k)
+                for (var k = 0; k < _comparers.Length; ++k)
                 {
                     var comparer = _comparers[k];
                     result = comparer.Compare(x, y);
@@ -4297,8 +4297,8 @@ namespace Avalonia.Collections
             /// <returns>Index where we should insert into</returns>
             public int FindInsertIndex(object x, IList list)
             {
-                int min = 0;
-                int max = list.Count - 1;
+                var min = 0;
+                var max = list.Count - 1;
                 int index;
 
                 // run a binary search to find the right index
@@ -4307,7 +4307,7 @@ namespace Avalonia.Collections
                 {
                     index = (min + max) / 2;
 
-                    int result = Compare(x, list[index]);
+                    var result = Compare(x, list[index]);
                     if (result == 0)
                     {
                         return index;

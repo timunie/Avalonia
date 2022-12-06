@@ -327,7 +327,7 @@ namespace Avalonia.Controls
         /// and unit type as oCompare.</returns>
         public override bool Equals(object obj)
         {
-            DataGridLength? dataGridLength = obj as DataGridLength?;
+            var dataGridLength = obj as DataGridLength?;
             if (dataGridLength.HasValue)
             {
                 return (this == dataGridLength);
@@ -368,7 +368,7 @@ namespace Avalonia.Controls
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
         {
             // We can only handle strings, integral and floating types
-            TypeCode tc = Type.GetTypeCode(sourceType);
+            var tc = Type.GetTypeCode(sourceType);
             switch (tc)
             {
                 case TypeCode.String:
@@ -433,7 +433,7 @@ namespace Avalonia.Controls
 
                 if (stringValue.EndsWith(_starSuffix, StringComparison.Ordinal))
                 {
-                    string stringValueWithoutSuffix = stringValue.Substring(0, stringValue.Length - _starSuffix.Length);
+                    var stringValueWithoutSuffix = stringValue.Substring(0, stringValue.Length - _starSuffix.Length);
 
                     double starWeight;
                     if (string.IsNullOrEmpty(stringValueWithoutSuffix))
@@ -448,7 +448,7 @@ namespace Avalonia.Controls
                     return new DataGridLength(starWeight, DataGridLengthUnitType.Star);
                 }
 
-                for (int index = 0; index < _valueInvariantUnitStrings.Length; index++)
+                for (var index = 0; index < _valueInvariantUnitStrings.Length; index++)
                 {
                     if (stringValue.Equals(_valueInvariantUnitStrings[index], StringComparison.OrdinalIgnoreCase))
                     {
@@ -458,7 +458,7 @@ namespace Avalonia.Controls
             }
 
             // Conversion from numeric type, WPF lets Convert exceptions bubble out here as well
-            double doubleValue = Convert.ToDouble(value, culture ?? CultureInfo.CurrentCulture);
+            var doubleValue = Convert.ToDouble(value, culture ?? CultureInfo.CurrentCulture);
             if (double.IsNaN(doubleValue))
             {
                 // WPF returns Auto in this case as well
@@ -505,7 +505,7 @@ namespace Avalonia.Controls
             {
                 throw DataGridError.DataGridLengthConverter.CannotConvertTo(destinationType.ToString());
             }
-            DataGridLength? dataGridLength = value as DataGridLength?;
+            var dataGridLength = value as DataGridLength?;
             if (!dataGridLength.HasValue)
             {
                 throw DataGridError.DataGridLengthConverter.InvalidDataGridLength("value");

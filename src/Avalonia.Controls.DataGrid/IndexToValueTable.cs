@@ -26,7 +26,7 @@ namespace Avalonia.Controls
         {
             get
             {
-                int indexCount = 0;
+                var indexCount = 0;
                 foreach (Range<T> range in _list)
                 {
                     indexCount += range.Count;
@@ -105,8 +105,8 @@ namespace Avalonia.Controls
         /// <returns>True if the entire index range is present in the table</returns>
         public bool ContainsAll(int startIndex, int endIndex)
         {
-            int start = -1;
-            int end = -1;
+            var start = -1;
+            var end = -1;
 
             foreach (Range<T> range in _list)
             {
@@ -147,7 +147,7 @@ namespace Avalonia.Controls
         /// <returns>true if the given index is contained in the table with the the given value</returns>
         public bool ContainsIndexAndValue(int index, T value)
         {
-            int lowerRangeIndex = this.FindRangeIndex(index);
+            var lowerRangeIndex = this.FindRangeIndex(index);
             return ((IsCorrectRangeIndex(lowerRangeIndex, index)) && (_list[lowerRangeIndex].ContainsValue(value)));
         }
 
@@ -167,8 +167,8 @@ namespace Avalonia.Controls
 
         public int GetNextGap(int index)
         {
-            int targetIndex = index + 1;
-            int rangeIndex = FindRangeIndex(targetIndex);
+            var targetIndex = index + 1;
+            var rangeIndex = FindRangeIndex(targetIndex);
             if (IsCorrectRangeIndex(rangeIndex, targetIndex))
             {
                 while (rangeIndex < _list.Count - 1 && _list[rangeIndex].UpperBound == _list[rangeIndex + 1].LowerBound - 1)
@@ -185,8 +185,8 @@ namespace Avalonia.Controls
 
         public int GetNextIndex(int index)
         {
-            int targetIndex = index + 1;
-            int rangeIndex = FindRangeIndex(targetIndex);
+            var targetIndex = index + 1;
+            var rangeIndex = FindRangeIndex(targetIndex);
             if (IsCorrectRangeIndex(rangeIndex, targetIndex))
             {
                 return targetIndex;
@@ -200,8 +200,8 @@ namespace Avalonia.Controls
 
         public int GetPreviousGap(int index)
         {
-            int targetIndex = index - 1;
-            int rangeIndex = FindRangeIndex(targetIndex);
+            var targetIndex = index - 1;
+            var rangeIndex = FindRangeIndex(targetIndex);
             if (IsCorrectRangeIndex(rangeIndex, targetIndex))
             {
                 while (rangeIndex > 0 && _list[rangeIndex].LowerBound == _list[rangeIndex - 1].UpperBound + 1)
@@ -218,8 +218,8 @@ namespace Avalonia.Controls
 
         public int GetPreviousIndex(int index)
         {
-            int targetIndex = index - 1;
-            int rangeIndex = FindRangeIndex(targetIndex);
+            var targetIndex = index - 1;
+            var rangeIndex = FindRangeIndex(targetIndex);
             if (IsCorrectRangeIndex(rangeIndex, targetIndex))
             {
                 return targetIndex;
@@ -244,8 +244,8 @@ namespace Avalonia.Controls
             {
                 return 0;
             }
-            int count = 0;
-            int index = FindRangeIndex(lowerBound);
+            var count = 0;
+            var index = FindRangeIndex(lowerBound);
             if (IsCorrectRangeIndex(index, lowerBound) && _list[index].ContainsValue(value))
             {
                 count += _list[index].UpperBound - lowerBound + 1;
@@ -278,8 +278,8 @@ namespace Avalonia.Controls
             {
                 return 0;
             }
-            int count = 0;
-            int index = this.FindRangeIndex(lowerBound);
+            var count = 0;
+            var index = this.FindRangeIndex(lowerBound);
             if (IsCorrectRangeIndex(index, lowerBound))
             {
                 count += _list[index].UpperBound - lowerBound + 1;
@@ -311,10 +311,10 @@ namespace Avalonia.Controls
                 return 0;
             }
 
-            int count = 0;
-            int currentIndex = startingIndex;
-            int rangeIndex = 0;
-            int gap = 0;
+            var count = 0;
+            var currentIndex = startingIndex;
+            var rangeIndex = 0;
+            var gap = 0;
             while (gap <= gapSize && rangeIndex < _list.Count)
             {
                 gap += _list[rangeIndex].LowerBound - currentIndex;
@@ -338,7 +338,7 @@ namespace Avalonia.Controls
 
             foreach (Range<T> range in _list)
             {
-                for (int i = range.LowerBound; i <= range.UpperBound; i++)
+                for (var i = range.LowerBound; i <= range.UpperBound; i++)
                 {
                     yield return i;
                 }
@@ -354,7 +354,7 @@ namespace Avalonia.Controls
         {
             Debug.Assert(_list != null);
 
-            int rangeIndex = FindRangeIndex(startIndex);
+            var rangeIndex = FindRangeIndex(startIndex);
             if (rangeIndex == -1)
             {
                 rangeIndex++;
@@ -362,7 +362,7 @@ namespace Avalonia.Controls
 
             while (rangeIndex < _list.Count)
             {
-                for (int i = _list[rangeIndex].LowerBound; i <= _list[rangeIndex].UpperBound; i++)
+                for (var i = _list[rangeIndex].LowerBound; i <= _list[rangeIndex].UpperBound; i++)
                 {
                     if (i >= startIndex)
                     {
@@ -380,7 +380,7 @@ namespace Avalonia.Controls
         public int GetNthIndex(int n)
         {
             Debug.Assert(n >= 0 && n < this.IndexCount);
-            int cumulatedEntries = 0;
+            var cumulatedEntries = 0;
             foreach (Range<T> range in _list)
             {
                 if (cumulatedEntries + range.Count > n)
@@ -402,7 +402,7 @@ namespace Avalonia.Controls
         /// <returns>the value at the given index or the default value if index is not in the table</returns>
         public T? GetValueAt(int index)
         {
-            return GetValueAt(index, out bool found);
+            return GetValueAt(index, out var found);
         }
 
         /// <summary>
@@ -413,7 +413,7 @@ namespace Avalonia.Controls
         /// <returns>the value at the given index or the default value if index is not in the table</returns>
         public T? GetValueAt(int index, out bool found)
         {
-            int rangeIndex = this.FindRangeIndex(index);
+            var rangeIndex = this.FindRangeIndex(index);
             if (this.IsCorrectRangeIndex(rangeIndex, index))
             {
                 found = true;
@@ -433,7 +433,7 @@ namespace Avalonia.Controls
         /// <returns></returns>
         public int IndexOf(int index)
         {
-            int cumulatedIndexes = 0;
+            var cumulatedIndexes = 0;
             foreach (Range<T> range in _list)
             {
                 if (range.UpperBound >= index)
@@ -488,7 +488,7 @@ namespace Avalonia.Controls
         public void InsertIndexesAndValues(int startIndex, int count, T value)
         {
             Debug.Assert(count > 0);
-            int lowerRangeIndex = this.FindRangeIndex(startIndex);
+            var lowerRangeIndex = this.FindRangeIndex(startIndex);
             InsertIndexesPrivate(startIndex, count, lowerRangeIndex);
             if ((lowerRangeIndex >= 0) && (_list[lowerRangeIndex].LowerBound > startIndex))
             {
@@ -523,12 +523,12 @@ namespace Avalonia.Controls
         /// <param name="count">total number of indexes to remove</param>
         public void RemoveIndexes(int startIndex, int count)
         {
-            int lowerRangeIndex = this.FindRangeIndex(startIndex);
+            var lowerRangeIndex = this.FindRangeIndex(startIndex);
             if (lowerRangeIndex < 0)
             {
                 lowerRangeIndex = 0;
             }
-            int i = lowerRangeIndex;
+            var i = lowerRangeIndex;
             while (i < _list.Count)
             {
                 Range<T> range = _list[i];
@@ -542,7 +542,7 @@ namespace Avalonia.Controls
                     }
                     else
                     {
-                        int currentIndex = i;
+                        var currentIndex = i;
                         if (range.LowerBound <= startIndex)
                         {
                             // Range gets split up
@@ -601,7 +601,7 @@ namespace Avalonia.Controls
         {
             Debug.Assert(count > 0);
 
-            int lowerRangeIndex = this.FindRangeIndex(startIndex);
+            var lowerRangeIndex = this.FindRangeIndex(startIndex);
             if (lowerRangeIndex < 0)
             {
                 lowerRangeIndex = 0;
@@ -643,7 +643,7 @@ namespace Avalonia.Controls
         {
             Debug.Assert(count > 0);
 
-            int endIndex = startIndex + count - 1;
+            var endIndex = startIndex + count - 1;
             Range<T> newRange = new Range<T>(startIndex, endIndex, value);
             if (_list.Count == 0)
             {
@@ -651,7 +651,7 @@ namespace Avalonia.Controls
             }
             else
             {
-                int lowerRangeIndex = startRangeIndex ?? FindRangeIndex(startIndex);
+                var lowerRangeIndex = startRangeIndex ?? FindRangeIndex(startIndex);
                 Range<T> lowerRange = (lowerRangeIndex < 0) ? null : _list[lowerRangeIndex];
                 if (lowerRange == null)
                 {
@@ -689,7 +689,7 @@ namespace Avalonia.Controls
 
                 // At this point the newRange has been inserted in the correct place, now we need to remove
                 // any subsequent ranges that no longer make sense and possibly update the one at newRange.UpperBound
-                int upperRangeIndex = lowerRangeIndex + 1;
+                var upperRangeIndex = lowerRangeIndex + 1;
                 while ((upperRangeIndex < _list.Count) && (_list[upperRangeIndex].UpperBound < endIndex))
                 {
                     _list.RemoveAt(upperRangeIndex);
@@ -717,12 +717,12 @@ namespace Avalonia.Controls
             }
 
             // Do a binary search for the index
-            int front = 0;
-            int end = _list.Count - 1;
+            var front = 0;
+            var end = _list.Count - 1;
             Range<T> range = null;
             while (end > front)
             {
-                int median = (front + end) / 2;
+                var median = (front + end) / 2;
                 range = _list[median];
                 if (range.UpperBound < index)
                 {
@@ -762,7 +762,7 @@ namespace Avalonia.Controls
 
         private bool Merge(int lowerRangeIndex)
         {
-            int upperRangeIndex = lowerRangeIndex + 1;
+            var upperRangeIndex = lowerRangeIndex + 1;
             if ((lowerRangeIndex >= 0) && (upperRangeIndex < _list.Count))
             {
                 Range<T> lowerRange = _list[lowerRangeIndex];
@@ -782,8 +782,8 @@ namespace Avalonia.Controls
             Debug.Assert(count > 0);
 
             // Same as AddRange after we fix the indicies affected by the insertion
-            int startRangeIndex = (lowerRangeIndex >= 0) ? lowerRangeIndex : 0;
-            for (int i = startRangeIndex; i < _list.Count; i++)
+            var startRangeIndex = (lowerRangeIndex >= 0) ? lowerRangeIndex : 0;
+            for (var i = startRangeIndex; i < _list.Count; i++)
             {
                 Range<T> range = _list[i];
                 if (range.LowerBound >= startIndex)

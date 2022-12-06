@@ -130,7 +130,7 @@ namespace Avalonia.Controls
         /// <param name="column">The column of the cell that has just exited edit mode.</param>
         /// <param name="row">The row container of the cell container that has just exited edit mode.</param>
         /// <param name="editAction">The editing action that has been taken.</param>
-        public DataGridCellEditEndedEventArgs(DataGridColumn column, DataGridRow row, DataGridEditAction editAction)
+        public DataGridCellEditEndedEventArgs(DataGridColumn? column, DataGridRow? row, DataGridEditAction editAction)
         {
             Column = column;
             Row = row;
@@ -140,7 +140,7 @@ namespace Avalonia.Controls
         /// <summary>
         /// The column of the cell that has just exited edit mode.
         /// </summary>
-        public DataGridColumn Column
+        public DataGridColumn? Column
         {
             get;
             private set;
@@ -158,7 +158,7 @@ namespace Avalonia.Controls
         /// <summary>
         /// The row container of the cell container that has just exited edit mode.
         /// </summary>
-        public DataGridRow Row
+        public DataGridRow? Row
         {
             get;
             private set;
@@ -222,9 +222,9 @@ namespace Avalonia.Controls
         /// <param name="row">The row container of the cell container that is about to exit edit mode.</param>
         /// <param name="editingElement">The editing element within the cell.</param>
         /// <param name="editAction">The editing action that will be taken.</param>
-        public DataGridCellEditEndingEventArgs(DataGridColumn column,
-                                               DataGridRow row,
-                                               Control editingElement,
+        public DataGridCellEditEndingEventArgs(DataGridColumn? column,
+                                               DataGridRow? row,
+                                               Control? editingElement,
                                                DataGridEditAction editAction)
         {
             Column = column;
@@ -236,7 +236,7 @@ namespace Avalonia.Controls
         /// <summary>
         /// The column of the cell that is about to exit edit mode.
         /// </summary>
-        public DataGridColumn Column
+        public DataGridColumn? Column
         {
             get;
             private set;
@@ -254,7 +254,7 @@ namespace Avalonia.Controls
         /// <summary>
         /// The editing element within the cell. 
         /// </summary>
-        public Control EditingElement
+        public Control? EditingElement
         {
             get;
             private set;
@@ -263,7 +263,7 @@ namespace Avalonia.Controls
         /// <summary>
         /// The row container of the cell container that is about to exit edit mode.
         /// </summary>
-        public DataGridRow Row
+        public DataGridRow? Row
         {
             get;
             private set;
@@ -327,7 +327,7 @@ namespace Avalonia.Controls
         /// <summary>
         /// The column being moved.
         /// </summary>
-        public DataGridColumn Column
+        public DataGridColumn? Column
         {
             get;
             private set;
@@ -336,7 +336,7 @@ namespace Avalonia.Controls
         /// <summary>
         /// The popup indicator displayed while dragging.  If null and Handled = true, then do not display a tooltip.
         /// </summary>
-        public Control DragIndicator
+        public Control? DragIndicator
         {
             get;
             set;
@@ -345,7 +345,7 @@ namespace Avalonia.Controls
         /// <summary>
         /// UIElement to display at the insertion position.  If null and Handled = true, then do not display an insertion indicator.
         /// </summary>
-        public Control DropLocationIndicator
+        public Control? DropLocationIndicator
         {
             get;
             set;
@@ -421,7 +421,7 @@ namespace Avalonia.Controls
         /// </summary>
         /// <param name="row">The row container of the cell container that has just exited edit mode.</param>
         /// <param name="editAction">The editing action that has been taken.</param>
-        public DataGridRowEditEndedEventArgs(DataGridRow row, DataGridEditAction editAction)
+        public DataGridRowEditEndedEventArgs(DataGridRow? row, DataGridEditAction editAction)
         {
             this.Row = row;
             this.EditAction = editAction;
@@ -439,7 +439,7 @@ namespace Avalonia.Controls
         /// <summary>
         /// The row container of the cell container that has just exited edit mode.
         /// </summary>
-        public DataGridRow Row
+        public DataGridRow? Row
         {
             get;
             private set;
@@ -458,10 +458,10 @@ namespace Avalonia.Controls
         /// <param name="row">The row that contains the cell to be edited.</param>
         /// <param name="editingEventArgs">Information about the user gesture that caused the cell to enter edit mode.</param>
         /// <param name="editingElement">The element that the column displays for a cell in editing mode.</param>
-        public DataGridPreparingCellForEditEventArgs(DataGridColumn column,
-                                                     DataGridRow row,
+        public DataGridPreparingCellForEditEventArgs(DataGridColumn? column,
+                                                     DataGridRow? row,
                                                      RoutedEventArgs editingEventArgs,
-                                                     Control editingElement)
+                                                     Control? editingElement)
         {
             Column = column;
             Row = row;
@@ -472,7 +472,7 @@ namespace Avalonia.Controls
         /// <summary>
         /// Gets the column that contains the cell to be edited.
         /// </summary>
-        public DataGridColumn Column
+        public DataGridColumn? Column
         {
             get;
             private set;
@@ -481,7 +481,7 @@ namespace Avalonia.Controls
         /// <summary>
         /// Gets the element that the column displays for a cell in editing mode.
         /// </summary>
-        public Control EditingElement
+        public Control? EditingElement
         {
             get;
             private set;
@@ -499,7 +499,7 @@ namespace Avalonia.Controls
         /// <summary>
         /// Gets the row that contains the cell to be edited.
         /// </summary>
-        public DataGridRow Row
+        public DataGridRow? Row
         {
             get;
             private set;
