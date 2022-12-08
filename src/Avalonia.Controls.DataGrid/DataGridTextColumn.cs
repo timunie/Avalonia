@@ -20,8 +20,8 @@ namespace Avalonia.Controls
     /// </summary>
     public class DataGridTextColumn : DataGridBoundColumn
     {
-        private readonly Lazy<ControlTheme> _cellTextBoxTheme;
-        private readonly Lazy<ControlTheme> _cellTextBlockTheme;
+        private readonly Lazy<ControlTheme?> _cellTextBoxTheme;
+        private readonly Lazy<ControlTheme?> _cellTextBlockTheme;
         
         /// <summary>
         /// Initializes a new instance of the <see cref="T:Avalonia.Controls.DataGridTextColumn" /> class.
@@ -30,10 +30,10 @@ namespace Avalonia.Controls
         {
             BindingTarget = TextBox.TextProperty;
 
-            _cellTextBoxTheme = new Lazy<ControlTheme>(() =>
-                OwningGrid.TryFindResource("DataGridCellTextBoxTheme", out var theme) ? (ControlTheme)theme : null);
-            _cellTextBlockTheme = new Lazy<ControlTheme>(() =>
-                OwningGrid.TryFindResource("DataGridCellTextBlockTheme", out var theme) ? (ControlTheme)theme : null);
+            _cellTextBoxTheme = new Lazy<ControlTheme?>(() =>
+                OwningGrid != null && OwningGrid.TryFindResource("DataGridCellTextBoxTheme", out var theme) ? theme as ControlTheme : null);
+            _cellTextBlockTheme = new Lazy<ControlTheme?>(() =>
+                OwningGrid != null && OwningGrid.TryFindResource("DataGridCellTextBlockTheme", out var theme) ? theme as ControlTheme : null);
         }
 
         /// <summary>
@@ -116,13 +116,13 @@ namespace Avalonia.Controls
         /// <summary>
         /// Identifies the Foreground dependency property.
         /// </summary>
-        public static readonly AttachedProperty<IBrush> ForegroundProperty =
+        public static readonly AttachedProperty<IBrush?> ForegroundProperty =
             TextElement.ForegroundProperty.AddOwner<DataGridTextColumn>();
 
         /// <summary>
         /// Gets or sets a brush that describes the foreground of the column cells.
         /// </summary>
-        public IBrush Foreground
+        public IBrush? Foreground
         {
             get => GetValue(ForegroundProperty);
             set => SetValue(ForegroundProperty, value);
@@ -162,7 +162,7 @@ namespace Avalonia.Controls
         /// <param name="cell">The cell that will contain the generated element.</param>
         /// <param name="dataItem">The data item represented by the row that contains the intended cell.</param>
         /// <returns>A new <see cref="T:Avalonia.Controls.TextBox" /> control that is bound to the column's <see cref="P:Avalonia.Controls.DataGridBoundColumn.Binding" /> property value.</returns>
-        protected override Control GenerateEditingElementDirect(DataGridCell cell, object dataItem)
+        protected override Control GenerateEditingElementDirect(DataGridCell cell, object? dataItem)
         {
             var textBox = new TextBox
             {                
@@ -184,7 +184,7 @@ namespace Avalonia.Controls
         /// <param name="cell">The cell that will contain the generated element.</param>
         /// <param name="dataItem">The data item represented by the row that contains the intended cell.</param>
         /// <returns>A new, read-only <see cref="T:Avalonia.Controls.TextBlock" /> element that is bound to the column's <see cref="P:Avalonia.Controls.DataGridBoundColumn.Binding" /> property value.</returns>
-        protected override Control GenerateElement(DataGridCell cell, object dataItem)
+        protected override Control GenerateElement(DataGridCell cell, object? dataItem)
         {
             var textBlockElement = new TextBlock
             {
@@ -214,8 +214,8 @@ namespace Avalonia.Controls
         {
             if (editingElement is TextBox textBox)
             {
-                var uneditedText = textBox.Text ?? String.Empty;
-                var len = uneditedText.Length;
+                var uneditedText = textBox.Text;
+                var len = uneditedText?.Length ?? 0;
                 if (editingEventArgs is KeyEventArgs keyEventArgs && keyEventArgs.Key == Key.F2)
                 {
                     // Put caret at the end of the text

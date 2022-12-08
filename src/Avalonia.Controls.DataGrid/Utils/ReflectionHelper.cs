@@ -20,7 +20,7 @@ namespace Avalonia.Controls.Utils
         internal const char PropertyNameSeparator = '.';
         internal const char RightIndexerToken = ']';
 
-        private static Type FindGenericType(Type definition, Type type)
+        private static Type? FindGenericType(Type definition, Type? type)
         {
             while ((type != null) && (type != typeof(object)))
             {
@@ -53,13 +53,13 @@ namespace Avalonia.Controls.Utils
         /// <param name="stringIndex">String value of indexer argument.</param>
         /// <param name="index">Resultant index value.</param>
         /// <returns>Indexer PropertyInfo if found, null otherwise.</returns>
-        private static PropertyInfo FindIndexerInMembers(MemberInfo[] members, string stringIndex, out object[] index)
+        private static PropertyInfo FindIndexerInMembers(IEnumerable<MemberInfo?> members, string stringIndex, out object[]? index)
         {
             index = null;
             ParameterInfo[] parameters;
-            PropertyInfo stringIndexer = null;
+            PropertyInfo? stringIndexer = null;
 
-            foreach (PropertyInfo pi in members)
+            foreach (PropertyInfo? pi in members)
             {
                 if (pi == null)
                 {
@@ -105,7 +105,7 @@ namespace Avalonia.Controls.Utils
             if (attributes != null && attributes.Length == 1)
             {
                 var defaultMemberAttribute = attributes[0] as DefaultMemberAttribute;
-                return defaultMemberAttribute.MemberName;
+                return defaultMemberAttribute?.MemberName;
             }
             else
             {
@@ -121,9 +121,9 @@ namespace Avalonia.Controls.Utils
         /// <param name="type">Type to search</param>
         /// <param name="propertyPath">property path</param>
         /// <returns>DisplayAttribute.ShortName if it exists, null otherwise</returns>
-        internal static string GetDisplayName(this Type type, string propertyPath)
+        internal static string? GetDisplayName(this Type? type, string? propertyPath)
         {
-            var propertyInfo = type.GetNestedProperty(propertyPath);
+            var propertyInfo = type?.GetNestedProperty(propertyPath);
             if (propertyInfo != null)
             {
                 object[] attributes = propertyInfo.GetCustomAttributes(typeof(DisplayAttribute), true);
@@ -158,7 +158,7 @@ namespace Avalonia.Controls.Utils
         /// <param name="exception">Potential exception</param>
         /// <param name="item">Parent item which will be set to the property value if non-null.</param>
         /// <returns></returns>
-        private static PropertyInfo GetNestedProperty(this Type parentType, string propertyPath, out Exception exception, ref object item)
+        private static PropertyInfo GetNestedProperty(this Type? parentType, string propertyPath, out Exception? exception, ref object? item)
         {
             exception = null;
             if (parentType == null || String.IsNullOrEmpty(propertyPath))
@@ -168,13 +168,13 @@ namespace Avalonia.Controls.Utils
             }
 
             var type = parentType;
-            PropertyInfo propertyInfo = null;
+            PropertyInfo? propertyInfo = null;
             List<string> propertyNames = SplitPropertyPath(propertyPath);
             for (var i = 0; i < propertyNames.Count; i++)
             {
                 // if we can't find the property or it is not of the correct type,
                 // treat it as a null value
-                propertyInfo = type.GetPropertyOrIndexer(propertyNames[i], out object[] index);
+                propertyInfo = type.GetPropertyOrIndexer(propertyNames[i], out var index);
                 if (propertyInfo == null)
                 {
                     item = null;
@@ -210,14 +210,14 @@ namespace Avalonia.Controls.Utils
         /// <returns>The PropertyInfo.</returns>
         internal static PropertyInfo GetNestedProperty(this Type parentType, string propertyPath, ref object item)
         {
-            return parentType.GetNestedProperty(propertyPath, out Exception ex, ref item);
+            return parentType.GetNestedProperty(propertyPath, out var ex, ref item);
         }
 
-        internal static PropertyInfo GetNestedProperty(this Type parentType, string propertyPath)
+        internal static PropertyInfo GetNestedProperty(this Type? parentType, string? propertyPath)
         {
             if (parentType != null)
             {
-                object item = null;
+                object? item = null;
                 return parentType.GetNestedProperty(propertyPath, ref item);
             }
             return null;
@@ -230,7 +230,7 @@ namespace Avalonia.Controls.Utils
         /// <returns>Textual representation of the input type</returns>
         internal static string GetTypeName(this Type type)
         {
-            Type baseType = type.GetNonNullableType();
+            var baseType = type.GetNonNullableType();
             var s = baseType.Name;
             if (type != baseType)
             {
@@ -239,14 +239,14 @@ namespace Avalonia.Controls.Utils
             return s;
         }
 
-        internal static Type GetNestedPropertyType(this Type parentType, string propertyPath)
+        internal static Type GetNestedPropertyType(this Type? parentType, string? propertyPath)
         {
             if (parentType == null || String.IsNullOrEmpty(propertyPath))
             {
                 return parentType;
             }
 
-            PropertyInfo propertyInfo = parentType.GetNestedProperty(propertyPath);
+            var propertyInfo = parentType.GetNestedProperty(propertyPath);
             if (propertyInfo != null)
             {
                 return propertyInfo.PropertyType;
@@ -264,7 +264,7 @@ namespace Avalonia.Controls.Utils
         /// <param name="propertyType">Property type</param>
         /// <param name="exception">Potential exception</param>
         /// <returns>Property value</returns>
-        internal static object GetNestedPropertyValue(object item, string propertyPath, Type propertyType, out Exception exception)
+        internal static object GetNestedPropertyValue(object? item, string propertyPath, Type propertyType, out Exception? exception)
         {
             exception = null;
 
@@ -284,7 +284,7 @@ namespace Avalonia.Controls.Utils
             var itemType = item.GetType();
             if (itemType != null)
             {
-                PropertyInfo propertyInfo = itemType.GetNestedProperty(propertyPath, out exception, ref propertyValue);
+                var propertyInfo = itemType.GetNestedProperty(propertyPath, out exception, ref propertyValue);
                 if (propertyInfo != null && propertyInfo.PropertyType != propertyType)
                 {
                     return null;
@@ -337,7 +337,7 @@ namespace Avalonia.Controls.Utils
         /// <param name="propertyPath">Property path.</param>
         /// <param name="index">Set to the index if return value is an indexer, otherwise null.</param>
         /// <returns>PropertyInfo for either a property or an indexer.</returns>
-        internal static PropertyInfo GetPropertyOrIndexer(this Type type, string propertyPath, out object[] index)
+        internal static PropertyInfo? GetPropertyOrIndexer(this Type type, string propertyPath, out object[]? index)
         {
             index = null;
             // Return the default value of GetProperty if the first character is not an indexer token.
@@ -413,7 +413,7 @@ namespace Avalonia.Controls.Utils
             return (FindGenericType(typeof(IEnumerable<>), enumerableType) != null);
         }
 
-        internal static bool IsNullableType(this Type type)
+        internal static bool IsNullableType(this Type? type)
         {
             return (((type != null) && type.IsGenericType) && (type.GetGenericTypeDefinition() == typeof(Nullable<>)));
         }
@@ -520,7 +520,7 @@ namespace Avalonia.Controls.Utils
                 {
                     var readOnlyAttribute = attributes[0] as ReadOnlyAttribute;
                     Debug.Assert(readOnlyAttribute != null);
-                    return readOnlyAttribute.IsReadOnly;
+                    return readOnlyAttribute!.IsReadOnly;
                 }
             }
             return false;
@@ -529,7 +529,7 @@ namespace Avalonia.Controls.Utils
         internal static Type GetItemType(this IEnumerable list)
         {
             var listType = list.GetType();
-            Type itemType = null;
+            Type? itemType = null;
 
             // if it's a generic enumerable, we get the generic type
 

@@ -27,7 +27,7 @@ namespace Avalonia.Controls
             get
             {
                 var indexCount = 0;
-                foreach (Range<T> range in _list)
+                foreach (var range in _list)
                 {
                     indexCount += range.Count;
                 }
@@ -108,7 +108,7 @@ namespace Avalonia.Controls
             var start = -1;
             var end = -1;
 
-            foreach (Range<T> range in _list)
+            foreach (var range in _list)
             {
                 if (start == -1 && range.UpperBound >= startIndex)
                 {
@@ -157,7 +157,7 @@ namespace Avalonia.Controls
         /// <returns>copy of this IndexToValueTable</returns>
         public IndexToValueTable<T> Copy()
         {
-            IndexToValueTable<T> copy = new IndexToValueTable<T>();
+            var copy = new IndexToValueTable<T>();
             foreach (Range<T> range in this._list)
             {
                 copy._list.Add(range.Copy());
@@ -336,7 +336,7 @@ namespace Avalonia.Controls
         {
             Debug.Assert(_list != null);
 
-            foreach (Range<T> range in _list)
+            foreach (var range in _list!)
             {
                 for (var i = range.LowerBound; i <= range.UpperBound; i++)
                 {
@@ -360,7 +360,7 @@ namespace Avalonia.Controls
                 rangeIndex++;
             }
 
-            while (rangeIndex < _list.Count)
+            while (rangeIndex < _list!.Count)
             {
                 for (var i = _list[rangeIndex].LowerBound; i <= _list[rangeIndex].UpperBound; i++)
                 {
@@ -381,7 +381,7 @@ namespace Avalonia.Controls
         {
             Debug.Assert(n >= 0 && n < this.IndexCount);
             var cumulatedEntries = 0;
-            foreach (Range<T> range in _list)
+            foreach (var range in _list)
             {
                 if (cumulatedEntries + range.Count > n)
                 {
@@ -434,7 +434,7 @@ namespace Avalonia.Controls
         public int IndexOf(int index)
         {
             var cumulatedIndexes = 0;
-            foreach (Range<T> range in _list)
+            foreach (var range in _list)
             {
                 if (range.UpperBound >= index)
                 {
@@ -531,7 +531,7 @@ namespace Avalonia.Controls
             var i = lowerRangeIndex;
             while (i < _list.Count)
             {
-                Range<T> range = _list[i];
+                var range = _list[i];
                 if (range.UpperBound >= startIndex)
                 {
                     if (range.LowerBound >= startIndex + count)
@@ -644,7 +644,7 @@ namespace Avalonia.Controls
             Debug.Assert(count > 0);
 
             var endIndex = startIndex + count - 1;
-            Range<T> newRange = new Range<T>(startIndex, endIndex, value);
+            var newRange = new Range<T>(startIndex, endIndex, value);
             if (_list.Count == 0)
             {
                 _list.Add(newRange);
@@ -652,7 +652,7 @@ namespace Avalonia.Controls
             else
             {
                 var lowerRangeIndex = startRangeIndex ?? FindRangeIndex(startIndex);
-                Range<T> lowerRange = (lowerRangeIndex < 0) ? null : _list[lowerRangeIndex];
+                var lowerRange = (lowerRangeIndex < 0) ? null : _list[lowerRangeIndex];
                 if (lowerRange == null)
                 {
                     if (lowerRangeIndex < 0)
@@ -663,7 +663,7 @@ namespace Avalonia.Controls
                 }
                 else
                 {
-                    if (!lowerRange.Value.Equals(value) && (lowerRange.UpperBound >= startIndex))
+                    if (lowerRange.Value != null && !lowerRange.Value.Equals(value) && (lowerRange.UpperBound >= startIndex))
                     {
                         // Split up the range
                         if (lowerRange.UpperBound > endIndex)
@@ -719,7 +719,7 @@ namespace Avalonia.Controls
             // Do a binary search for the index
             var front = 0;
             var end = _list.Count - 1;
-            Range<T> range = null;
+            Range<T>? range = null;
             while (end > front)
             {
                 var median = (front + end) / 2;
@@ -765,9 +765,9 @@ namespace Avalonia.Controls
             var upperRangeIndex = lowerRangeIndex + 1;
             if ((lowerRangeIndex >= 0) && (upperRangeIndex < _list.Count))
             {
-                Range<T> lowerRange = _list[lowerRangeIndex];
+                var lowerRange = _list[lowerRangeIndex];
                 Range<T> upperRange = _list[upperRangeIndex];
-                if ((lowerRange.UpperBound + 1 >= upperRange.LowerBound) && (lowerRange.Value.Equals(upperRange.Value)))
+                if (lowerRange.Value != null && (lowerRange.UpperBound + 1 >= upperRange.LowerBound) && (lowerRange.Value.Equals(upperRange.Value)))
                 {
                     lowerRange.UpperBound = Math.Max(lowerRange.UpperBound, upperRange.UpperBound);
                     _list.RemoveAt(upperRangeIndex);
@@ -785,7 +785,7 @@ namespace Avalonia.Controls
             var startRangeIndex = (lowerRangeIndex >= 0) ? lowerRangeIndex : 0;
             for (var i = startRangeIndex; i < _list.Count; i++)
             {
-                Range<T> range = _list[i];
+                var range = _list[i];
                 if (range.LowerBound >= startIndex)
                 {
                     range.LowerBound += count;
@@ -839,7 +839,7 @@ namespace Avalonia.Controls
         public void PrintIndexes()
         {
             Debug.WriteLine(this.IndexCount + " indexes");
-            foreach (Range<T> range in _list)
+            foreach (var range in _list)
             {
                 Debug.WriteLine(String.Format(System.Globalization.CultureInfo.InvariantCulture, "{0} - {1}", range.LowerBound, range.UpperBound));
             }

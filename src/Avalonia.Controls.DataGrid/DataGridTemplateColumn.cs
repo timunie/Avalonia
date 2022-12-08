@@ -15,28 +15,28 @@ namespace Avalonia.Controls
 {
     public class DataGridTemplateColumn : DataGridColumn
     {
-        private IDataTemplate _cellTemplate;
+        private IDataTemplate? _cellTemplate;
 
-        public static readonly DirectProperty<DataGridTemplateColumn, IDataTemplate> CellTemplateProperty =
-            AvaloniaProperty.RegisterDirect<DataGridTemplateColumn, IDataTemplate>(
+        public static readonly DirectProperty<DataGridTemplateColumn, IDataTemplate?> CellTemplateProperty =
+            AvaloniaProperty.RegisterDirect<DataGridTemplateColumn, IDataTemplate?>(
                 nameof(CellTemplate),
                 o => o.CellTemplate,
                 (o, v) => o.CellTemplate = v);
 
         [Content]
-        public IDataTemplate CellTemplate
+        public IDataTemplate? CellTemplate
         {
             get { return _cellTemplate; }
             set { SetAndRaise(CellTemplateProperty, ref _cellTemplate, value); }
         }
 
-        private IDataTemplate _cellEditingCellTemplate;
+        private IDataTemplate? _cellEditingCellTemplate;
 
         /// <summary>
         /// Defines the <see cref="CellEditingTemplate"/> property.
         /// </summary>
-        public static readonly DirectProperty<DataGridTemplateColumn, IDataTemplate> CellEditingTemplateProperty =
-                AvaloniaProperty.RegisterDirect<DataGridTemplateColumn, IDataTemplate>(
+        public static readonly DirectProperty<DataGridTemplateColumn, IDataTemplate?> CellEditingTemplateProperty =
+                AvaloniaProperty.RegisterDirect<DataGridTemplateColumn, IDataTemplate?>(
                     nameof(CellEditingTemplate),
                     o => o.CellEditingTemplate,
                     (o, v) => o.CellEditingTemplate = v);
@@ -50,7 +50,7 @@ namespace Avalonia.Controls
         /// <remarks>
         /// If this property is <see langword="null"/> the column is read-only.
         /// </remarks>
-        public IDataTemplate CellEditingTemplate
+        public IDataTemplate? CellEditingTemplate
         {
             get => _cellEditingCellTemplate;
             set => SetAndRaise(CellEditingTemplateProperty, ref _cellEditingCellTemplate, value);
@@ -58,11 +58,11 @@ namespace Avalonia.Controls
         
         private static void OnCellTemplateChanged(AvaloniaPropertyChangedEventArgs e)
         {
-            var oldValue = (IDataTemplate)e.OldValue;
-            var value = (IDataTemplate)e.NewValue;
+            var oldValue = e.OldValue as IDataTemplate;
+            var value = e.NewValue as IDataTemplate;
         }
 
-        protected override Control GenerateElement(DataGridCell cell, object dataItem)
+        protected override Control? GenerateElement(DataGridCell cell, object? dataItem)
         {
             if (CellTemplate != null)
             {
@@ -80,7 +80,7 @@ namespace Avalonia.Controls
             }
         }
 
-        protected override Control GenerateEditingElement(DataGridCell cell, object dataItem, out ICellEditBinding binding)
+        protected override Control? GenerateEditingElement(DataGridCell cell, object? dataItem, out ICellEditBinding? binding)
         {
             binding = null;
             if(CellEditingTemplate != null)

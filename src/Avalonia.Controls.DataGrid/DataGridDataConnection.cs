@@ -418,7 +418,7 @@ namespace Avalonia.Controls
             return !AllowEdit;
         }
 
-        public int IndexOf(object dataItem)
+        public int IndexOf(object? dataItem)
         {
             var list = List;
             if (list != null)

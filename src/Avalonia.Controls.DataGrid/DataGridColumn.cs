@@ -31,7 +31,7 @@ namespace Avalonia.Controls
         private double? _minWidth;
         private bool _settingWidthInternally;
         private int _displayIndexWithFiller;
-        private object _header;
+        private object? _header;
         private IDataTemplate? _headerTemplate;
         private DataGridColumnHeader? _headerCell;
         private Control? _editingElement;
@@ -291,7 +291,7 @@ namespace Avalonia.Controls
                 else if (OwningGrid != null)
                 {
                     var propertyPath = GetSortPropertyName();
-                    var propertyType = OwningGrid.DataConnection.DataType.GetNestedPropertyType(propertyPath);
+                    var propertyType = OwningGrid.DataConnection?.DataType.GetNestedPropertyType(propertyPath);
 
                     // if the type is nullable, then we will compare the non-nullable type
                     if (TypeHelper.IsNullableType(propertyType))
@@ -423,8 +423,8 @@ namespace Avalonia.Controls
         /// <summary>
         ///    Backing field for Header property
         /// </summary>
-        public static readonly DirectProperty<DataGridColumn, object> HeaderProperty =
-            AvaloniaProperty.RegisterDirect<DataGridColumn, object>(
+        public static readonly DirectProperty<DataGridColumn, object?> HeaderProperty =
+            AvaloniaProperty.RegisterDirect<DataGridColumn, object?>(
                 nameof(Header),
                 o => o.Header,
                 (o, v) => o.Header = v);
@@ -432,7 +432,7 @@ namespace Avalonia.Controls
         /// <summary>
         ///    Gets or sets the <see cref="DataGridColumnHeader"/> content
         /// </summary>
-        public object Header
+        public object? Header
         {
             get { return _header; }
             set { SetAndRaise(HeaderProperty, ref _header, value); }
@@ -603,7 +603,7 @@ namespace Avalonia.Controls
         /// <summary>
         /// The binding that will be used to get or set cell content for the clipboard.
         /// </summary>
-        public virtual IBinding ClipboardContentBinding
+        public virtual IBinding? ClipboardContentBinding
         {
             get
             {
@@ -626,7 +626,7 @@ namespace Avalonia.Controls
             Debug.Assert(OwningGrid != null);
 
             object? content = null;
-            if (binding != null)
+            if (binding != null && OwningGrid != null)
             {
                 OwningGrid.ClipboardContentControl.DataContext = item;
                 var sub = OwningGrid.ClipboardContentControl.Bind(ContentControl.ContentProperty, binding);
@@ -747,7 +747,7 @@ namespace Avalonia.Controls
         /// <returns>
         /// A new editing element that is bound to the column's <see cref="P:Avalonia.Controls.DataGridBoundColumn.Binding" /> property value.
         /// </returns>
-        protected abstract Control GenerateEditingElement(DataGridCell cell, object? dataItem, out ICellEditBinding binding);
+        protected abstract Control? GenerateEditingElement(DataGridCell cell, object? dataItem, out ICellEditBinding? binding);
 
         /// <summary>
         /// When overridden in a derived class, gets a read-only element that is bound to the column's
@@ -762,7 +762,7 @@ namespace Avalonia.Controls
         /// <returns>
         /// A new, read-only element that is bound to the column's <see cref="P:Avalonia.Controls.DataGridBoundColumn.Binding" /> property value.
         /// </returns>
-        protected abstract Control GenerateElement(DataGridCell cell, object dataItem);
+        protected abstract Control? GenerateElement(DataGridCell cell, object? dataItem);
 
         /// <summary>
         /// Called by a specific column type when one of its properties changed,
@@ -908,7 +908,7 @@ namespace Avalonia.Controls
             SetWidthInternalNoCallback(CoerceWidth(Width));
         }
 
-        internal Control GenerateElementInternal(DataGridCell cell, object dataItem)
+        internal Control GenerateElementInternal(DataGridCell? cell, object? dataItem)
         {
             return GenerateElement(cell, dataItem);
         }
@@ -1076,7 +1076,7 @@ namespace Avalonia.Controls
         }
 
         //TODO Binding
-        internal Control? GenerateEditingElementInternal(DataGridCell cell, object? dataItem)
+        internal Control? GenerateEditingElementInternal(DataGridCell? cell, object? dataItem)
         {
             if (_editingElement == null)
             {

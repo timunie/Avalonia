@@ -49,7 +49,7 @@ namespace Avalonia.Controls
             return (LowerBound <= index) && (UpperBound >= index);
         }
 
-        public bool ContainsValue(object value)
+        public bool ContainsValue(object? value)
         {
             if (Value == null)
             {

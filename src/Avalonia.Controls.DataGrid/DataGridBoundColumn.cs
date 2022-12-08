@@ -21,14 +21,14 @@ namespace Avalonia.Controls
     /// </summary>
     public abstract class DataGridBoundColumn : DataGridColumn
     {
-        private IBinding _binding; 
+        private IBinding? _binding; 
 
         /// <summary>
         /// Gets or sets the binding that associates the column with a property in the data source.
         /// </summary>
         //TODO Binding
         [AssignBinding]
-        public virtual IBinding Binding
+        public virtual IBinding? Binding
         {
             get
             {
@@ -83,7 +83,7 @@ namespace Avalonia.Controls
         /// The binding that will be used to get or set cell content for the clipboard.
         /// If the base ClipboardContentBinding is not explicitly set, this will return the value of Binding.
         /// </summary>
-        public override IBinding ClipboardContentBinding
+        public override IBinding? ClipboardContentBinding
         {
             get
             {
@@ -97,7 +97,7 @@ namespace Avalonia.Controls
 
         //TODO Rename
         //TODO Validation
-        protected sealed override Control GenerateEditingElement(DataGridCell cell, object dataItem, out ICellEditBinding editBinding)
+        protected sealed override Control GenerateEditingElement(DataGridCell cell, object? dataItem, out ICellEditBinding? editBinding)
         {
             var element = GenerateEditingElementDirect(cell, dataItem);
             editBinding = null; 
@@ -110,7 +110,7 @@ namespace Avalonia.Controls
             return element;
         } 
 
-        private static ICellEditBinding BindEditingElement(AvaloniaObject target, AvaloniaProperty property, IBinding binding)
+        private static ICellEditBinding? BindEditingElement(AvaloniaObject target, AvaloniaProperty property, IBinding binding)
         {
             var result = binding.Initiate(target, property, enableDataValidation: true); 
 
@@ -131,13 +131,13 @@ namespace Avalonia.Controls
             return null;
         } 
 
-        protected abstract Control GenerateEditingElementDirect(DataGridCell cell, object dataItem); 
+        protected abstract Control GenerateEditingElementDirect(DataGridCell cell, object? dataItem); 
 
-        protected AvaloniaProperty BindingTarget { get; set; } 
+        protected AvaloniaProperty? BindingTarget { get; set; } 
 
         internal void SetHeaderFromBinding()
         {
-            if (OwningGrid != null && OwningGrid.DataConnection.DataType != null
+            if (OwningGrid != null && OwningGrid.DataConnection?.DataType != null
                 && Header == null && Binding != null && Binding is BindingBase binding)
             {
                 var path = (binding as Binding)?.Path ?? (binding as CompiledBindingExtension)?.Path.ToString();

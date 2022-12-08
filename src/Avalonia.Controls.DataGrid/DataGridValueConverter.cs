@@ -17,16 +17,16 @@ namespace Avalonia.Controls
     {
         public static DataGridValueConverter Instance = new DataGridValueConverter();
 
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
             return DefaultValueConverter.Instance.Convert(value, targetType, parameter, culture);
         }
 
         // This suppresses a warning saying that we should use String.IsNullOrEmpty instead of a string
         // comparison, but in this case we want to explicitly check for Empty and not Null.
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
-            if (targetType != null && targetType.IsNullableType())
+            if (targetType.IsNullableType())
             {
                 var strValue = value as string;
                 if (string.IsNullOrEmpty(strValue))

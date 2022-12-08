@@ -2947,7 +2947,7 @@ namespace Avalonia.Controls
         {
             if (_rowsPresenter != null && _measured && RowDetailsTemplate != null)
             {
-                object dataItem = null;
+                object? dataItem = null;
                 if(VisibleSlotCount > 0)
                     dataItem = DataConnection.GetDataItem(0);
                 var detailsContent = RowDetailsTemplate.Build(dataItem);

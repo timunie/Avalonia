@@ -792,7 +792,7 @@ namespace Avalonia.Controls
             get
             {
                 Debug.Assert(OwningGrid != null);
-                return DetailsTemplate ?? OwningGrid.RowDetailsTemplate;
+                return DetailsTemplate ?? OwningGrid?.RowDetailsTemplate;
             }
         }
 

@@ -51,12 +51,12 @@ namespace Avalonia.Controls
             return headerCell;
         }
 
-        protected override Control GenerateElement(DataGridCell cell, object dataItem)
+        protected override Control GenerateElement(DataGridCell cell, object? dataItem)
         {
             return null;
         }
 
-        protected override Control GenerateEditingElement(DataGridCell cell, object dataItem, out ICellEditBinding editBinding)
+        protected override Control GenerateEditingElement(DataGridCell cell, object? dataItem, out ICellEditBinding? editBinding)
         {
             editBinding = null;
             return null;

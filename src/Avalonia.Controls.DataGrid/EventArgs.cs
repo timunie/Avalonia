@@ -82,7 +82,7 @@ namespace Avalonia.Controls
         /// Information about the user gesture that caused the cell to enter edit mode.
         /// </param>
         public DataGridBeginningEditEventArgs(DataGridColumn column,
-                                              DataGridRow row,
+                                              DataGridRow? row,
                                               RoutedEventArgs editingEventArgs)
         {
             this.Column = column;
@@ -111,7 +111,7 @@ namespace Avalonia.Controls
         /// <summary>
         /// Gets the row that contains the cell to be edited.
         /// </summary>
-        public DataGridRow Row
+        public DataGridRow? Row
         {
             get;
             private set;
