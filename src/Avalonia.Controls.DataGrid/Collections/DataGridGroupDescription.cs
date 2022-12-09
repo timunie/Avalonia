@@ -47,7 +47,7 @@ namespace Avalonia.Collections
             PropertyChanged?.Invoke(this, e);
         }
 
-        public virtual string PropertyName => String.Empty;
+        public virtual string? PropertyName => String.Empty;
         public abstract object GroupKeyFromItem(object item, int level, CultureInfo culture);
         public virtual bool KeysMatch(object groupKey, object itemKey)
         {
@@ -56,19 +56,19 @@ namespace Avalonia.Collections
     }
     public class DataGridPathGroupDescription : DataGridGroupDescription
     {
-        private string _propertyPath;
-        private Type _propertyType;
+        private string? _propertyPath;
+        private Type? _propertyType;
         private IValueConverter _valueConverter;
         private StringComparison _stringComparison = StringComparison.Ordinal;
 
-        public DataGridPathGroupDescription(string propertyPath)
+        public DataGridPathGroupDescription(string? propertyPath)
         {
             _propertyPath = propertyPath;
         }
 
         public override object GroupKeyFromItem(object item, int level, CultureInfo culture)
         {
-            object GetKey(object o)
+            object? GetKey(object o)
             {
                 if(o == null)
                     return null;
@@ -98,15 +98,15 @@ namespace Avalonia.Collections
             else
                 return base.KeysMatch(groupKey, itemKey);
         }
-        public override string PropertyName => _propertyPath;
+        public override string? PropertyName => _propertyPath;
 
         public IValueConverter ValueConverter { get => _valueConverter; set => _valueConverter = value; }
 
-        private Type GetPropertyType(object o)
+        private Type? GetPropertyType(object o)
         {
             return o.GetType().GetNestedPropertyType(_propertyPath);
         }
-        private static object InvokePath(object item, string propertyPath, Type propertyType)
+        private static object? InvokePath(object item, string? propertyPath, Type? propertyType)
         {
             var propertyValue = TypeHelper.GetNestedPropertyValue(item, propertyPath, propertyType, out var exception);
             if (exception != null)

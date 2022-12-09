@@ -10,17 +10,17 @@ namespace Avalonia.Collections
 {
     public abstract class DataGridSortDescription
     {
-        public virtual string PropertyPath => null;
+        public virtual string? PropertyPath => null;
 
         public virtual ListSortDirection Direction => ListSortDirection.Ascending;
         public bool HasPropertyPath => !String.IsNullOrEmpty(PropertyPath);
-        public abstract IComparer<object> Comparer { get; }
+        public abstract IComparer<object>? Comparer { get; }
 
-        public virtual IOrderedEnumerable<object> OrderBy(IEnumerable<object> seq)
+        public virtual IOrderedEnumerable<object?> OrderBy(IEnumerable<object?> seq)
         {
             return seq.OrderBy(o => o, Comparer);
         }
-        public virtual IOrderedEnumerable<object> ThenBy(IOrderedEnumerable<object> seq)
+        public virtual IOrderedEnumerable<object?> ThenBy(IOrderedEnumerable<object?> seq)
         {
             return seq.ThenBy(o => o, Comparer);
         }
@@ -33,7 +33,7 @@ namespace Avalonia.Collections
         internal virtual void Initialize(Type itemType)
         { }
 
-        private static object InvokePath(object item, string propertyPath, Type propertyType)
+        private static object? InvokePath(object? item, string? propertyPath, Type? propertyType)
         {
             var propertyValue = TypeHelper.GetNestedPropertyValue(item, propertyPath, propertyType, out var exception);
             if (exception != null)
@@ -105,13 +105,13 @@ namespace Avalonia.Collections
         private class DataGridPathSortDescription : DataGridSortDescription
         {
             private readonly ListSortDirection _direction;
-            private readonly string _propertyPath;
+            private readonly string? _propertyPath;
             private readonly Lazy<CultureSensitiveComparer> _cultureSensitiveComparer;
-            private readonly Lazy<IComparer<object>> _comparer;
-            private Type _propertyType;
+            private readonly Lazy<IComparer<object>?> _comparer;
+            private Type? _propertyType;
             private IComparer _internalComparer;
-            private IComparer<object> _internalComparerTyped;
-            private IComparer<object> InternalComparer
+            private IComparer<object>? _internalComparerTyped;
+            private IComparer<object>? InternalComparer
             {
                 get
                 {
@@ -127,17 +127,17 @@ namespace Avalonia.Collections
                 }
             }
 
-            public override string PropertyPath => _propertyPath;
-            public override IComparer<object> Comparer => _comparer.Value;
+            public override string? PropertyPath => _propertyPath;
+            public override IComparer<object>? Comparer => _comparer.Value;
             public override ListSortDirection Direction => _direction;
 
-            public DataGridPathSortDescription(string propertyPath, ListSortDirection direction, IComparer internalComparer, CultureInfo culture)
+            public DataGridPathSortDescription(string? propertyPath, ListSortDirection direction, IComparer internalComparer, CultureInfo culture)
             {
                 _propertyPath = propertyPath;
                 _direction = direction;
                 _cultureSensitiveComparer = new Lazy<CultureSensitiveComparer>(() => new CultureSensitiveComparer(culture ?? CultureInfo.CurrentCulture));
                 _internalComparer = internalComparer;
-                _comparer = new Lazy<IComparer<object>>(() => Comparer<object>.Create((x, y) => Compare(x, y)));
+                _comparer = new Lazy<IComparer<object>?>(() => Comparer<object>.Create((x, y) => Compare(x, y)));
             }
             private DataGridPathSortDescription(DataGridPathSortDescription inner, ListSortDirection direction)
             {
@@ -148,10 +148,10 @@ namespace Avalonia.Collections
                 _internalComparer = inner._internalComparer;
                 _internalComparerTyped = inner._internalComparerTyped;
 
-                _comparer = new Lazy<IComparer<object>>(() => Comparer<object>.Create((x, y) => Compare(x, y)));
+                _comparer = new Lazy<IComparer<object>?>(() => Comparer<object>.Create((x, y) => Compare(x, y)));
             }
 
-            private object GetValue(object o)
+            private object? GetValue(object? o)
             {
                 if (o == null)
                     return null;
@@ -165,19 +165,19 @@ namespace Avalonia.Collections
                     return null;
             }
 
-            private IComparer GetComparerForType(Type type)
+            private IComparer GetComparerForType(Type? type)
             {
                 if (type == typeof(string))
                     return _cultureSensitiveComparer.Value;
                 else
                     return (typeof(Comparer<>).MakeGenericType(type).GetProperty("Default")).GetValue(null, null) as IComparer;
             }
-            private Type GetPropertyType(object o)
+            private Type? GetPropertyType(object? o)
             {
                 return o.GetType().GetNestedPropertyType(_propertyPath);
             }
 
-            private int Compare(object x, object y)
+            private int Compare(object? x, object? y)
             {
                 var result = 0;
 
@@ -216,7 +216,7 @@ namespace Avalonia.Collections
                 if (_internalComparer == null && _propertyType != null)
                     _internalComparer = GetComparerForType(_propertyType);
             }
-            public override IOrderedEnumerable<object> OrderBy(IEnumerable<object> seq)
+            public override IOrderedEnumerable<object?> OrderBy(IEnumerable<object?> seq)
             {
                 if (Direction == ListSortDirection.Descending)
                 {
@@ -227,7 +227,7 @@ namespace Avalonia.Collections
                     return seq.OrderBy(o => GetValue(o), InternalComparer);
                 }
             }
-            public override IOrderedEnumerable<object> ThenBy(IOrderedEnumerable<object> seq)
+            public override IOrderedEnumerable<object?> ThenBy(IOrderedEnumerable<object?> seq)
             {
                 if (Direction == ListSortDirection.Descending)
                 {
@@ -246,12 +246,12 @@ namespace Avalonia.Collections
             }
         }
 
-        public static DataGridSortDescription FromPath(string propertyPath, ListSortDirection direction = ListSortDirection.Ascending, CultureInfo culture = null)
+        public static DataGridSortDescription FromPath(string? propertyPath, ListSortDirection direction = ListSortDirection.Ascending, CultureInfo culture = null)
         {
             return new DataGridPathSortDescription(propertyPath, direction, null, culture);
         }
 
-        public static DataGridSortDescription FromPath(string propertyPath, ListSortDirection direction, IComparer comparer)
+        public static DataGridSortDescription FromPath(string? propertyPath, ListSortDirection direction, IComparer comparer)
         {
             return new DataGridPathSortDescription(propertyPath, direction, comparer, null);
         }
@@ -266,10 +266,10 @@ namespace Avalonia.Collections
     {
         private readonly IComparer _innerComparer;
         private readonly ListSortDirection _direction;
-        private readonly IComparer<object> _comparer;
+        private readonly IComparer<object>? _comparer;
 
         public IComparer SourceComparer => _innerComparer;
-        public override IComparer<object> Comparer => _comparer;
+        public override IComparer<object>? Comparer => _comparer;
         public override ListSortDirection Direction => _direction;
         public DataGridComparerSortDescription(IComparer comparer, ListSortDirection direction)
         {

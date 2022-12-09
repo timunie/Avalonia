@@ -653,7 +653,7 @@ namespace Avalonia.Collections
         }
 
         int IDataGridCollectionView.GroupingDepth => GroupDescriptions?.Count ?? 0;
-        string IDataGridCollectionView.GetGroupingPropertyNameAtDepth(int level)
+        string? IDataGridCollectionView.GetGroupingPropertyNameAtDepth(int level)
         {
             var groups = GroupDescriptions;
             if(groups != null && level >= 0 && level < groups.Count)
@@ -2460,7 +2460,7 @@ namespace Avalonia.Collections
         /// <param name="propertyPath">property names path</param>
         /// <param name="propertyType">property type that we want to check for</param>
         /// <returns>child object</returns>
-        private static object InvokePath(object item, string propertyPath, Type propertyType)
+        private static object? InvokePath(object item, string? propertyPath, Type? propertyType)
         {
             var propertyValue = TypeHelper.GetNestedPropertyValue(item, propertyPath, propertyType, out var exception);
             if (exception != null)
@@ -3234,7 +3234,7 @@ namespace Avalonia.Collections
             Debug.Assert(enumerable != null, "Input list to filter/sort should not be null");
 
             // filter the collection's array into the local array
-            List<object> localList = new List<object>();
+            List<object?> localList = new List<object?>();
 
             foreach (var item in enumerable)
             {
@@ -3941,11 +3941,11 @@ namespace Avalonia.Collections
         /// </summary>
         /// <param name="list">List of objects to sort</param>
         /// <returns>The sorted list</returns>
-        private List<object> SortList(List<object> list)
+        private List<object?> SortList(List<object?> list)
         {
             Debug.Assert(list != null, "Input list to sort should not be null");
 
-            IEnumerable<object> seq = (IEnumerable<object>)list;
+            IEnumerable<object?> seq = (IEnumerable<object?>)list;
             IComparer<object> comparer = new CultureSensitiveComparer(Culture);
             var itemType = ItemType;
 

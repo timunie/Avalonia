@@ -279,7 +279,7 @@ namespace Avalonia.Controls
             return true;
         }
 
-        public static bool CanEdit(Type type)
+        public static bool CanEdit(Type? type)
         {
             Debug.Assert(type != null);
 

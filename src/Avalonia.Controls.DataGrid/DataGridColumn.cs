@@ -173,7 +173,7 @@ namespace Avalonia.Controls
             private set;
         }
 
-        internal ICellEditBinding CellEditBinding
+        internal ICellEditBinding? CellEditBinding
         {
             get => _editBinding;
         }
@@ -300,7 +300,7 @@ namespace Avalonia.Controls
                     }
 
                     // return whether or not the property type can be compared
-                    return (typeof(IComparable).IsAssignableFrom(propertyType)) ? true : false;
+                    return (typeof(IComparable).IsAssignableFrom(propertyType));
                 }
                 else
                 {
@@ -441,8 +441,8 @@ namespace Avalonia.Controls
         /// <summary>
         ///    Backing field for Header property
         /// </summary>
-        public static readonly DirectProperty<DataGridColumn, IDataTemplate> HeaderTemplateProperty =
-            AvaloniaProperty.RegisterDirect<DataGridColumn, IDataTemplate>(
+        public static readonly DirectProperty<DataGridColumn, IDataTemplate?> HeaderTemplateProperty =
+            AvaloniaProperty.RegisterDirect<DataGridColumn, IDataTemplate?>(
                 nameof(HeaderTemplate),
                 o => o.HeaderTemplate,
                 (o, v) => o.HeaderTemplate = v);
@@ -450,7 +450,7 @@ namespace Avalonia.Controls
         /// <summary>
         ///  Gets or sets an <see cref="IDataTemplate"/> for the <see cref="Header"/>
         /// </summary>
-        public IDataTemplate HeaderTemplate
+        public IDataTemplate? HeaderTemplate
         {
             get { return _headerTemplate; }
             set { SetAndRaise(HeaderTemplateProperty, ref _headerTemplate, value); }
@@ -621,7 +621,7 @@ namespace Avalonia.Controls
         /// <param name="item">The item associated with a cell.</param>
         /// <param name="binding">The binding to get the value of.</param>
         /// <returns>The resultant cell value.</returns>
-        internal object GetCellValue(object? item, IBinding? binding)
+        internal object? GetCellValue(object? item, IBinding? binding)
         {
             Debug.Assert(OwningGrid != null);
 
@@ -654,7 +654,7 @@ namespace Avalonia.Controls
             return null;
         }
 
-        public Control? GetCellContent(object dataItem)
+        public Control? GetCellContent(object? dataItem)
         {
             Contract.Requires<ArgumentNullException>(dataItem != null);
             if (OwningGrid == null)
@@ -747,7 +747,7 @@ namespace Avalonia.Controls
         /// <returns>
         /// A new editing element that is bound to the column's <see cref="P:Avalonia.Controls.DataGridBoundColumn.Binding" /> property value.
         /// </returns>
-        protected abstract Control? GenerateEditingElement(DataGridCell cell, object? dataItem, out ICellEditBinding? binding);
+        protected abstract Control? GenerateEditingElement(DataGridCell? cell, object? dataItem, out ICellEditBinding? binding);
 
         /// <summary>
         /// When overridden in a derived class, gets a read-only element that is bound to the column's
@@ -762,7 +762,7 @@ namespace Avalonia.Controls
         /// <returns>
         /// A new, read-only element that is bound to the column's <see cref="P:Avalonia.Controls.DataGridBoundColumn.Binding" /> property value.
         /// </returns>
-        protected abstract Control? GenerateElement(DataGridCell cell, object? dataItem);
+        protected abstract Control? GenerateElement(DataGridCell? cell, object? dataItem);
 
         /// <summary>
         /// Called by a specific column type when one of its properties changed,
@@ -908,7 +908,7 @@ namespace Avalonia.Controls
             SetWidthInternalNoCallback(CoerceWidth(Width));
         }
 
-        internal Control GenerateElementInternal(DataGridCell? cell, object? dataItem)
+        internal Control? GenerateElementInternal(DataGridCell? cell, object? dataItem)
         {
             return GenerateElement(cell, dataItem);
         }
@@ -1098,7 +1098,7 @@ namespace Avalonia.Controls
         /// <summary>
         /// Holds the name of the member to use for sorting, if not using the default.
         /// </summary>
-        public string SortMemberPath
+        public string? SortMemberPath
         {
             get;
             set;
@@ -1116,7 +1116,7 @@ namespace Avalonia.Controls
         /// We get the sort description from the data source.  We don't worry whether we can modify sort -- perhaps the sort description
         /// describes an unchangeable sort that exists on the data.
         /// </summary>
-        internal DataGridSortDescription GetSortDescription()
+        internal DataGridSortDescription? GetSortDescription()
         {
             if (OwningGrid != null
                 && OwningGrid.DataConnection != null
@@ -1138,7 +1138,7 @@ namespace Avalonia.Controls
             return null;
         }
 
-        internal string GetSortPropertyName()
+        internal string? GetSortPropertyName()
         {
             var result = SortMemberPath;
 

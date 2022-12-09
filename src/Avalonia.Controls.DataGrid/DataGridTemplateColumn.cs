@@ -62,7 +62,7 @@ namespace Avalonia.Controls
             var value = e.NewValue as IDataTemplate;
         }
 
-        protected override Control? GenerateElement(DataGridCell cell, object? dataItem)
+        protected override Control? GenerateElement(DataGridCell? cell, object? dataItem)
         {
             if (CellTemplate != null)
             {
@@ -80,7 +80,7 @@ namespace Avalonia.Controls
             }
         }
 
-        protected override Control? GenerateEditingElement(DataGridCell cell, object? dataItem, out ICellEditBinding? binding)
+        protected override Control? GenerateEditingElement(DataGridCell? cell, object? dataItem, out ICellEditBinding? binding)
         {
             binding = null;
             if(CellEditingTemplate != null)

@@ -97,7 +97,7 @@ namespace Avalonia.Controls
 
         //TODO Rename
         //TODO Validation
-        protected sealed override Control GenerateEditingElement(DataGridCell cell, object? dataItem, out ICellEditBinding? editBinding)
+        protected sealed override Control GenerateEditingElement(DataGridCell? cell, object? dataItem, out ICellEditBinding? editBinding)
         {
             var element = GenerateEditingElementDirect(cell, dataItem);
             editBinding = null; 
@@ -131,7 +131,7 @@ namespace Avalonia.Controls
             return null;
         } 
 
-        protected abstract Control GenerateEditingElementDirect(DataGridCell cell, object? dataItem); 
+        protected abstract Control GenerateEditingElementDirect(DataGridCell? cell, object? dataItem); 
 
         protected AvaloniaProperty? BindingTarget { get; set; } 
 

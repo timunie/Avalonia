@@ -346,7 +346,7 @@ namespace Avalonia.Controls
             foreach (var columnIndex in DisplayIndexMap)
             {
                 var column = ItemsInternal[columnIndex];
-                if (filter(column))
+                if (filter != null && filter(column))
                 {
                     yield return column;
                 }
@@ -428,10 +428,10 @@ namespace Avalonia.Controls
                                                   bool? isVisible, bool? isFrozen, bool? isReadOnly)
         {
             Debug.Assert(dataGridColumnStart != null);
-            Debug.Assert(ItemsInternal.Contains(dataGridColumnStart));
+            Debug.Assert(ItemsInternal.Contains(dataGridColumnStart!));
             Debug.Assert(ItemsInternal.Count == DisplayIndexMap.Count);
 
-            var index = dataGridColumnStart.DisplayIndexWithFiller + 1;
+            var index = dataGridColumnStart?.DisplayIndexWithFiller + 1 ?? -1;
             while (index < DisplayIndexMap.Count)
             {
                 var dataGridColumn = GetColumnAtDisplayIndex(index);

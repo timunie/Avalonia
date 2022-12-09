@@ -38,7 +38,7 @@ namespace Avalonia.Controls
     {
 
         private DataGridColumn _column;
-        private object _content;
+        private object? _content;
         private object? _item;
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace Avalonia.Controls
         /// <param name="item">DataGrid row item containing the cell.</param>
         /// <param name="column">DataGridColumn containing the cell.</param>
         /// <param name="content">DataGrid cell value.</param>
-        public DataGridClipboardCellContent(object? item, DataGridColumn column, object content)
+        public DataGridClipboardCellContent(object? item, DataGridColumn column, object? content)
         {
             this._item = item;
             this._column = column;
@@ -68,7 +68,7 @@ namespace Avalonia.Controls
         /// <summary>
         /// Cell content.
         /// </summary>
-        public object Content
+        public object? Content
         {
             get
             {

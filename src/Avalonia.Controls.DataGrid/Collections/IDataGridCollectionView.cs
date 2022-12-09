@@ -107,7 +107,7 @@ namespace Avalonia.Collections
 
         bool IsGrouping { get; }
         int GroupingDepth { get; }
-        string GetGroupingPropertyNameAtDepth(int level);
+        string? GetGroupingPropertyNameAtDepth(int level);
 
         /// <summary>Gets the top-level groups.</summary>
         /// <returns>A read-only collection of the top-level groups or null if there are no groups.</returns>

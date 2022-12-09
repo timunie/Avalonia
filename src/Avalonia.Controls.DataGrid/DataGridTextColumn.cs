@@ -162,7 +162,7 @@ namespace Avalonia.Controls
         /// <param name="cell">The cell that will contain the generated element.</param>
         /// <param name="dataItem">The data item represented by the row that contains the intended cell.</param>
         /// <returns>A new <see cref="T:Avalonia.Controls.TextBox" /> control that is bound to the column's <see cref="P:Avalonia.Controls.DataGridBoundColumn.Binding" /> property value.</returns>
-        protected override Control GenerateEditingElementDirect(DataGridCell cell, object? dataItem)
+        protected override Control GenerateEditingElementDirect(DataGridCell? cell, object? dataItem)
         {
             var textBox = new TextBox
             {                
@@ -184,7 +184,7 @@ namespace Avalonia.Controls
         /// <param name="cell">The cell that will contain the generated element.</param>
         /// <param name="dataItem">The data item represented by the row that contains the intended cell.</param>
         /// <returns>A new, read-only <see cref="T:Avalonia.Controls.TextBlock" /> element that is bound to the column's <see cref="P:Avalonia.Controls.DataGridBoundColumn.Binding" /> property value.</returns>
-        protected override Control GenerateElement(DataGridCell cell, object? dataItem)
+        protected override Control GenerateElement(DataGridCell? cell, object? dataItem)
         {
             var textBlockElement = new TextBlock
             {

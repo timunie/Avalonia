@@ -85,7 +85,7 @@ namespace Avalonia.Controls
         ///  <returns>
         ///  A new <see cref="T:System.Windows.Controls.CheckBox" /> control that is bound to the column's <see cref="P:System.Windows.Controls.DataGridBoundColumn.Binding" /> property value.
         ///  </returns>
-        protected override Control GenerateEditingElementDirect(DataGridCell cell, object? dataItem)
+        protected override Control GenerateEditingElementDirect(DataGridCell? cell, object? dataItem)
         {
             var checkBox = new CheckBox
             {
@@ -107,7 +107,7 @@ namespace Avalonia.Controls
         /// <returns>
         /// A new, read-only <see cref="T:System.Windows.Controls.CheckBox" /> control that is bound to the column's <see cref="P:System.Windows.Controls.DataGridBoundColumn.Binding" /> property value.
         /// </returns>
-        protected override Control GenerateElement(DataGridCell cell, object? dataItem)
+        protected override Control GenerateElement(DataGridCell? cell, object? dataItem)
         {
             var isEnabled = false;
             var checkBoxElement = new CheckBox();
