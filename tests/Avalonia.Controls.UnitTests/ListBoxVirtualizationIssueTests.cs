@@ -223,7 +223,7 @@ public class ListBoxVirtualizationIssueTests : ScopedTestBase
             var panel = (VirtualizingStackPanel)target.Presenter!.Panel!;
 
             var realizedContainers = target.GetRealizedContainers().ToList();
-                
+
             // The focused container should still be in Children, but NOT in realizedContainers
             Assert.Contains(container, panel.Children);
             Assert.DoesNotContain(container, realizedContainers);
@@ -248,10 +248,10 @@ public class ListBoxVirtualizationIssueTests : ScopedTestBase
             target.ScrollIntoView(10);
             target.UpdateLayout();
             Assert.Contains(container, panel.Children);
-                
+
             items.RemoveAt(1); // Item 0 was at index 1 because of Insert(0, "New Item")
             target.UpdateLayout();
-                
+
             // container should be removed from children because RecycleElementOnItemRemoved is called
             Assert.DoesNotContain(container, panel.Children);
             Assert.False(container.IsVisible);
@@ -280,16 +280,72 @@ public class ListBoxVirtualizationIssueTests : ScopedTestBase
             // We use a high index and don't call UpdateLayout immediately if we want to catch it in between?
             // Actually ScrollIntoView calls layout internally.
             target.ScrollIntoView(50);
-                
+
             var panel = (VirtualizingStackPanel)target.Presenter!.Panel!;
-                
+
             // 2. Remove the item we just scrolled to
             items.RemoveAt(50);
             target.UpdateLayout();
-                
+
             // If it was kept in _scrollToElement and not recycled, it might be a ghost.
             var visibleChildren = panel.Children.Where(c => c.IsVisible).ToList();
             Assert.Equal(target.GetRealizedContainers().Count(), visibleChildren.Count);
+        }
+    }
+
+    [Fact]
+    public void NoGhostItemWhenScrolledAnInvisibleListBox()
+    {
+        using (UnitTestApplication.Start(TestServices.MockPlatformRenderInterface))
+        {
+            var items = new ObservableCollection<string>(Enumerable.Range(0, 100).Select(i => $"Item {i}"));
+
+            var target = new ListBox
+            {
+                Template = new FuncControlTemplate(CreateListBoxTemplate),
+                ItemsSource = items,
+                ItemTemplate = new FuncDataTemplate<string>((_, _) => new TextBlock { Height = 50 }),
+                Height = 100, // Show 2 items
+                ItemsPanel = new FuncTemplate<Panel?>(() => new VirtualizingStackPanel { CacheLength = 0 }),
+                SelectedIndex = 0,
+                SelectionMode = SelectionMode.Single | SelectionMode.AlwaysSelected,
+            };
+
+            var container = new Border { Child = target, Width = 100, Height = 100 };
+            var root = new TestRoot(container);
+            root.LayoutManager.ExecuteInitialLayoutPass();
+
+            var panel = (VirtualizingStackPanel)target.Presenter!.Panel!;
+
+            // 1. Hide the ListBox by setting Width to 0 (simulating SplitView closing pane)
+            container.Width = 0;
+            root.LayoutManager.ExecuteLayoutPass();
+
+            // 2. Change SelectedIndex while invisible
+            for (int i = 0; i < 50; i++)
+            {
+                target.SelectedIndex = i;
+                target.ScrollIntoView(i);
+                root.LayoutManager.ExecuteLayoutPass();
+            }
+
+            // Check if there is a leak while STILL invisible (container.Width = 0)
+            // Even if finalSize is 0, we should not have extra internal children that are not realized.
+            // Wait, if Width is 0, realizedContainers will be 0.
+            // But panel.Children might contain the leaked _scrollToElement.
+            var visibleChildrenCount = panel.Children.Count(c => c.IsVisible);
+            Assert.Equal(0, visibleChildrenCount);
+
+            // 3. Make ListBox visible again
+            container.Width = 100;
+            root.LayoutManager.ExecuteLayoutPass();
+
+            // Check for ghost items
+            var visibleChildren = panel.Children.Where(c => c.IsVisible).ToList();
+            var realizedContainers = target.GetRealizedContainers().ToList();
+            
+            // If there's a ghost, visibleChildren will have more items than realizedContainers
+            Assert.Equal(realizedContainers.Count, visibleChildren.Count);
         }
     }
 
@@ -324,13 +380,14 @@ public class ListBoxVirtualizationIssueTests : ScopedTestBase
         var root = new TestRoot(target);
         root.LayoutManager.ExecuteInitialLayoutPass();
     }
-        
+
     private class Item
     {
         public Item(int id)
         {
             Id = id;
         }
+
         public int Id { get; }
     }
 }
