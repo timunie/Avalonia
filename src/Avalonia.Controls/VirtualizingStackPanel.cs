@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
@@ -9,6 +9,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Logging;
+using Avalonia.Threading;
 using Avalonia.Utilities;
 using Avalonia.VisualTree;
 
@@ -188,8 +189,11 @@ namespace Avalonia.Controls
         {
             var items = Items;
 
-            if (items.Count == 0)
+            if (items.Count == 0 || availableSize.Width <= 0 || availableSize.Height <= 0)
+            {
+                _realizedElements?.RecycleAllElements(_recycleElement);
                 return default;
+            }
 
             var orientation = Orientation;
 
@@ -291,6 +295,21 @@ namespace Avalonia.Controls
                         new Rect(0, u, finalSize.Width, _focusedElement.DesiredSize.Height);
 
                     _focusedElement.Arrange(rect);
+                }
+
+                if (_scrollToElement is not null)
+                {
+                    if (finalSize.Width > 0 && finalSize.Height > 0 && _scrollToIndex >= 0)
+                    {
+                        u = GetOrEstimateElementU(_scrollToIndex);
+                        var rect = orientation == Orientation.Horizontal ?
+                            new Rect(u, 0, _scrollToElement.DesiredSize.Width, Math.Max(0, finalSize.Height)) :
+                            new Rect(0, u, Math.Max(0, finalSize.Width), _scrollToElement.DesiredSize.Height);
+
+                        _scrollToElement.Arrange(rect);
+                    }
+                    
+                    RecycleScrollToElement();
                 }
 
                 return finalSize;
@@ -472,14 +491,9 @@ namespace Avalonia.Controls
                     }
                     break;
                 case NotifyCollectionChangedAction.Reset:
-                    if (_focusedElement is not null)
-                    {
-                        RecycleFocusedElement();
-                    }
-                    if (_scrollToElement is not null)
-                    {
-                        RecycleScrollToElement();
-                    }
+                    RecycleFocusedElement();
+                    RecycleScrollToElement();
+                    _scrollToIndex = -1;
                     break;
             }
         }
@@ -610,15 +624,21 @@ namespace Avalonia.Controls
         {
             var items = Items;
 
-            if (_isInLayout || index < 0 || index >= items.Count || _realizedElements is null || !IsEffectivelyVisible)
+            if (_isInLayout || index < 0 || index >= items.Count || _realizedElements is null)
                 return null;
+
+            if (Bounds.Width <= 0 || Bounds.Height <= 0 || !IsEffectivelyVisible)
+            {
+                _scrollToIndex = index;
+                return null;
+            }
 
             if (GetRealizedElement(index) is Control element)
             {
                 element.BringIntoView();
                 return element;
             }
-            else if (this.GetLayoutRoot() is {} root)
+            else if (this.GetLayoutRoot() is { } root)
             {
                 // Create and measure the element to be brought into view. Store it in a field so that
                 // it can be re-used in the layout pass.
@@ -637,17 +657,19 @@ namespace Avalonia.Controls
                 _scrollToElement = scrollToElement;
                 _scrollToIndex = index;
 
-                // If the item being brought into view was added since the last layout pass then
-                // our bounds won't be updated, so any containing scroll viewers will not have an
-                // updated extent. Do a layout pass to ensure that the containing scroll viewers
-                // will be able to scroll the new item into view.
-                if (!Bounds.Contains(rect) && !_viewport.Contains(rect))
-                {
-                    _isWaitingForViewportUpdate = true;
-                    root.LayoutManager.ExecuteLayoutPass();
-                    _isWaitingForViewportUpdate = false;
-                }
+            // If the item being brought into view was added since the last layout pass then
+            // our bounds won't be updated, so any containing scroll viewers will not have an
+            // updated extent. Do a layout pass to ensure that the containing scroll viewers
+            // will be able to scroll the new item into view.
+            if (!Bounds.Contains(rect) && !_viewport.Contains(rect))
+            {
+                _isWaitingForViewportUpdate = true;
+                root.LayoutManager.ExecuteLayoutPass();
+                _isWaitingForViewportUpdate = false;
+            }
 
+            try
+            {
                 // Try to bring the item into view.
                 scrollToElement.BringIntoView();
 
@@ -657,7 +679,12 @@ namespace Avalonia.Controls
                 // - The viewport is then updated by the layout system which invalidates our measure
                 // - Measure is then done with the new viewport.
                 _isWaitingForViewportUpdate = !_viewport.Contains(rect);
-                root.LayoutManager.ExecuteLayoutPass();
+
+                if (_isWaitingForViewportUpdate)
+                {
+                    root.LayoutManager.ExecuteLayoutPass();
+                    _isWaitingForViewportUpdate = false;
+                }
 
                 // If for some reason the layout system didn't give us a new viewport during the layout, we
                 // need to do another layout pass as the one that took place was a no-op.
@@ -673,9 +700,13 @@ namespace Avalonia.Controls
                 // After the previous BringIntoView, Y offset should be correct and an extra layout pass has been executed,
                 // hence the width extent should be correct now, and we can try to scroll again.
                 scrollToElement.BringIntoView();
+            }
+                finally
+                {
+                    _scrollToElement = null;
+                    _scrollToIndex = -1;
+                }
 
-                _scrollToElement = null;
-                _scrollToIndex = -1;
                 return scrollToElement;
             }
 
@@ -973,10 +1004,8 @@ namespace Avalonia.Controls
             ref int specialIndex,
             ref Control? specialElement)
         {
-            if (specialIndex == index)
+            if (specialIndex == index && specialElement is not null)
             {
-                Debug.Assert(specialElement is not null);
-
                 var result = specialElement;
                 specialIndex = -1;
                 specialElement = null;
@@ -1151,6 +1180,14 @@ namespace Avalonia.Controls
             // Update current viewport
             _viewport = e.EffectiveViewport.Intersect(new(Bounds.Size));
             _isWaitingForViewportUpdate = false;
+
+            if (_scrollToIndex >= 0 && _scrollToElement is null && (Bounds.Width > 0 || Bounds.Height > 0) && IsEffectivelyVisible)
+            {
+                var index = _scrollToIndex;
+                _scrollToIndex = -1;
+                // Defer call to ScrollIntoView until after current viewport update is processed
+                ScrollIntoView(index);
+            }
 
             // Calculate buffer sizes based on viewport dimensions
             var viewportSize = vertical ? _viewport.Height : _viewport.Width;
