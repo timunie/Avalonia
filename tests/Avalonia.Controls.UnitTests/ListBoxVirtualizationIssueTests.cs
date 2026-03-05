@@ -4,6 +4,7 @@ using Avalonia.Controls.Presenters;
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Templates;
 using Avalonia.Input;
+using Avalonia.Threading;
 using Avalonia.UnitTests;
 using Xunit;
 
@@ -105,7 +106,7 @@ public class ListBoxVirtualizationIssueTests : ScopedTestBase
 
                 // Check for ghost items during the process
                 var p = target.Presenter!.Panel!;
-                var visibleChildren  = p.Children.Where(c => c.IsVisible).ToList();
+                var visibleChildren = p.Children.Where(c => c.IsVisible).ToList();
                 var realizedContainers = target.GetRealizedContainers()
                     .Cast<ListBoxItem>()
                     .ToList();
@@ -191,8 +192,7 @@ public class ListBoxVirtualizationIssueTests : ScopedTestBase
             Assert.Equal("B", realizedContainers[1].Content?.ToString());
         }
     }
-
-
+    
     [Fact]
     public void GhostItemTest_FocusManagement()
     {
@@ -325,7 +325,6 @@ public class ListBoxVirtualizationIssueTests : ScopedTestBase
             for (int i = 0; i < 50; i++)
             {
                 target.SelectedIndex = i;
-                target.ScrollIntoView(i);
                 root.LayoutManager.ExecuteLayoutPass();
             }
 
@@ -338,14 +337,118 @@ public class ListBoxVirtualizationIssueTests : ScopedTestBase
 
             // 3. Make ListBox visible again
             container.Width = 100;
+
+
             root.LayoutManager.ExecuteLayoutPass();
 
-            // Check for ghost items
-            var visibleChildren = panel.Children.Where(c => c.IsVisible).ToList();
-            var realizedContainers = target.GetRealizedContainers().ToList();
+            for (int i = 0; i < 50; i++)
+            {
+                target.ScrollIntoView(i);
+                // Check for ghost items
+                var visibleChildren = panel.Children.Where(c => c.IsVisible).ToList();
+                var realizedContainers = target.GetRealizedContainers().ToList();
+
+                // If there's a ghost, visibleChildren will have more items than realizedContainers
+                Assert.Equal(realizedContainers.Count, visibleChildren.Count);
+            }
+        }
+    }
+    
+    
+    [Fact]
+    public void ScrollIntoView_While_Zero_Size_Should_Not_Create_Ghost_Items()
+    {
+        using (UnitTestApplication.Start(TestServices.MockThreadingInterface))
+        {
+            var items = new ObservableCollection<Item>(Enumerable.Range(0, 100).Select(i => new Item(i)));
+            var target = new ListBox
+            {
+                ItemsSource = items,
+                Template = new FuncControlTemplate(CreateListBoxTemplate),
+                ItemTemplate = new FuncDataTemplate<Item>((i, _) => new Canvas { Width = 10, Height = 10 }),
+            };
+
+            var root = new TestRoot(target);
+            target.Width = 100;
+            target.Height = 100;
+            root.LayoutManager.ExecuteInitialLayoutPass();
+
+            var panel = (VirtualizingStackPanel)target.Presenter!.Panel!;
+
+            // 1. Make ListBox zero size
+            target.Width = 0;
+            root.LayoutManager.ExecuteLayoutPass();
+
+            // 2. Scroll multiple times while zero size
+            for (int i = 0; i < 50; i++)
+            {
+                target.ScrollIntoView(i);
+                // We don't call ExecuteLayoutPass here because we want to see if they accumulate
+            }
+
+            // This layout pass should recycle any potential _scrollToElement if it was created
+            root.LayoutManager.ExecuteLayoutPass();
+
+            Assert.Equal(0, panel.Children.Count(c => c.IsVisible));
+
+            // 3. Make visible again
+            target.Width = 100;
+            root.LayoutManager.ExecuteLayoutPass();
+
+            // 4. Check for ghosts
+            for (int i = 0; i < 50; i++)
+            {
+                target.ScrollIntoView(i);
+                root.LayoutManager.ExecuteLayoutPass();
+
+                var visibleChildren = panel.Children.Where(c => c.IsVisible).ToList();
+                var realizedContainers = target.GetRealizedContainers().ToList();
+
+                Assert.Equal(realizedContainers.Count, visibleChildren.Count);
+            }
+        }
+    }
+
+    [Fact]
+    public void ScrollIntoView_While_Invisible_Should_Scroll_When_Made_Visible()
+    {
+        using (UnitTestApplication.Start(TestServices.MockThreadingInterface))
+        {
+            var items = new ObservableCollection<Item>(Enumerable.Range(0, 100).Select(i => new Item(i)));
+            var target = new ListBox
+            {
+                ItemsSource = items,
+                Template = new FuncControlTemplate(CreateListBoxTemplate),
+                ItemTemplate = new FuncDataTemplate<Item>((i, _) => new Canvas { Width = 10, Height = 10 }),
+                ItemsPanel = new FuncTemplate<Panel?>(() => new VirtualizingStackPanel { CacheLength = 0 }),
+            };
+
+            var root = new TestRoot(target);
+            target.Width = 100;
+            target.Height = 100;
+            root.LayoutManager.ExecuteInitialLayoutPass();
+
+            var scrollViewer = (ScrollViewer)target.VisualChildren[0];
+            Assert.Equal(0, scrollViewer.Offset.Y);
+
+            // 1. Make ListBox zero size (effectively invisible)
+            target.Width = 0;
+            root.LayoutManager.ExecuteLayoutPass();
+
+            // 2. Request ScrollIntoView while zero size
+            target.ScrollIntoView(items[50]);
             
-            // If there's a ghost, visibleChildren will have more items than realizedContainers
-            Assert.Equal(realizedContainers.Count, visibleChildren.Count);
+            // 3. Make visible again
+            target.Width = 100;
+            root.LayoutManager.ExecuteLayoutPass();
+
+            // Wait for Dispatcher.Post (Background priority)
+            Dispatcher.UIThread.RunJobs(DispatcherPriority.Background, TestContext.Current.CancellationToken);
+            root.LayoutManager.ExecuteLayoutPass();
+
+            // 4. Verify it scrolled
+            // Each item is 10 height, so item 50 should be at 500 offset (or at least scrolled down)
+            Assert.True(scrollViewer.Offset.Y > 0, "Should have scrolled even though request was made while zero-sized");
         }
     }
 
